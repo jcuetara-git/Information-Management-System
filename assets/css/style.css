@@ -1,0 +1,247 @@
+
+/* LOGIN */
+body.login-body {
+    background: #d9d9d9;
+    font-family: Arial, sans-serif;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+}
+
+.login-card {
+    background: #fff9f5;
+    width: 330px;
+    height: 430px;
+    padding: 35px;
+    border-radius: 25px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+.logo {
+    margin-top: -15px;
+    height:90px;
+    width: 110px;
+}
+
+.login-card h1 {
+    font-size:30px;
+    color: #ffb400;
+    margin-bottom: 30px;
+    margin-top: 0;
+}
+
+.login-card input {
+    width: 94%;
+    border-radius: 8px;
+    border: none;
+    background: #e0e0e0;
+}
+
+.forgot {
+    font-size: 12px;
+    text-align: right;
+    margin-top: -10px;
+    margin-bottom: 8px;
+    cursor: pointer;
+}
+
+.forgot:hover{
+    color:#585856; ;
+}
+
+.login-btn:hover {
+    background-color: #ffb405;
+}
+
+.register-text {
+    font-size: 100px;
+    margin-top: 8px;   
+    margin-bottom: -4px; 
+}
+
+.register-btn {
+    color: black !important;
+    width: 100px !important;
+    border-radius: 8px !important;
+}
+
+.register-btn:hover{
+    background-color: #fff4d9;
+}
+
+.error {
+    color: rgb(235, 1, 1);
+    font-size: 13px; 
+}
+
+/* REGISTER */
+
+.login-body {
+  margin: 0;
+  background: #eeeeee;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.register-card {
+    background: #fff9f5;
+    width: 390px;
+    height: 500px;
+    padding: 35px;
+    border-radius: 25px;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+    text-align: center;
+}
+
+/* Logo */
+.register-logo {
+  width: 90px;
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* Title */
+.register-title {
+  margin-top: -80px;
+  margin-left: -50px;
+  color: #ffb400;
+  font-size: 35px;
+  font-weight: 700;
+}
+
+.id-input{
+  width: 165px;
+}
+/* Subtitle */
+.subtitle {
+  margin-top: -25px;
+  margin-left: 50px;
+  margin-bottom: 40px;
+  font-size: 13px;
+  color: #777;
+}
+
+/* Error message */
+.error {
+  background: #ffd6d6;
+  color: #a40000;
+  padding: 8px 10px;
+  border-radius: 6px;
+  font-size: 13px;
+  margin-bottom: 12px;
+}
+
+/* Form */
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Inputs & Select */
+input,
+select {
+  width: 94%;
+  padding: 12px;
+  margin: 2px 0px;
+  border-radius: 6px;
+  border: none;
+  background: #e0e0e0;
+  font-size: 14px;
+  outline: none;
+}
+
+input::placeholder {
+  color: #9a9a9a;
+}
+
+/* Two column layout */
+.two-col {
+  display: flex;
+  gap: 12px;
+}
+
+.two-col select{
+    width: 100%;
+    padding: 10px;
+    padding-right: 15px;
+    border-radius: 6px;
+    border: none;
+    background: #e0e0e0;
+    color: #333;
+
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+
+    background-image: url("data:image/svg+xml;utf8,<svg fill='black' height='20' viewBox='0 0 24 24' width='20' xmlns='http://www.w3.org/2000/svg'><path d='M7 10l5 5 5-5z'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right 10px center;
+}
+
+.two-col input,
+.two-col select {
+  flex: 1;
+  right: 15px;
+}
+
+.password-field{
+    position: relative;
+}
+
+.password-field span{
+    font-size: 12px;
+    position: absolute;
+    right: 12px;
+    top: 15px;
+    cursor: pointer;
+}
+
+/* Register button */
+.login-btn {
+  margin-top: 25px;
+  padding: 12px;
+  border-radius: 8px;
+  border: none;
+  background: #ffc107;
+  color: #000;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.login-btn:hover {
+  background: #ffb300;
+}
+
+/* Bottom text */
+.register-text {
+  margin-top: 12px;
+  font-size: 13px;
+  text-align: center;
+  color: #666;
+}
+
+/* Sign in button */
+.register-btn {
+  display: block;
+  margin: 6px auto 0;
+  padding: 6px 16px;
+  border-radius: 14px;
+  border: 1.5px solid #ffc107;
+  font-size: 13px;
+  font-weight: 600;
+  color: #ffc107;
+  text-decoration: none;
+  transition: all 0.2s ease;
+}
+
+.register-btn:hover {
+  background: #ffc107;
+  color: #000;
+}
+

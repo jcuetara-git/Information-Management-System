@@ -1,0 +1,173 @@
+/* ================= GLOBAL ================= */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background: #d9d9d9;
+}
+
+/* ================= HEADER ================= */
+.logo-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 15px 50px;
+    background: #f4b42a;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+
+.logo-left {
+    display: flex;
+    align-items: center;
+    padding-left: 35px;
+    gap: 18px;
+}
+
+.logo-circle {
+    background: white;
+    border-radius: 50%;
+    padding: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-circle img {
+    width: 50px;
+}
+
+.logo-text h2 {
+    font-size: 22px;
+    font-weight: bold;
+}
+
+.logo-text p {
+    font-size: 14px;
+    color: #333;
+}
+
+.profile-icon {
+    font-size: 20px;
+    background: white;
+    padding: 6px;
+    margin-right: 35px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.profile-icon:hover {
+    background: #b3b7bb;
+    color: white;
+}
+
+/* ================= CONTAINER ================= */
+.container {
+    width: 80%;
+    margin: auto;
+    margin-top: 30px;
+}
+
+.container h2 {
+    font-size: 22px;
+}
+
+/* ================= PROFILE CARD ================= */
+.profile-card {
+    background: white;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+    margin-top: 10px;
+    padding: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.profile-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.student-pic {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+/* ================= ACCORDION ================= */
+.accordion-btn {
+    width: 100%;
+    text-align: left;
+    padding: 18px;
+    border: none;
+    background: white;
+    border-radius: 8px;
+    margin-top: 10px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 16px;
+}
+
+.accordion-content {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+    background: white;
+    border-radius: 8px;
+    margin-top: 8px;
+}
+
+/* ================= GRID ================= */
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px 25px;
+    padding: 20px;
+}
+
+.field {
+    display: flex;
+    flex-direction: column;
+}
+
+.field label {
+    font-weight: bold;
+    font-size: 13px;
+    color: #333;
+    margin-bottom: 5px;
+}
+
+.field p {
+    background: #f5f5f5;
+    padding: 10px;
+    border-radius: 6px;
+    font-size: 14px;
+}
+
+.field p:hover {
+    background: #ececec;
+    transition: 0.2s;
+}
+
+.full-width {
+    grid-column: span 2;
+}
+
+/* ================= MOBILE ================= */
+@media (max-width: 768px) {
+    .info-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .full-width {
+        grid-column: span 1;
+    }
+}
