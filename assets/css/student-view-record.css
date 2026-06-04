@@ -3,11 +3,27 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Arial, sans-serif;
 }
 
 body {
     background: #d9d9d9;
+    overflow-x: hidden;
+    width: 100%;
+}
+
+/* Animations */
+@keyframes slideDown {
+    from { transform: translateY(-100%); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+@keyframes fadeInScale {
+    from { transform: scale(0.95); opacity: 0; }
+    to { transform: scale(1); opacity: 1; }
+}
+@keyframes slideInUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
 }
 
 /* ================= HEADER ================= */
@@ -18,6 +34,7 @@ body {
     padding: 15px 50px;
     background: #f4b42a;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    animation: slideDown 0.5s ease;
 }
 
 .logo-left {
@@ -34,10 +51,12 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: transform 0.3s ease;
 }
 
 .logo-circle img {
     width: 50px;
+    display: block;
 }
 
 .logo-text h2 {
@@ -50,79 +69,128 @@ body {
     color: #333;
 }
 
-.profile-icon {
-    font-size: 20px;
-    background: white;
-    padding: 6px;
-    margin-right: 35px;
-    border-radius: 50%;
-    cursor: pointer;
-    transition: 0.3s;
+.profile-menu a {
+    text-decoration: none;
+    color: black;
+    display: block;
+    padding: 8px 15px;
+    transition: 0.3s ease;
+    border-radius: 5px;
+    font-weight: normal;
 }
 
-.profile-icon:hover {
-    background: #b3b7bb;
-    color: white;
+.profile-menu a:hover {
+    background-color: rgba(0,0,0,0.1);
 }
 
 /* ================= CONTAINER ================= */
 .container {
-    width: 80%;
-    margin: auto;
-    margin-top: 30px;
+    width: 85%;
+    max-width: 1000px;
+    margin: 30px auto;
+    padding-bottom: 60px;
 }
 
 .container h2 {
     font-size: 22px;
+    margin-bottom: 20px;
+    border-left: 5px solid #f4b42a;
+    padding-left: 15px;
+    animation: slideInUp 0.5s ease both;
 }
 
 /* ================= PROFILE CARD ================= */
 .profile-card {
     background: white;
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
-    border-radius: 10px;
-    margin-top: 10px;
-    padding: 30px;
+    border-radius: 12px;
+    padding: 25px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 20px;
+    animation: fadeInScale 0.6s ease both;
 }
 
 .profile-left {
     display: flex;
     align-items: center;
-    gap: 15px;
+    gap: 20px;
 }
 
 .student-pic {
-    width: 60px;
-    height: 60px;
+    width: 80px;
+    height: 80px;
     border-radius: 50%;
     object-fit: cover;
+    border: 3px solid #f4b42a;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+}
+
+.student-pic:hover {
+    transform: scale(1.05);
+}
+
+.profile-left h3 {
+    font-size: 20px;
+    color: #222;
+}
+
+.profile-left p {
+    font-size: 14px;
+    color: #666;
 }
 
 /* ================= ACCORDION ================= */
+.accordion {
+    animation: fadeInScale 0.6s ease 0.2s both;
+}
+
 .accordion-btn {
     width: 100%;
     text-align: left;
-    padding: 18px;
+    padding: 18px 25px;
     border: none;
     background: white;
     border-radius: 8px;
-    margin-top: 10px;
+    margin-top: 12px;
     cursor: pointer;
     font-weight: bold;
     font-size: 16px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.accordion-btn::after {
+    content: '\f078';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    font-size: 12px;
+    transition: transform 0.3s ease;
+}
+
+.accordion-btn.active {
+    background: #f4b42a;
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
+}
+
+.accordion-btn.active::after {
+    transform: rotate(180deg);
 }
 
 .accordion-content {
     max-height: 0;
     overflow: hidden;
-    transition: max-height 0.3s ease;
+    transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
     background: white;
-    border-radius: 8px;
-    margin-top: 8px;
+    border-bottom-left-radius: 8px;
+    border-bottom-right-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.05);
 }
 
 /* ================= GRID ================= */
@@ -130,44 +198,122 @@ body {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 15px 25px;
-    padding: 20px;
+    padding: 25px;
 }
 
 .field {
     display: flex;
     flex-direction: column;
+    gap: 5px;
 }
 
 .field label {
     font-weight: bold;
     font-size: 13px;
     color: #333;
-    margin-bottom: 5px;
+    text-transform: capitalize;
+    letter-spacing: 0.5px;
 }
 
 .field p {
-    background: #f5f5f5;
-    padding: 10px;
-    border-radius: 6px;
+    background: #f9f9f9;
+    padding: 12px 15px;
+    border-radius: 8px;
     font-size: 14px;
-}
-
-.field p:hover {
-    background: #ececec;
-    transition: 0.2s;
+    color: #333;
+    border: 1px solid #eee;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    min-height: 45px;
 }
 
 .full-width {
     grid-column: span 2;
 }
 
-/* ================= MOBILE ================= */
-@media (max-width: 768px) {
-    .info-grid {
-        grid-template-columns: 1fr;
-    }
+/* ================= BACK BUTTON ================= */
+.back-container {
+    margin-top: 55px;
+    text-align: center;
+    animation: slideInUp 0.6s ease 0.4s both;
+}
 
-    .full-width {
-        grid-column: span 1;
+.back-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    text-decoration: none;
+    color: #000;
+    font-weight: bold;
+    font-size: 15px;
+    background: #f4b42a;
+    padding: 14px 40px;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(244, 180, 42, 0.3);
+    transition: all 0.3s ease;
+}
+
+.back-btn:hover {
+    background: #fdd76f;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(244, 180, 42, 0.4);
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 768px) {
+    .logo-section { padding: 12px 20px; }
+    .logo-left { padding-left: 0; gap: 12px; }
+    .logo-circle img { width: 35px; }
+    .logo-text h2 { font-size: 16px; }
+    .logo-text p { font-size: 11px; }
+    .profile-menu a { font-size: 14px;}
+
+    .container { width: 92%; margin-top: 20px; }
+    .container h2 { font-size: 18px; margin-bottom: 15px; }
+
+    .profile-card { 
+        padding: 20px; 
+        flex-direction: column; 
+        text-align: center; 
+        gap: 15px; 
     }
+    .profile-left { flex-direction: column; gap: 10px; }
+    .student-pic { width: 75px; height: 75px; }
+    .profile-left h3 { font-size: 17px; }
+    
+    .profile-left p, .field p { font-size: 13px; }
+    .accordion-btn, .back-btn { font-size: 14px; }
+     
+    .info-grid { 
+        grid-template-columns: 1fr 1fr; 
+        padding: 20px; 
+        gap: 15px; 
+    }
+    .full-width { grid-column: span 1; }
+
+    /* FORCING MOBILE SEQUENCE USING CSS ORDER */
+    /* Target only the Personal Information section's grid */
+    .accordion:nth-of-type(1) .accordion-content:nth-of-type(1) .info-grid .field:nth-child(1) { order: 1; }  /* First Name */
+    .accordion:nth-of-type(1) .accordion-content:nth-of-type(1) .info-grid .field:nth-child(3) { order: 3; }  /* Middle Name */
+    .accordion:nth-of-type(1) .accordion-content:nth-of-type(1) .info-grid .field:nth-child(5) { order: 5; }  /* Last Name */
+    .accordion:nth-of-type(1) .accordion-content:nth-of-type(1) .info-grid .field:nth-child(7) { order: 7; }  /* DOB */
+    .accordion:nth-of-type(1) .accordion-content:nth-of-type(1) .info-grid .field:nth-child(9) { order: 9; }  /* Age */
+    .accordion:nth-of-type(1) .accordion-content:nth-of-type(1) .info-grid .field:nth-child(2) { order: 2; }  /* Gender */
+    .accordion:nth-of-type(1) .accordion-content:nth-of-type(1) .info-grid .field:nth-child(4) { order: 4; }  /* Civil Status */
+    .accordion:nth-of-type(1) .accordion-content:nth-of-type(1) .info-grid .field:nth-child(6) { order: 6; }  /* Contact No */
+    .accordion:nth-of-type(1) .accordion-content:nth-of-type(1) .info-grid .field:nth-child(8) { order: 8; }  /* Activities */
+    .accordion:nth-of-type(1) .accordion-content:nth-of-type(1) .info-grid .field:nth-child(10) { order:10; } /* GPA */
+
+    .accordion-btn { padding: 14px 18px; }
+    .field label { font-size: 11px; }
+    .field p { padding: 10px; }
+
+    .back-btn { width: 100%; max-width: 250px; padding: 14px; }
+}
+
+/* Touch Device Optimizations */
+@media (hover: none) {
+    .profile-card:hover, .student-pic:hover, .back
 }

@@ -3,11 +3,12 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Arial, sans-serif;
 }
 
 body {
     background: #d9d9d9;
+    overflow-x: hidden;
 }
 
 /* SUCCESS MESSAGE  */
@@ -30,9 +31,7 @@ body {
     border-radius: 12px;
     text-align: center;
     width: 300px;
-
     box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-
     animation: popIn 0.3s ease;
 }
 
@@ -50,10 +49,16 @@ body {
     border-radius: 6px;
     cursor: pointer;
     font-size: 14px;
+    transition: background 0.3s ease, transform 0.2s ease;
 }
 
 .success-box button:hover {
     background: #f5deac;
+    transform: translateY(-2px);
+}
+
+.success-box button:active {
+    transform: translateY(0);
 }
 
 /* Animation */
@@ -74,6 +79,42 @@ body {
     transition: opacity 0.3s ease;
 }
 
+/* Slide-in animation for header */
+@keyframes slideDown {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+/* Fade-in animation for cards */
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Scale animation for buttons */
+@keyframes scaleUp {
+    from {
+        transform: scale(0.95);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
 .logo-section {
     display: flex;
     align-items: center;
@@ -81,6 +122,7 @@ body {
     padding: 15px 50px;
     background: #f4b42a;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    animation: slideDown 0.5s ease;
 }
 
 /* LEFT SIDE (Logo + Text Together) */
@@ -99,6 +141,12 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.logo-circle:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 .logo-circle img {
@@ -108,58 +156,34 @@ body {
 
 /* TEXT NEXT TO LOGO */
 .logo-text h2 {
-    font-size: 20px;
+    font-size: 22px;
     font-weight: bold;
     color: #000;
 }
 
 .logo-text p {
-    font-size: 12px;
+    font-size: 14px;
     color: #333;
 }
 
-/* PROFILE ICON */
-.profile-menu{
-    position: relative;
-
+/* PROFILE */
+.profile-menu a {
+    text-decoration: none;
+    color: black;
+    display: block;
+    padding: 8px 12px;
+    transition: 0.3s ease;
+    border-radius: 5px;
 }
 
-.profile-icon{
-    font-size:22px;
-    background:#eee;
-    width:40px;
-    height:40px;
-    border-radius:50%;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
+/* Hover effect */
+.profile-menu a:hover {
+    background-color: rgba(0,0,0,0.1);
+    transform: translateX(5px);
 }
 
-.profile-dropdown{
-    position:absolute;
-    right:0;
-    top:50px;
-    background:white;
-    border-radius:8px;
-    width:120px;
-    box-shadow:0 2px 8px rgba(0,0,0,0.2);
-    display:none;
-}
-
-.profile-dropdown a{
-    display:block;
-    font-size: 14px;
-    text-align: center;
-    padding: 5px;
-    text-decoration:none;
-    color:rgb(0, 0, 0);
-}
-
-.profile-dropdown a:hover{
-    background:#f4b42a; 
-    border-color: white;
-    border-radius: 8px;
+.profile-menu a:active {
+    transform: translateX(3px);
 }
 
 /* CARDS */
@@ -171,20 +195,28 @@ body {
     margin: 25px auto;         
     width: 90%;
     max-width: 1100px;
+    animation: fadeIn 0.6s ease;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+}
+
+.card:hover {
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
 }
 
 .welcome-card h1 {
     font-size: 30px;
     font-weight: 800;
+    animation: fadeIn 0.7s ease 0.1s both;
 }
 
 .welcome-card p {
     color: #555;
     font-size: 15px;
+    animation: fadeIn 0.7s ease 0.2s both;
 }
 
 /* ADD INFO CARD */
-
 .add-info-card {
     height: 310px;
     display: flex;
@@ -192,37 +224,105 @@ body {
     justify-content: center;
     align-items: center;
     cursor: pointer;
-    transition: 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.3s ease;
 }
 
 .add-info-card:hover {
     background-color: #fdf7e6;
+    transform: scale(1.02);
 }
 
-/* PLUS ICON */
+.add-info-card:active {
+    transform: scale(0.98);
+}
+
+/* PLUS ICON - GEOMETRIC VERSION FOR PERFECT ROTATION */
 .plus-icon {
     width: 55px;
     height: 55px;
     border-radius: 50%;
     border: 3px solid #333;
+    position: relative; /* Needed for absolute positioning of lines */
     display: flex;
-    align-items: center;     /* FIX */
-    justify-content: center; /* FIX */
-    font-size: 30px;
-    font-weight: bold;
+    align-items: center;
+    justify-content: center;
     margin-bottom: 10px;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), border-color 0.3s ease;
+    overflow: hidden;
+}
+
+/* The Horizontal Line */
+.plus-icon::before {
+    content: "";
+    position: absolute;
+    width: 25px;
+    height: 3px;
+    background-color: #333;
+    transition: background-color 0.3s ease;
+}
+
+/* The Vertical Line */
+.plus-icon::after {
+    content: "";
+    position: absolute;
+    width: 3px;
+    height: 25px;
+    background-color: #333;
+    transition: background-color 0.3s ease;
+}
+
+.add-info-card:hover .plus-icon {
+    transform: rotate(90deg) scale(1.1);
+    border-color: #f4b42a;
+}
+
+.add-info-card:hover .plus-icon::before,
+.add-info-card:hover .plus-icon::after {
+    background-color: #f4b42a;
+}
+
+/* CHECK ICON - GEOMETRIC VERSION */
+.check-icon {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    border: 3px solid #28a745; /* Green border for completion */
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+    background-color: #e8f5e9; /* Light green background */
+}
+
+/* Single element checkmark for perfect corner */
+.check-icon::after {
+    content: "";
+    display: block;
+    width: 12px;
+    height: 22px;
+    border: solid #28a745;
+    border-width: 0 4px 4px 0; /* Thickness of the checkmark */
+    transform: rotate(45deg);
+    margin-top: -5px; /* Centering adjustment */
 }
 
 .add-info-card p {
     font-size: 16px;
     font-weight: 500;
+    text-decoration: none;
+    transition: color 0.3s ease;
 }
 
+.add-info-card:hover p {
+    color: #f4b42a;
+}
 
 /* BUTTON */
 .button-container {
     text-align: center;
     margin-top: 40px;
+    animation: scaleUp 0.8s ease 0.3s both;
 }
 
 .view-btn {
@@ -233,9 +333,135 @@ body {
     font-size: 16px;
     font-weight: 600;
     cursor: pointer;
-    transition: 0.3s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease, box-shadow 0.3s ease;
+    box-shadow: 0 4px 12px rgba(244, 180, 42, 0.3);
 }
 
 .view-btn:hover {
     background-color: #fdd76f;
+    transform: translateY(-3px);
+    box-shadow: 0 6px 16px rgba(244, 180, 42, 0.4);
 }
+
+.view-btn:active {
+    transform: translateY(-1px);
+}
+
+/* DISABLED STATE FOR ADD INFO CARD */
+.add-info-card.disabled {
+    background-color: #f7f7f7 !important;
+    cursor: default !important;
+    pointer-events: none;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+}
+
+.add-info-card.disabled:hover {
+    background-color: #f7f7f7 !important;
+    transform: none;
+}
+
+.add-info-card.disabled .plus-icon {
+    border-color: #030303;
+    transform: none;
+}
+
+.add-info-card.disabled .plus-icon::before,
+.add-info-card.disabled .plus-icon::after {
+    background-color: #030303;
+}
+
+.add-info-card.disabled p {
+    color: #030303;
+    font-weight: bold;
+}
+
+.add-info-link {
+    text-decoration: none;
+    color: inherit;
+}
+
+/*MOBILE RESPONSIVE */
+
+@media (max-width: 768px) {
+    .logo-section {
+        padding: 12px 20px;
+    }
+
+    .logo-left {
+        padding-left: 0;
+        gap: 12px;
+    }
+
+    .logo-circle img {
+        width: 35px;
+    }
+
+    .logo-text h2 {
+        font-size: 16px;
+    }
+
+    .logo-text p {
+        font-size: 11px;
+    }
+
+    .profile-menu a {
+        padding: 6px 10px;
+        font-size: 14px;
+    }
+
+    .card {
+        padding: 25px;
+        margin: 20px auto;
+        width: 95%;
+    }
+
+    .welcome-card h1 {
+        font-size: 24px;
+    }
+
+    .welcome-card p {
+        font-size: 13px;
+    }
+
+    .add-info-card {
+        height: 250px;
+    }
+
+    .plus-icon, .check-icon {
+        width: 48px;
+        height: 48px;
+    }
+    
+    .plus-icon::before { width: 20px; }
+    .plus-icon::after { height: 20px; }
+
+    .check-icon::after {
+        width: 10px;
+        height: 18px;
+        border-width: 0 3px 3px 0;
+        margin-top: -4px;
+    }
+
+    .add-info-card p {
+        font-size: 14px;
+    }
+
+    .view-btn {
+        padding: 14px 50px;
+        font-size: 15px;
+    }
+
+    .success-box {
+        width: 280px;
+    }
+
+    .success-box p {
+        font-size: 16px;
+    }
+
+    .success-box button {
+        padding: 8px 20px;
+        font-size: 13px;
+    }
+}
+

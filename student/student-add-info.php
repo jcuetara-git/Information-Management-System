@@ -8,6 +8,7 @@ session_start();
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>student-add-info</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/student-add-info.css">
 </head>
 
@@ -28,14 +29,8 @@ session_start();
                 </div>
             </div>
 
-           <div class="profile-menu">
-                <div class="profile-icon" onclick="toggleMenu()">
-                    <span>👤</span>
-                </div>
-
-                <div class="profile-dropdown" id="profileDropdown">
-                 <a href="../auth/logout.php">Logout</a>
-                </div>
+            <div class="profile-menu">
+                    <a href="../auth/logout.php"><i class="fa-solid fa-sign-out-alt"></i> Logout</a>
             </div>
 
         </div>
@@ -44,7 +39,8 @@ session_start();
     <div class="modal-overlay">
         <div class="personal-modal">
 
-            <div class="close-btn">✖</div>
+            <!-- Close Button with redirect -->
+            <div class="close-btn" onclick="goBackToDashboard()">✖</div>
 
             <form class="personal-form" method="POST" action="save-student.php" onsubmit="return confirmSave()">
 
@@ -72,17 +68,17 @@ session_start();
 
                         <div class="form-group">
                             <label for="last_name">Last Name</label>
-                            <input type="text" name="first_name" value="<?=$_SESSION['last_name'] ?? ''; ?>" readonly>
+                            <input type="text" name="last_name" value="<?=$_SESSION['last_name'] ?? ''; ?>" readonly>
                         </div>
 
                         <div class="form-group">
-                            <label for="birthdate">Date of Birth</label>
-                            <input type="date" id="dob" name="dob" max="<?= date('Y-m-d'); ?>" required>
+                            <label>Date of Birth</label>
+                            <input type="date" id="dob" name="dob" required>
                         </div>
 
                         <div class="form-group">
-                            <label for="age">Age</label>
-                            <input type="number" id="age" name="age" min="1" required>
+                            <label>Age</label>
+                            <input type="number" id="age" name="age" required readonly>
                         </div>
 
                         <div class="form-group">
@@ -99,13 +95,12 @@ session_start();
 
                     </div>
 
-
                     <!-- ================= COLUMN 2 ================= -->
                     <div class="form-column">
 
                         <div class="form-group">
                             <label for="civil_status">Civil Status</label>
-                            <input type="text" id="civil_status" name="civil_status">
+                            <input type="text" id="civil_status" name="civil_status" required>
                         </div>
 
                         <div class="form-group">
@@ -115,12 +110,12 @@ session_start();
 
                         <div class="form-group">
                             <label for="permanent_address">Permanent Address</label>
-                            <textarea id="permanent_address" name="permanent_address" rows="2"></textarea>
+                            <textarea id="permanent_address" name="permanent_address" rows="2" required></textarea>
                         </div>
 
                         <div class="form-group">
                             <label for="city_address">Provincial/City Address</label>
-                            <textarea id="city_address" name="city_address" rows="2"></textarea>
+                            <textarea id="city_address" name="city_address" rows="2" required></textarea>
                         </div>
 
                         <div class="form-group">
@@ -182,12 +177,12 @@ session_start();
 
                         <div class="form-group">
                             <label for="activities">Extracurricular Activities</label>
-                            <textarea id="activities" name="activities" rows="4"></textarea>
+                            <textarea id="activities" name="activities" rows="4" required></textarea>
                         </div>
 
                         <div class="form-group">
                             <label for="previous_gpa">Previous GPA</label>
-                            <input type="text" id="previous_gpa" name="previous_gpa">
+                            <input type="text" id="previous_gpa" name="previous_gpa" required>
                         </div>
 
                     </div>
@@ -196,7 +191,8 @@ session_start();
 
                 <!--BUTTONS  -->
                 <div class="modal-buttons">
-                    <button type="button" class="cancel-btn">Cancel</button>
+                    <!-- Cancel Button with redirect -->
+                    <button type="button" class="cancel-btn" onclick="goBackToDashboard()">Cancel</button>
                     <button type="submit" class="save-btn">Save</button>
                 </div>
 
@@ -207,6 +203,30 @@ session_start();
     <!-- ================= END MODAL ================= -->
 </div>
  
+<script>
+// Function to redirect back to the dashboard
+function goBackToDashboard() {
+    window.location.href = 'student-dashboard.php';
+}
+
+// Function to confirm save (placeholder for your existing logic)
+function confirmSave() {
+    return confirm("Are you sure you want to save this information?");
+}
+
+// Function to calculate age from DOB
+document.getElementById('dob').addEventListener('change', function() {
+    const dob = new Date(this.value);
+    const today = new Date();
+    let age = today.getFullYear() - dob.getFullYear();
+    const m = today.getMonth() - dob.getMonth();
+    if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) {
+        age--;
+    }
+    document.getElementById('age').value = age;
+});
+</script>
+
 <script src="../assets/js/script.js"></script>
 
 </body>

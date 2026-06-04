@@ -1,11 +1,10 @@
 <?php
+session_start();
 include("../config/db.php");
 
 $error = "";
 
-// Check if form is submitted
 if(isset($_POST['register'])) {
-
     $student_no = trim($_POST['student_no']);
     $first_name = trim($_POST['first_name']);
     $last_name  = trim($_POST['last_name']);
@@ -14,18 +13,14 @@ if(isset($_POST['register'])) {
     $password   = $_POST['password'];
     $confirm    = $_POST['confirm_password'];
 
-    // Check if passwords match 
     if($password !== $confirm){
         $error = "Passwords do not match!";
     } elseif(empty($year_level)){
         $error = "Please select a year level!";
     } else {
-
-        // Hash the password
         $hash = password_hash($password, PASSWORD_DEFAULT);
-        $role = "student"; // default role
+        $role = "student"; 
 
-        // Check if student ID already exists
         $check = $conn->prepare("SELECT student_no FROM users WHERE student_no = ?");
         $check->bind_param("s", $student_no);
         $check->execute();
@@ -34,21 +29,10 @@ if(isset($_POST['register'])) {
         if($check->num_rows > 0){
             $error = "Student ID already registered!";
         } else {
-
-            // Insert new user
             $stmt = $conn->prepare("INSERT INTO users (student_no, first_name, last_name, email, year_level, password, role) VALUES (?,?,?,?,?,?,?)");
-            $stmt->bind_param("sssssss",
-                $student_no,
-                $first_name,
-                $last_name,
-                $email,
-                $year_level,
-                $hash,
-                $role
-            );
+            $stmt->bind_param("sssssss", $student_no, $first_name, $last_name, $email, $year_level, $hash, $role);
 
             if($stmt->execute()){
-                // Redirect to login after successful registration
                 header("Location: login.php");
                 exit();
             } else {
@@ -60,17 +44,19 @@ if(isset($_POST['register'])) {
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>register</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/style.css?v=1.3">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 </head>
 <body class="login-body">
 
 <div class="register-card">
 
-    <img src="../assets/logo.png" class="register-logo">
+    <img src="../assets/logo.png" class="register-logo" alt="Logo">
 
     <h1 class="register-title">Register</h1>
     <p class="subtitle">Register to get started with your account.</p>
@@ -79,7 +65,7 @@ if(isset($_POST['register'])) {
         <p class="error"><?= htmlspecialchars($error) ?></p>
     <?php endif; ?>
 
-    <form method="POST">
+    <form method="POST" class="auth-form">
 
         <input type="text" name="student_no" placeholder="ID Number" class="id-input" required>
 
@@ -93,10 +79,10 @@ if(isset($_POST['register'])) {
 
             <select name="year_level" required>
                 <option value="" disabled selected>Year Level</option>
-                <option>1</option>
-                <option>2</option>
-                <option>3</option>
-                <option>4</option>
+                <option value="1">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+                <option value="4">4</option>
             </select>
         </div>
 
@@ -114,7 +100,7 @@ if(isset($_POST['register'])) {
             </span>
         </div>
 
-        <button class="login-btn" name="register">Register</button>
+        <button type="submit" class="login-btn" name="register">Register</button>
 
     </form>
 

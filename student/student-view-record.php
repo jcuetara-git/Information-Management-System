@@ -30,7 +30,9 @@ if($row && !empty($row['dob'])){
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Student Record</title>
+    <title>student-record</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/student-view-record.css">
 </head>
 
@@ -41,12 +43,14 @@ if($row && !empty($row['dob'])){
         <div class="logo-circle">
             <img src="../assets/logo.png">
         </div>
-        <div>
+        <div class="logo-text">
             <h2>College of Criminal Justice</h2>
             <p>Center of Development in Criminology</p>
         </div>
     </div>
-    <div class="profile-icon">👤</div>
+    <div class="profile-menu">
+        <a href="../auth/logout.php"><i class="fa-solid fa-sign-out-alt"></i> Logout</a>
+    </div>
 </div>
 
 <div class="container">
@@ -67,6 +71,7 @@ if($row && !empty($row['dob'])){
             src="<?= !empty($row['profile_pic']) ? '../uploads/'.$row['profile_pic'] : '../assets/student.jpg'; ?>" 
             class="student-pic"
             onclick="document.getElementById('photoInput').click();"
+            title="Click to change photo"
             >
 
             <div>
@@ -182,11 +187,18 @@ if($row && !empty($row['dob'])){
     </div>
 
     <?php else: ?>
-        <div class="card" style="padding: 20px; text-align: center;">
+        <div class="card">
             <p>No record found. Please add your personal information first.</p>
-            <a href="student-add-info.php" style="color: #007bff; text-decoration: underline;">Add Info Now</a>
+            <a href="student-add-info.php">Add Info Now</a>
         </div>
     <?php endif; ?>
+
+    <!-- BACK BUTTON AT BOTTOM -->
+    <div class="back-container">
+        <a href="student-dashboard.php" class="back-btn">
+            <i class="fa-solid fa-arrow-left"></i> Back 
+        </a>
+    </div>
 
 </div>
 
@@ -194,8 +206,13 @@ if($row && !empty($row['dob'])){
 <script>
 document.querySelectorAll(".accordion-btn").forEach(btn => {
     btn.addEventListener("click", function(){
+        this.classList.toggle("active");
         let panel = this.nextElementSibling;
-        panel.style.maxHeight = panel.style.maxHeight ? null : panel.scrollHeight + "px";
+        if (panel.style.maxHeight) {
+            panel.style.maxHeight = null;
+        } else {
+            panel.style.maxHeight = panel.scrollHeight + "px";
+        }
     });
 });
 </script>

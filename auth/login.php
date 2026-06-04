@@ -5,29 +5,24 @@ include("../config/db.php");
 $error = "";
 
 if(isset($_POST['login'])){
-
-    $login    = trim($_POST['student_no']); // can be student_no OR email
+    $login    = trim($_POST['student_no']);
     $password = trim($_POST['password']);
 
+    // Prepared statement for security
     $stmt = $conn->prepare("SELECT * FROM users WHERE student_no = ? OR email = ?");
     $stmt->bind_param("ss", $login, $login);
     $stmt->execute();
     $result = $stmt->get_result();
 
     if($result->num_rows == 1){
-
         $user = $result->fetch_assoc();
-
         if(password_verify($password, $user['password'])){
-
-            // SESSION
             $_SESSION['user_id'] = $user['id'];
             $_SESSION['student_no'] = $user['student_no'];
             $_SESSION['role'] = $user['role'];
             $_SESSION['first_name'] = $user['first_name'] ?? '';
             $_SESSION['last_name']  = $user['last_name'] ?? '';
 
-            // ROLE REDIRECT
             if($user['role'] == "admin"){
                 header("Location: ../admin/admin-dashboard.php");
                 exit();
@@ -35,11 +30,9 @@ if(isset($_POST['login'])){
                 header("Location: ../student/student-dashboard.php");
                 exit();
             }
-
         } else {
             $error = "Incorrect password!";
         }
-
     } else {
         $error = "Account not found!";
     }
@@ -47,15 +40,17 @@ if(isset($_POST['login'])){
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>login</title>
-    <link rel="stylesheet" href="../assets/css/style.css">
+    <link rel="stylesheet" href="../assets/css/style.css?v=1.3">
 </head>
 <body class="login-body">
 
 <div class="login-card"> 
-    <img src="../assets/logo.png" class="logo">
+    <img src="../assets/logo.png" class="logo" alt="Logo">
 
     <h1>Welcome back!</h1>
 
@@ -63,13 +58,15 @@ if(isset($_POST['login'])){
         <p class="error"><?= htmlspecialchars($error) ?></p>
     <?php endif; ?>
 
-    <form method="POST">
+    <form method="POST" class="auth-form">
         <input type="text" name="student_no" placeholder="ID Number" required>
         <input type="password" name="password" placeholder="Password" required>
 
-        <div class="forgot">Forgot Password?</div>
+        <div class="forgot">
+            <a href="forgot-password.php">Forgot Password?</a>
+        </div>
 
-        <button class="login-btn" name="login">Sign In</button>
+        <button type="submit" class="login-btn" name="login">Sign In</button>
     </form>
 
     <p class="register-text">Don't have an account?</p>
