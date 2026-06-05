@@ -1,4 +1,3 @@
-
 <?php
 session_start();
 include("../config/db.php");
@@ -28,9 +27,10 @@ if($row && !empty($row['dob'])){
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>student-record</title>
+    <meta charset="UTF-8">
+    <title>student record</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/student-view-record.css">
@@ -41,7 +41,7 @@ if($row && !empty($row['dob'])){
 <div class="logo-section">
     <div class="logo-left">
         <div class="logo-circle">
-            <img src="../assets/logo.png">
+            <img src="../assets/logo.png" alt="Logo">
         </div>
         <div class="logo-text">
             <h2>College of Criminal Justice</h2>
@@ -49,14 +49,15 @@ if($row && !empty($row['dob'])){
         </div>
     </div>
     <div class="profile-menu">
-        <a href="../auth/logout.php"><i class="fa-solid fa-sign-out-alt"></i> Logout</a>
+        <a href="../auth/logout.php">
+            <i class="fa-solid fa-sign-out-alt"></i> 
+            <span class="logout-text">Logout</span>
+        </a>
     </div>
 </div>
 
 <div class="container">
-
     <h2>My Student Record</h2>
-
     <?php if($row): ?>
 
     <!-- PROFILE -->
@@ -67,12 +68,13 @@ if($row && !empty($row['dob'])){
                 <input type="file" name="photo" id="photoInput" hidden onchange="this.form.submit()">
             </form>
 
-            <img 
-            src="<?= !empty($row['profile_pic']) ? '../uploads/'.$row['profile_pic'] : '../assets/student.jpg'; ?>" 
-            class="student-pic"
-            onclick="document.getElementById('photoInput').click();"
-            title="Click to change photo"
-            >
+            <div class="student-pic-container" onclick="document.getElementById('photoInput').click();" title="Click to change photo">
+                <img 
+                src="<?= !empty($row['profile_pic']) ? '../uploads/'.$row['profile_pic'] : '../assets/student.jpg'; ?>" 
+                class="student-pic"
+                alt="Student Photo"
+                >
+            </div>
 
             <div>
                 <h3><?= htmlspecialchars($row['first_name'] . " " . $row['last_name']); ?></h3>
@@ -156,7 +158,7 @@ if($row && !empty($row['dob'])){
                     <p><?= htmlspecialchars($row['father_name']); ?></p>
                 </div>
                 <div class="field">
-                    <label>Father Occupation</label>
+                    <label>Father's Occupation</label>
                     <p><?= htmlspecialchars($row['father_occupation']); ?></p>
                 </div>
                 <div class="field">
@@ -164,7 +166,7 @@ if($row && !empty($row['dob'])){
                     <p><?= htmlspecialchars($row['mother_name']); ?></p>
                 </div>
                 <div class="field">
-                    <label>Mother Occupation</label>
+                    <label>Mother's Occupation</label>
                     <p><?= htmlspecialchars($row['mother_occupation']); ?></p>
                 </div>
             </div>
@@ -187,9 +189,9 @@ if($row && !empty($row['dob'])){
     </div>
 
     <?php else: ?>
-        <div class="card">
-            <p>No record found. Please add your personal information first.</p>
-            <a href="student-add-info.php">Add Info Now</a>
+        <div class="card" ">
+            <p>No record found. <br> Please add your personal information first.</p>
+            <a href="student-add-info.php" >Add Personal Information</a>
         </div>
     <?php endif; ?>
 

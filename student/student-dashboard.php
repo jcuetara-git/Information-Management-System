@@ -35,7 +35,7 @@ if (!empty($student_no)) {
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>student-dashboard</title>
+    <title>student dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/student-dashboard.css">
 </head>
@@ -67,7 +67,10 @@ if (!empty($student_no)) {
         </div>
 
         <div class="profile-menu">
-                    <a href="../auth/logout.php"><i class="fa-solid fa-sign-out-alt"></i> Logout</a>
+            <a href="../auth/logout.php">
+                <i class="fa-solid fa-sign-out-alt"></i> 
+                <span class="logout-text">Logout</span>
+            </a>
         </div>
 
     </div>

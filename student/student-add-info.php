@@ -17,7 +17,6 @@ session_start();
 
     <!-- ================= HEADER ================= -->
         <div class="logo-section">
-            
             <div class="logo-left">
                 <div class="logo-circle">
                     <img src="../assets/logo.png" alt="College Logo">
@@ -28,11 +27,12 @@ session_start();
                     <p>Center of Development in Criminology</p>
                 </div>
             </div>
-
             <div class="profile-menu">
-                    <a href="../auth/logout.php"><i class="fa-solid fa-sign-out-alt"></i> Logout</a>
+                <a href="../auth/logout.php">
+                    <i class="fa-solid fa-sign-out-alt"></i> 
+                    <span class="logout-text">Logout</span>
+                </a>
             </div>
-
         </div>
 
     <!-- ================= MODAL ================= -->

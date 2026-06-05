@@ -170,20 +170,27 @@ body {
 .profile-menu a {
     text-decoration: none;
     color: black;
-    display: block;
-    padding: 8px 12px;
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 30px;
     transition: 0.3s ease;
     border-radius: 5px;
 }
 
-/* Hover effect */
-.profile-menu a:hover {
-    background-color: rgba(0,0,0,0.1);
-    transform: translateX(5px);
+.logout-text {
+    visibility: hidden;
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    white-space: nowrap;
 }
 
-.profile-menu a:active {
-    transform: translateX(3px);
+.profile-menu a:hover .logout-text {
+    visibility: visible;
+    opacity: 5;
+    width: auto;
+    margin-left: 8px; /* Spacing between icon and text */
 }
 
 /* CARDS */
@@ -383,85 +390,24 @@ body {
 /*MOBILE RESPONSIVE */
 
 @media (max-width: 768px) {
-    .logo-section {
-        padding: 12px 20px;
-    }
-
-    .logo-left {
-        padding-left: 0;
-        gap: 12px;
-    }
-
-    .logo-circle img {
-        width: 35px;
-    }
-
-    .logo-text h2 {
-        font-size: 16px;
-    }
-
-    .logo-text p {
-        font-size: 11px;
-    }
-
-    .profile-menu a {
-        padding: 6px 10px;
-        font-size: 14px;
-    }
-
-    .card {
-        padding: 25px;
-        margin: 20px auto;
-        width: 95%;
-    }
-
-    .welcome-card h1 {
-        font-size: 24px;
-    }
-
-    .welcome-card p {
-        font-size: 13px;
-    }
-
-    .add-info-card {
-        height: 250px;
-    }
-
-    .plus-icon, .check-icon {
-        width: 48px;
-        height: 48px;
-    }
-    
+    .logo-section { padding: 12px 20px; }
+    .logo-left { padding-left: 0; gap: 12px; }
+    .logo-circle img { width: 35px; }
+    .logo-text h2 { font-size: 16px; }
+    .logo-text p { font-size: 11px; }
+    .profile-menu a { font-size: 14px; padding: 8px 5px;}
+    .card { padding: 25px; margin: 20px auto; width: 95%; }
+    .welcome-card h1 { font-size: 24px; }
+    .welcome-card p { font-size: 13px; }
+    .add-info-card { height: 250px; }
+    .plus-icon, .check-icon { width: 48px; height: 48px;}
     .plus-icon::before { width: 20px; }
     .plus-icon::after { height: 20px; }
-
-    .check-icon::after {
-        width: 10px;
-        height: 18px;
-        border-width: 0 3px 3px 0;
-        margin-top: -4px;
-    }
-
-    .add-info-card p {
-        font-size: 14px;
-    }
-
-    .view-btn {
-        padding: 14px 50px;
-        font-size: 15px;
-    }
-
-    .success-box {
-        width: 280px;
-    }
-
-    .success-box p {
-        font-size: 16px;
-    }
-
-    .success-box button {
-        padding: 8px 20px;
-        font-size: 13px;
-    }
+    .check-icon::after { width: 10px; height: 18px; border-width: 0 3px 3px 0; margin-top: -4px; }
+    .add-info-card p { font-size: 14px; }
+    .view-btn { padding: 14px 50px; font-size: 15px; }
+    .success-box { width: 280px; }
+    .success-box p { font-size: 16px; }
+    .success-box button { padding: 8px 20px; font-size: 13px; }
 }
 

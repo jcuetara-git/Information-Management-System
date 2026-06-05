@@ -77,19 +77,31 @@ body {
     color: #333;
 }
 
-/* PROFILE / LOGOUT */
+/* PROFILE */
 .profile-menu a {
     text-decoration: none;
     color: black;
-    display: block;
-    padding: 8px 15px;
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 30px;
     transition: 0.3s ease;
     border-radius: 5px;
-    font-weight: 500;
 }
 
-.profile-menu a:hover {
-    background-color: rgba(0,0,0,0.1);
+.logout-text {
+    visibility: hidden;
+    opacity: 0;
+    width: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+    white-space: nowrap;
+}
+
+.profile-menu a:hover .logout-text {
+    visibility: visible;
+    opacity: 5;
+    width: auto;
+    margin-left: 8px; 
 }
 
 /* ================= MODAL AREA ================= */
@@ -119,11 +131,11 @@ body {
     position: absolute;
     top: 20px;
     right: 35px;
-    font-size: 18px;
+    font-size: 16px;
     cursor: pointer;
     background: #b10202;
     color: white;
-    padding: 3px 10px;
+    padding: 3px 8px;
     border-radius: 5px;
     transition: 0.3s ease;
     display: flex;
@@ -271,147 +283,27 @@ input[readonly] {
 
 /* Large Tablets / Laptops */
 @media (max-width: 1200px) {
-    .form-grid {
-        grid-template-columns: repeat(2, 1fr);
-        gap: 20px;
-    }
-    
-    .personal-modal {
-        padding: 25px;
-    }
+    .form-grid { grid-template-columns: repeat(2, 1fr); gap: 20px; }
+    .personal-modal { padding: 25px; }
 }
 
 /* Tablets (768px and below) */
 @media (max-width: 768px) {
-    .logo-section {
-        padding: 12px 20px;
-    }
-
-    .logo-left {
-        padding-left: 0;
-        gap: 12px;
-    }
-
-    .logo-circle img {
-        width: 35px;
-    }
-
-    .logo-text h2 {
-        font-size: 16px;
-    }
-
-    .logo-text p {
-        font-size: 10px;
-    }
-
-    .profile-menu a {
-        font-size: 14px;
-        padding: 8px 12px;
-    }
-
-    .modal-overlay {
-        padding: 20px 10px;
-    }
-
-    .personal-modal {
-        padding: 20px;
-        width: 100%;
-    }
-
-    .form-grid {
-        grid-template-columns: 1fr;
-        gap: 15px;
-    }
-
-    .form-title {
-        font-size: 18px;
-        width: 100%;
-        text-align: center;
-    }
-
-    .modal-buttons {
-        flex-direction: column-reverse;
-        gap: 10px;
-    }
-
-    .cancel-btn, .save-btn {
-        width: 100%;
-        padding: 14px;
-    }
-
-    .close-btn {
-        top: 18px;
-        right: 20px;
-        font-size: 12px;
-        padding: 3px 8px;
-    }
+    .logo-section { padding: 12px 20px; }
+    .logo-left { padding-left: 0; gap: 12px; }
+    .logo-circle img { width: 35px; }
+    .logo-text h2 { font-size: 16px; }
+    .logo-text p { font-size: 11px; }
+    .profile-menu a { font-size: 14px; padding: 8px 5px;}
+    .modal-overlay { padding: 20px 10px; }
+    .personal-modal { padding: 20px; width: 100%; }
+    .form-grid { grid-template-columns: 1fr; gap: 15px; }
+    .form-title { font-size: 18px; width: 100%; text-align: center; }
+    .modal-buttons { flex-direction: column-reverse; gap: 10px; }
+    .cancel-btn, .save-btn { width: 100%; padding: 14px; }
+    .close-btn { top: 18px; right: 20px; font-size: 12px; padding: 3px 7px; }
 }
 
-/* Mobile Phones (480px and below) */
-@media (max-width: 480px) {
-    .logo-section {
-        flex-direction: column;
-        align-items: center;
-        text-align: center;
-        gap: 12px;
-        padding: 20px;
-    }
-
-    .logo-left {
-        flex-direction: column;
-        gap: 8px;
-    }
-
-    .logo-text h2 {
-        font-size: 14px;
-    }
-
-    .logo-text p {
-        font-size: 9px;
-    }
-
-    .profile-menu {
-        width: 100%;
-        border-top: 1px solid rgba(0,0,0,0.05);
-        padding-top: 10px;
-    }
-
-    .profile-menu a {
-        padding: 12px;
-        font-size: 13px;
-        background: rgba(0,0,0,0.03);
-        border-radius: 6px;
-        text-align: center;
-    }
-
-    .personal-modal {
-        padding: 15px;
-        border-radius: 10px;
-    }
-
-    .form-group label {
-        font-size: 12px;
-    }
-
-    input, textarea, select {
-        font-size: 13px;
-        padding: 8px;
-    }
-
-    .form-title {
-        font-size: 16px;
-        margin-bottom: 20px;
-    }
-}
-
-/* Very Small Devices (360px and below) */
-@media (max-width: 360px) {
-    .logo-text h2 {
-        font-size: 12px;
-    }
-}
-
-/* Touch Device Optimizations */
 @media (hover: none) {
     .save-btn:hover, .cancel-btn:hover, .logo-circle:hover {
         transform: none;
