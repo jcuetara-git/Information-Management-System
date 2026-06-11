@@ -54,7 +54,6 @@ if (!empty($student_no)) {
 
     <!-- HEADER -->
     <div class="logo-section">
-
         <div class="logo-left">
             <div class="logo-circle">
                 <img src="../assets/logo.png">
@@ -72,7 +71,6 @@ if (!empty($student_no)) {
                 <span class="logout-text">Logout</span>
             </a>
         </div>
-
     </div>
 
     <!-- WELCOME -->

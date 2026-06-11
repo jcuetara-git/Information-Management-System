@@ -50,9 +50,19 @@ $result = $conn->query($query);
 <div class="main-container">
 
     <!-- ================= SIDEBAR ================= -->
-    <nav class="sidebar" role="navigation" aria-label="Main Navigation">
+     <nav class="sidebar" id="sidebar" role="navigation" aria-label="Main Navigation">
+        <div class="sidebar-header">
+            <button id="toggleSidebar" class="hamburger-btn" aria-label="Toggle Sidebar">
+                <i class="fa-solid fa-bars"></i>
+            </button>
+        </div>
+
         <ul>
-            <li role="menuitem">
+            <li role="menuitem" onclick="window.location.href='admin-dashboard.php'">
+                <i class="fa-solid fa-chart-line"></i> 
+                <span>Dashboard</span>
+            </li>
+            <li class="active" role="menuitem" onclick="window.location.href='admin-students.php'" >
                 <i class="fa-solid fa-users"></i> 
                 <span>Students</span>
             </li>
@@ -85,6 +95,7 @@ $result = $conn->query($query);
             </a>
         </div>
     </nav>
+
 
     <!-- ================= MAIN CONTENT ================= -->
     <main class="dashboard-container" role="main">

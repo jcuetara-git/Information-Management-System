@@ -190,7 +190,7 @@ body {
     visibility: visible;
     opacity: 5;
     width: auto;
-    margin-left: 8px; /* Spacing between icon and text */
+    margin-left: 8px; 
 }
 
 /* CARDS */
