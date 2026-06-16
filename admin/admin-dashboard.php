@@ -23,7 +23,7 @@ $total_students = 0;
 
 while($row = $summary_result->fetch_assoc()) {
     $yl = $row['year_level'];
-    $count = $row['count'];
+    $count = (int)$row['count'];
     $total_students += $count;
     
     if (strpos($yl, '1') !== false) $stats['1st Year'] += $count;
@@ -59,10 +59,11 @@ while($row = $summary_result->fetch_assoc()) {
             <button id="toggleSidebar" class="hamburger-btn" aria-label="Toggle Sidebar">
                 <i class="fa-solid fa-bars"></i>
             </button>
+            <span class="sidebar-title">UC-MAIN CCJ</span>
         </div>
 
-        <ul>
-            <li class="active" role="menuitem" onclick="window.location.href='admin-dashboard.php'"></li>
+        <ul class="sidebar-nav">
+            <li class="active" role="menuitem" onclick="window.location.href='admin-dashboard.php'">
                 <i class="fa-solid fa-chart-line"></i> 
                 <span>Dashboard</span>
             </li>
@@ -83,7 +84,7 @@ while($row = $summary_result->fetch_assoc()) {
                 <span>Organizations</span>
             </li>
             <li role="menuitem">
-                <i class="fa-solid fa-house"></i> 
+                <i class="fa-solid fa-people-roof"></i>
                 <span>Community Extension</span>
             </li>
             <li role="menuitem">
@@ -119,8 +120,13 @@ while($row = $summary_result->fetch_assoc()) {
 
         <!-- Welcome Section -->
         <section class="card welcome-card" aria-label="Welcome Section">
-            <h2>Welcome, Admin!</h2>
-            <p>View students summary per year level.</p>
+            <div class="welcome-content">
+                <h2>Welcome, Admin!</h2>
+                <p>View students summary per year level.</p>
+            </div>
+            <div class="welcome-date">
+                <p><i class="fa-regular fa-calendar"></i> <?php echo date('F d, Y'); ?></p>
+            </div>
         </section>
 
         <!-- Summary Statistics Grid -->
@@ -129,37 +135,50 @@ while($row = $summary_result->fetch_assoc()) {
                 <div class="stat-icon"><i class="fa-solid fa-user-graduate"></i></div>
                 <div class="stat-info">
                     <h3>1st Year</h3>
-                    <p><?= $stats['1st Year'] ?></p>
+                    <p><?= number_format($stats['1st Year']) ?></p>
                 </div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon"><i class="fa-solid fa-user-graduate"></i></div>
                 <div class="stat-info">
                     <h3>2nd Year</h3>
-                    <p><?= $stats['2nd Year'] ?></p>
+                    <p><?= number_format($stats['2nd Year']) ?></p>
                 </div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon"><i class="fa-solid fa-user-graduate"></i></div>
                 <div class="stat-info">
                     <h3>3rd Year</h3>
-                    <p><?= $stats['3rd Year'] ?></p>
+                    <p><?= number_format($stats['3rd Year']) ?></p>
                 </div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon"><i class="fa-solid fa-user-graduate"></i></div>
                 <div class="stat-info">
                     <h3>4th Year</h3>
-                    <p><?= $stats['4th Year'] ?></p>
+                    <p><?= number_format($stats['4th Year']) ?></p>
                 </div>
             </div>
             <div class="stat-card total-card">
                 <div class="stat-icon"><i class="fa-solid fa-users"></i></div>
                 <div class="stat-info">
                     <h3>Total Students</h3>
-                    <p><?= $total_students ?></p>
+                    <p><?= number_format($total_students) ?></p>
                 </div>
             </div>
         </div>
+    </main>
+</div>
+
+<script>
+    document.getElementById('toggleSidebar').addEventListener('click', function() {
+        const sidebar = document.getElementById('sidebar');
+        const mainContent = document.getElementById('mainContent');
+        
+        sidebar.classList.toggle('collapsed');
+        mainContent.classList.toggle('expanded');
+    });
+</script>
+
 </body>
 </html>

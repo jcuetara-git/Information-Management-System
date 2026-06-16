@@ -85,9 +85,9 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
 
     // 4. EXECUTE AND REDIRECT
     if($stmt->execute()){
-        header("Location: admin-dashboard.php?success=Student information saved successfully!");
+        header("Location: admin-students.php?success=Student information saved successfully!");
     } else {
-        header("Location: admin-dashboard.php?error=Database error: " . $conn->error);
+        header("Location: admin-students.php?error=Database error: " . $conn->error);
     }
     exit();
 }

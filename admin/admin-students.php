@@ -32,6 +32,7 @@ if($_SESSION['role'] != "admin"){
             <button id="toggleSidebar" class="hamburger-btn" aria-label="Toggle Sidebar">
                 <i class="fa-solid fa-bars"></i>
             </button>
+            <span class="sidebar-title">UC-MAIN CCJ</span>
         </div>
 
         <ul>
@@ -76,24 +77,10 @@ if($_SESSION['role'] != "admin"){
     <!-- ================= MAIN CONTENT ================= -->
     <main class="dashboard-container" id="mainContent" role="main">
 
-        <!-- HEADER -->
-        <header class="logo-section">
-            <div class="logo-left">
-                <div class="logo-circle">
-                    <img src="../assets/logo.png" alt="College of Criminal Justice Logo">
-                </div>
-
-                <div class="logo-text">
-                    <h1>College of Criminal Justice</h1>
-                    <p>Center of Development in Criminology</p>
-                </div>
-            </div>
-        </header>
-
         <!-- Welcome Section -->
         <section class="card welcome-card" aria-label="Welcome Section">
-            <h2>Welcome, Admin!</h2>
-            <p>View students and manage their account.</p>
+            <h2>Manage Students</h2>
+            <p>View list of students and manage their account.</p>
         </section>
 
         <!-- Add Student Card -->
@@ -127,7 +114,7 @@ if($_SESSION['role'] != "admin"){
         </div>
 
         <!-- FORM -->
-        <form class="personal-form" method="POST" action="save-student.php" novalidate>
+        <form class="personal-form" method="POST" action="admin-save-student.php" novalidate>
 
             <div class="form-grid">
 
@@ -253,7 +240,7 @@ if($_SESSION['role'] != "admin"){
                     <input type="text" id="previous_gpa" name="previous_gpa" required>
                 </div>
 
-            </div>
+            </div>  
 
             <!-- MODAL BUTTONS -->
             <div class="modal-buttons">
