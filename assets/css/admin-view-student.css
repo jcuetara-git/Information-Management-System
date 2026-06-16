@@ -1,0 +1,243 @@
+/* ================= VIEW STUDENT STYLES ================= */
+
+.view-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: #f0f2f5;
+    padding: 20px;
+}
+
+.view-card {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+    max-width: 1000px;
+    width: 100%;
+    overflow: hidden;
+    animation: slideUp 0.3s ease;
+}
+
+@keyframes slideUp {
+    from { transform: translateY(30px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+.view-header {
+    background: linear-gradient(135deg, #f4b42c 0%, #e0a822 100%);
+    padding: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #000;
+}
+
+.view-header h2 {
+    font-size: 28px;
+    margin: 0;
+    font-weight: 700;
+}
+
+.close-btn {
+    background: rgba(255, 255, 255, 0.2);
+    border: none;
+    color: #000;
+    font-size: 24px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: 0.3s ease;
+    text-decoration: none;
+}
+
+.close-btn:hover {
+    background: rgba(0, 0, 0, 0.1);
+    transform: scale(1.1);
+}
+
+.view-body {
+    padding: 30px;
+}
+
+.view-section {
+    margin-bottom: 35px;
+}
+
+.view-section:last-child {
+    margin-bottom: 0;
+}
+
+.view-section h3 {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f4b42c;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.view-section h3 i {
+    color: #f4b42c;
+}
+
+.view-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 25px;
+}
+
+.view-item {
+    display: flex;
+    flex-direction: column;
+}
+
+.view-item.full-width {
+    grid-column: 1 / -1;
+}
+
+.view-item label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #666;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 6px;
+}
+
+.view-item p {
+    font-size: 15px;
+    color: #1a1a1a;
+    margin: 0;
+    word-break: break-word;
+}
+
+.view-footer {
+    display: flex;
+    gap: 15px;
+    padding: 20px 30px;
+    background: #f9f9f9;
+    border-top: 1px solid #eee;
+    justify-content: flex-end;
+}
+
+.edit-btn,
+.close-btn-full {
+    padding: 12px 25px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: 0.3s ease;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    text-decoration: none;
+    border: none;
+}
+
+.edit-btn {
+    background: var(--primary-color);
+    color: #000;
+}
+
+.edit-btn:hover {
+    background: #e0a822;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(244, 180, 42, 0.3);
+}
+
+.close-btn-full {
+    background: #b10202;
+    color: white;
+}
+
+.close-btn-full:hover {
+    background: #e43333;
+    transform: translateY(-2px);
+}
+
+/* ================= RESPONSIVE ================= */
+
+@media (max-width: 768px) {
+    .view-card {
+        margin: 20px auto;
+    }
+
+    .view-header {
+        padding: 20px;
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+
+    .view-header h2 {
+        font-size: 22px;
+    }
+
+    .view-body {
+        padding: 20px;
+    }
+
+    .view-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .view-section {
+        margin-bottom: 25px;
+    }
+
+    .view-footer {
+        flex-direction: column;
+        padding: 15px 20px;
+    }
+
+    .edit-btn,
+    .close-btn-full {
+        width: 100%;
+    }
+}
+
+@media (max-width: 480px) {
+    .view-container {
+        padding: 10px;
+    }
+
+    .view-card {
+        border-radius: 10px;
+    }
+
+    .view-header {
+        padding: 15px;
+    }
+
+    .view-header h2 {
+        font-size: 18px;
+    }
+
+    .view-body {
+        padding: 15px;
+    }
+
+    .view-section h3 {
+        font-size: 16px;
+        margin-bottom: 15px;
+    }
+
+    .view-item label {
+        font-size: 11px;
+    }
+
+    .view-item p {
+        font-size: 13px;
+    }
+}

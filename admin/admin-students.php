@@ -80,7 +80,7 @@ if($_SESSION['role'] != "admin"){
         <!-- Welcome Section -->
         <section class="card welcome-card" aria-label="Welcome Section">
             <h2>Manage Students</h2>
-            <p>View list of students and manage their account.</p>
+            <p>Add students and manage their account.</p>
         </section>
 
         <!-- Add Student Card -->
