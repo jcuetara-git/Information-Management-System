@@ -74,8 +74,7 @@ $total_results = $result->num_rows;
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="../assets/css/admin-dashboard.css">
-    <link rel="stylesheet" href="../assets/css/manage-students.css">
-    <link rel="stylesheet" href="../assets/css/manage-students-enhanced.css">
+    <link rel="stylesheet" href="../assets/css/manage-students.css"> 
 </head>
 
 <body>
@@ -136,8 +135,10 @@ $total_results = $result->num_rows;
 
         <!-- Welcome Section -->
         <section class="card welcome-card" aria-label="Welcome Section">
-            <h2>Manage Students</h2>
-            <p>View, edit, and manage student information.</p>
+            <div class="welcome-content">
+                <h2>Manage Students</h2>
+                <p>Filter, view, edit, and delete student information.</p>
+            </div>
         </section>
 
         <!-- Messages -->
@@ -161,7 +162,6 @@ $total_results = $result->num_rows;
             <form method="GET" class="filters-grid">
                 <div class="filter-group search-input">
                     <label for="search">Search Student</label>
-                    <i class="fa-solid fa-search search-icon"></i>
                     <input type="text" id="search" name="search" placeholder="ID, Name, or Email" value="<?= htmlspecialchars($search) ?>">
                 </div>
 

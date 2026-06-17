@@ -266,6 +266,7 @@ body {
 
 /* ================= WELCOME CARD ================= */
 .welcome-card {
+    margin-top: 100px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -280,7 +281,7 @@ body {
 
 .welcome-content p {
     color: var(--text-muted);
-    font-size: 13px;
+    font-size: 14px;
 }
 
 .welcome-date {
