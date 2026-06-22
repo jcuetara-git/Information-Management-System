@@ -224,9 +224,13 @@ select {
         max-width: 100%;
     }
 
-    .two-col input, .two-col select{
+    /* Properly collapse standard multi-column layouts */
+    .two-col {
         flex-direction: column;
         gap: 18px;
-        width: 50%;
+    }
+
+    .two-col input, .two-col select {
+        width: 100%;
     }
 }

@@ -1,5 +1,11 @@
 /* MANAGE STUDENTS TABLE STYLES */
-
+.card{
+    padding-top: 22px;
+    padding-bottom: 22px;
+    margin-top: 8px;
+    margin-bottom: 30px;
+}
+  
 .table-container {
     overflow-x: auto;
     padding: 0 !important;
@@ -85,6 +91,93 @@ table tbody tr:nth-child(even) {
     transform: scale(0.95);
 }
 
+.button-container {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.view-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 20px;
+    gap: 3px;
+    width: 150px;
+    height: 45px;
+    background: var(--primary-color);
+    color: #000;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: var(--transition);
+    text-decoration: none;
+    border: none;
+    font-weight: 600;
+    font-size: 15px;
+}
+
+.view-btn:hover {
+    background: #e0a822;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Alert Box Styles - Top Center */
+.alert {
+    padding: 15px 20px;
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: bold;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* Slightly larger shadow for depth */
+    
+    /* Centering and Positioning Logic */
+    position: fixed; 
+    top: 20px;       /* Distance from the top of the screen */
+    left: 50%;       /* Push to the middle */
+    transform: translateX(-50%); /* Pull back exactly half its own width to center it perfectly */
+    z-index: 9999;   /* Ensures it stays on top of your sidebar and other content */
+    min-width: 300px; /* Ensures it doesn't look too squished */
+    
+    animation: slideDown 0.4s ease-out forwards;
+}
+
+.alert-success {
+    background-color: #d4edda;
+    color: #155724;
+    border: 1px solid #c3e6cb;
+}
+
+.alert-danger {
+    background-color: #f8d7da;
+    color: #721c24;
+    border: 1px solid #f5c6cb;
+}
+
+.alert .close-btn {
+    margin-left: auto; /* Pushes the 'x' button to the far right */
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: inherit;
+    opacity: 0.7;
+}
+
+.alert .close-btn:hover {
+    opacity: 1;
+}
+
+/* Animation to make it slide down from the very top edge */
+@keyframes slideDown {
+    from { 
+        opacity: 0; 
+        transform: translate(-50%, -20px); 
+    }
+    to { 
+        opacity: 1; 
+        transform: translate(-50%, 0); 
+    }
+}
 /* ================= RESPONSIVE TABLE ================= */
 
 /* Large Desktop (1200px and above) */
@@ -416,7 +509,7 @@ table tbody tr:nth-child(even) {
     white-space: nowrap;
     display: flex;
     gap: 8px;
-    justify-content: center;
+    justify-content: flex-start;
 }
 
 .view-btn-table,
@@ -500,7 +593,7 @@ table tbody tr:nth-child(even) {
 }
 
 .result-count strong {
-    color: var(--primary-color);
+    color: var(--text-color);
     font-weight: 700;
 }
 

@@ -51,7 +51,6 @@ if(!$student){
 <div class="view-container">
     <div class="view-card">
         <div class="view-header">
-            <h2><?= htmlspecialchars($student['first_name'] . ' ' . $student['last_name']) ?></h2>
             <a href="manage-students.php" class="close-btn"><i class="fa-solid fa-times"></i></a>
         </div>
         
@@ -90,6 +89,24 @@ if(!$student){
                     <div class="view-item">
                         <label>Civil Status:</label>
                         <p><?= htmlspecialchars($student['civil_status'] ?? 'N/A') ?></p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="view-section">
+                <h3><i class="fa-solid fa-graduation-cap"></i> Academic Information</h3>
+                <div class="view-grid">
+                    <div class="view-item full-width">
+                        <label>Extracurricular Activities:</label>
+                        <p><?= htmlspecialchars($student['activities'] ?? 'N/A') ?></p>
+                    </div>
+                    <div class="view-item">
+                        <label>Previous GPA:</label>
+                        <p><?= htmlspecialchars($student['previous_gpa'] ?? 'N/A') ?></p>
+                    </div>
+                    <div class="view-item">
+                        <label>Year Level:</label>
+                        <p><?= htmlspecialchars($student['year_level'] ?? 'N/A') ?></p>
                     </div>
                 </div>
             </div>
@@ -160,28 +177,12 @@ if(!$student){
                 </div>
             </div>
 
-            <div class="view-section">
-                <h3><i class="fa-solid fa-graduation-cap"></i> Academic Information</h3>
-                <div class="view-grid">
-                    <div class="view-item full-width">
-                        <label>Extracurricular Activities:</label>
-                        <p><?= htmlspecialchars($student['activities'] ?? 'N/A') ?></p>
-                    </div>
-                    <div class="view-item">
-                        <label>Previous GPA:</label>
-                        <p><?= htmlspecialchars($student['previous_gpa'] ?? 'N/A') ?></p>
-                    </div>
-                    <div class="view-item">
-                        <label>Year Level:</label>
-                        <p><?= htmlspecialchars($student['year_level'] ?? 'N/A') ?></p>
-                    </div>
-                </div>
-            </div>
+            
         </div>
 
         <div class="view-footer">
-            <a href="admin-edit-student.php?id=<?= urlencode($student['student_no']) ?>" class="edit-btn"><i class="fa-solid fa-edit"></i> Edit</a>
             <a href="manage-students.php" class="close-btn-full"><i class="fa-solid fa-arrow-left"></i> Back</a>
+            <a href="admin-edit-student.php?id=<?= urlencode($student['student_no']) ?>" class="edit-btn"><i class="fa-solid fa-edit"></i> Edit</a>
         </div>
     </div>
 </div>

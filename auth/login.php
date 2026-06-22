@@ -23,8 +23,12 @@ if(isset($_POST['login'])){
             $_SESSION['first_name'] = $user['first_name'] ?? '';
             $_SESSION['last_name']  = $user['last_name'] ?? '';
 
+            // Dynamic Path Routing Redirection based on roles
             if($user['role'] == "admin"){
                 header("Location: ../admin/admin-dashboard.php");
+                exit();
+            } elseif($user['role'] == "faculty") {
+                header("Location: ../faculty/faculty-dashboard.php");
                 exit();
             } else {
                 header("Location: ../student/student-dashboard.php");
@@ -59,7 +63,7 @@ if(isset($_POST['login'])){
     <?php endif; ?>
 
     <form method="POST" class="auth-form">
-        <input type="text" name="student_no" placeholder="ID Number" required>
+        <input type="text" name="student_no" placeholder="ID Number or Email" required>
         <input type="password" name="password" placeholder="Password" required>
 
         <div class="forgot">

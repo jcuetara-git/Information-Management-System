@@ -16,74 +16,34 @@ if($_SESSION['role'] != "admin"){
     <meta name="theme-color" content="#f4b42c">
     <title>admin-students</title>
     
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="../assets/css/admin-students.css">
+    
+    <style>
+        /* Small style addition to make disabled fields look locked */
+        .locked-field {
+            opacity: 0.5;
+            cursor: not-allowed !important;
+            background-color: #e9ecef;
+        }
+    </style>
 </head>
 
 <body>
 
 <div class="main-container">
 
-    <!-- ================= SIDEBAR ================= -->
-    <nav class="sidebar" id="sidebar" role="navigation" aria-label="Main Navigation">
-        <div class="sidebar-header">
-            <button id="toggleSidebar" class="hamburger-btn" aria-label="Toggle Sidebar">
-                <i class="fa-solid fa-bars"></i>
-            </button>
-            <span class="sidebar-title">UC-MAIN CCJ</span>
-        </div>
-
-        <ul>
-            <li role="menuitem" onclick="window.location.href='admin-dashboard.php'">
-                <i class="fa-solid fa-chart-line"></i> 
-                <span>Dashboard</span>
-            </li>
-            <li class="active" role="menuitem" onclick="window.location.href='admin-students.php'">
-                <i class="fa-solid fa-users"></i> 
-                <span>Students</span>
-            </li>
-            <li role="menuitem">
-                <i class="fa-solid fa-user-tie"></i> 
-                <span>Faculty</span>
-            </li>
-            <li role="menuitem">
-                <i class="fa-solid fa-briefcase"></i> 
-                <span>Internship</span>
-            </li>
-            <li role="menuitem">
-                <i class="fa-solid fa-folder"></i> 
-                <span>Organizations</span>
-            </li>
-            <li role="menuitem">
-                <i class="fa-solid fa-house"></i> 
-                <span>Community Extension</span>
-            </li>
-            <li role="menuitem">
-                <i class="fa-solid fa-file"></i> 
-                <span>Indiana Jones</span>
-            </li>
-        </ul>
-
-        <div class="profile-menu">
-            <a href="../auth/logout.php" role="menuitem">
-                <i class="fa-solid fa-sign-out-alt"></i> 
-                <span>Logout</span>
-            </a>
-        </div>
-    </nav>
-
-    <!-- ================= MAIN CONTENT ================= -->
+    <?php 
+    include("../includes/sidebar.php");
+    ?>
+    
     <main class="dashboard-container" id="mainContent" role="main">
 
-        <!-- Welcome Section -->
         <section class="card welcome-card" aria-label="Welcome Section">
-            <h2>Manage Students</h2>
+            <h2>Add Students</h2>
             <p>Add students and manage their account.</p>
         </section>
 
-        <!-- Add Student Card -->
         <section class="card add-info-card" id="openModalBtn" role="button" tabindex="0" aria-label="Add Student">
             <div class="plus-icon">
                 <i class="fa-solid fa-plus"></i>
@@ -91,7 +51,6 @@ if($_SESSION['role'] != "admin"){
             <p>Add Student</p>
         </section>
          
-        <!-- Action Buttons -->
         <div class="button-container">
             <button class="view-btn" onclick="window.location.href='manage-students.php'" aria-label="Go to Manage Students page">
                 <i class="fa-solid fa-list"></i> Manage Students
@@ -102,26 +61,24 @@ if($_SESSION['role'] != "admin"){
 
 </div>
 
-<!-- ================= ADD STUDENT MODAL ================= -->
 <div id="studentModal" class="modal" role="dialog" aria-labelledby="modalTitle" aria-hidden="true">
 
     <div class="modal-content">
 
-        <!-- MODAL HEADER -->
         <div class="modal-header">
             <h2 id="modalTitle">Student Personal Information</h2>
             <button class="close" aria-label="Close Modal" title="Close">&times;</button>
         </div>
 
-        <!-- FORM -->
         <form class="personal-form" method="POST" action="admin-save-student.php" novalidate>
 
             <div class="form-grid">
 
-                <!-- PERSONAL INFORMATION -->
-                <div class="form-group">
+                <div class="form-group" style="grid-column: 1 / -1;">
                     <label for="student_no">ID Number <span aria-label="required">*</span></label>
-                    <input type="text" id="student_no" name="student_no" required>
+                    <input type="text" id="student_no" name="student_no" required autocomplete="off" placeholder="Enter ID to unlock form">
+                    
+                    <div id="id_message" style="margin-top: 8px; font-size: 14px; font-weight: bold; display: none;"></div>
                 </div>
 
                 <div class="form-group">
@@ -166,7 +123,6 @@ if($_SESSION['role'] != "admin"){
                     <input type="text" id="civil_status" name="civil_status" required>
                 </div>
 
-                <!-- RELIGIOUS & RESIDENTIAL INFORMATION -->
                 <div class="form-group">
                     <label for="religion">Religion</label>
                     <input type="text" id="religion" name="religion">
@@ -192,7 +148,6 @@ if($_SESSION['role'] != "admin"){
                     </select>
                 </div>
 
-                <!-- CONTACT INFORMATION -->
                 <div class="form-group">
                     <label for="contact_number">Contact Number <span aria-label="required">*</span></label>
                     <input type="tel" id="contact_number" name="contact_number" required>
@@ -208,7 +163,6 @@ if($_SESSION['role'] != "admin"){
                     <input type="tel" id="emergency_number" name="emergency_number" required>
                 </div>
 
-                <!-- FAMILY INFORMATION -->
                 <div class="form-group">
                     <label for="father_name">Father's Name <span aria-label="required">*</span></label>
                     <input type="text" id="father_name" name="father_name" required>
@@ -229,7 +183,6 @@ if($_SESSION['role'] != "admin"){
                     <input type="text" id="mother_occupation" name="mother_occupation" required>
                 </div>
 
-                <!-- ACADEMIC INFORMATION -->
                 <div class="form-group">
                     <label for="activities">Extracurricular Activities</label>
                     <textarea id="activities" name="activities"></textarea>
@@ -242,10 +195,9 @@ if($_SESSION['role'] != "admin"){
 
             </div>  
 
-            <!-- MODAL BUTTONS -->
             <div class="modal-buttons">
                 <button type="button" class="cancel-btn" aria-label="Cancel Form">Cancel</button>
-                <button type="submit" class="save-btn" aria-label="Save Student Information">Save Student</button>
+                <button type="submit" class="save-btn" id="saveBtn" aria-label="Save Student Information">Save Student</button>
             </div>
 
         </form>
@@ -253,36 +205,127 @@ if($_SESSION['role'] != "admin"){
     </div>
 </div>
 
-<!-- Scripts -->
 <script>
-    // Sidebar Toggle Logic
-    const sidebar = document.getElementById("sidebar");
-    const toggleBtn = document.getElementById("toggleSidebar");
-    const mainContent = document.getElementById("mainContent");
+    // ==========================================
+    // GLOBAL ELEMENT DECLARATIONS
+    // ==========================================
+    const studentNoInput = document.getElementById("student_no");
+    const idMessage = document.getElementById("id_message");
+    const saveBtn = document.getElementById("saveBtn");
+    const form = document.querySelector(".personal-form");
 
-    toggleBtn.addEventListener("click", () => {
-        sidebar.classList.toggle("collapsed");
-        mainContent.classList.toggle("expanded");
+    // Grab all inputs/selects/textareas EXCEPT the student_no
+    const formFields = document.querySelectorAll(".personal-form input:not(#student_no), .personal-form select, .personal-form textarea");
+
+    function lockForm() {
+        formFields.forEach(field => {
+            field.disabled = true;
+            field.classList.add("locked-field");
+        });
+        saveBtn.disabled = true;
+        saveBtn.classList.add("locked-field");
+    }
+
+    function unlockForm() {
+        formFields.forEach(field => {
+            field.disabled = false;
+            field.classList.remove("locked-field");
+        });
+        saveBtn.disabled = false;
+        saveBtn.classList.remove("locked-field");
+    }
+
+    // Check Database on 'blur' (when user clicks out of the ID input)
+    studentNoInput.addEventListener("blur", async function() {
+        const studentId = this.value.trim();
+
+        if (studentId === "") {
+            lockForm();
+            idMessage.style.display = "none";
+            return;
+        }
+
+        // Show loading state
+        idMessage.style.display = "block";
+        idMessage.style.color = "#007bff"; 
+        idMessage.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Checking ID...';
+
+        try {
+            const response = await fetch(`check-student-id.php?id=${studentId}`);
+            const data = await response.json();
+
+            if (!data.registered) {
+                lockForm();
+                idMessage.style.color = "#dc3545"; 
+                idMessage.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Error: Student must be registered first!';
+            } else if (data.has_profile) {
+                lockForm();
+                idMessage.style.color = "#ffc107"; 
+                idMessage.innerHTML = '<i class="fa-solid fa-triangle-exclamation"></i> Profile already exists for this ID.';
+            } else {
+                // Success! Unlock the form
+                unlockForm();
+                idMessage.style.color = "#28a745"; 
+                idMessage.innerHTML = '<i class="fa-solid fa-circle-check"></i> Student found! Proceeding...';
+                
+                // Auto-fill names matching your input element IDs
+                document.getElementById("first_name").value = data.first_name || "";
+                document.getElementById("last_name").value = data.last_name || "";
+            }
+        } catch (error) {
+            lockForm();
+            idMessage.style.color = "#dc3545";
+            idMessage.innerHTML = '<i class="fa-solid fa-circle-xmark"></i> Error checking database.';
+            console.error(error);
+        }
     });
 
-    // Modal Logic
+    // ==========================================
+    // SUBMIT BUTTON / REQUIRED FIELD VALIDATION
+    // ==========================================
+    form.addEventListener("submit", function(event) {
+        let isValid = true;
+        const requiredFields = form.querySelectorAll("[required]");
+
+        requiredFields.forEach(field => {
+            if (field.type === "radio") {
+                const radioGroup = form.querySelectorAll(`input[name="${field.name}"]:checked`);
+                if (radioGroup.length === 0) isValid = false;
+            } else if (field.tagName === "SELECT") {
+                if (field.selectedIndex === 0 || field.value === "") isValid = false;
+            } else {
+                if (!field.value.trim()) isValid = false;
+            }
+        });
+
+        if (!isValid) {
+            event.preventDefault(); 
+            alert("Please completely fill out all required (*) fields before saving the student information.");
+        }
+    });
+
+    // ==========================================
+    // MODAL LOGIC
+    // ==========================================
     const modal = document.getElementById("studentModal");
     const openBtn = document.getElementById("openModalBtn");
     const closeBtn = document.querySelector(".close");
     const cancelBtn = document.querySelector(".cancel-btn");
-    const form = document.querySelector(".personal-form");
 
     function openModal() {
         modal.style.display = "block";
         modal.setAttribute("aria-hidden", "false");
         document.body.style.overflow = "hidden";
+        
+        form.reset();
+        idMessage.style.display = "none";
+        lockForm(); 
     }
 
     function closeModal() {
         modal.style.display = "none";
         modal.setAttribute("aria-hidden", "true");
         document.body.style.overflow = "auto";
-        form.reset();
     }
 
     openBtn.addEventListener("click", openModal);
@@ -298,7 +341,9 @@ if($_SESSION['role'] != "admin"){
     window.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
     document.addEventListener("keydown", (e) => { if (e.key === "Escape" && modal.style.display === "block") closeModal(); });
 
-    // Age Calculation Logic
+    // ==========================================
+    // AGE CALCULATION LOGIC
+    // ==========================================
     const dobInput = document.getElementById("dob");
     const ageInput = document.getElementById("age");
 

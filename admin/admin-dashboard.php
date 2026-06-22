@@ -53,54 +53,10 @@ while($row = $summary_result->fetch_assoc()) {
 
 <div class="main-container">
 
-    <!-- ================= SIDEBAR ================= -->
-    <nav class="sidebar" id="sidebar" role="navigation" aria-label="Main Navigation">
-        <div class="sidebar-header">
-            <button id="toggleSidebar" class="hamburger-btn" aria-label="Toggle Sidebar">
-                <i class="fa-solid fa-bars"></i>
-            </button>
-            <span class="sidebar-title">UC-MAIN CCJ</span>
-        </div>
-
-        <ul class="sidebar-nav">
-            <li class="active" role="menuitem" onclick="window.location.href='admin-dashboard.php'">
-                <i class="fa-solid fa-chart-line"></i> 
-                <span>Dashboard</span>
-            </li>
-            <li role="menuitem" onclick="window.location.href='admin-students.php'">
-                <i class="fa-solid fa-users"></i> 
-                <span>Students</span>
-            </li>
-            <li role="menuitem">
-                <i class="fa-solid fa-user-tie"></i> 
-                <span>Faculty</span>
-            </li>
-            <li role="menuitem">
-                <i class="fa-solid fa-briefcase"></i> 
-                <span>Internship</span>
-            </li>
-            <li role="menuitem">
-                <i class="fa-solid fa-folder"></i> 
-                <span>Organizations</span>
-            </li>
-            <li role="menuitem">
-                <i class="fa-solid fa-people-roof"></i>
-                <span>Community Extension</span>
-            </li>
-            <li role="menuitem">
-                <i class="fa-solid fa-file"></i> 
-                <span>Indiana Jones</span>
-            </li>
-        </ul>
-
-        <div class="profile-menu">
-            <a href="../auth/logout.php" role="menuitem">
-                <i class="fa-solid fa-sign-out-alt"></i> 
-                <span>Logout</span>
-            </a>
-        </div>
-    </nav>
-
+    <?php 
+    include("../includes/sidebar.php");
+    ?>
+    
     <!-- ================= MAIN CONTENT ================= -->
     <main class="dashboard-container" id="mainContent" role="main">
 
@@ -125,7 +81,7 @@ while($row = $summary_result->fetch_assoc()) {
                 <p>View students summary per year level.</p>
             </div>
             <div class="welcome-date">
-                <p><i class="fa-regular fa-calendar"></i> <?php echo date('F d, Y'); ?></p>
+                <i class="fa-regular fa-calendar"></i> <?php echo date('F d, Y'); ?>
             </div>
         </section>
 
@@ -169,16 +125,6 @@ while($row = $summary_result->fetch_assoc()) {
         </div>
     </main>
 </div>
-
-<script>
-    document.getElementById('toggleSidebar').addEventListener('click', function() {
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('mainContent');
-        
-        sidebar.classList.toggle('collapsed');
-        mainContent.classList.toggle('expanded');
-    });
-</script>
 
 </body>
 </html>

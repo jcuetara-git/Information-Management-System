@@ -70,70 +70,37 @@ $total_results = $result->num_rows;
     <meta name="theme-color" content="#f4b42c">
     <title>manage-students</title>
     
-    <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="../assets/css/admin-dashboard.css">
     <link rel="stylesheet" href="../assets/css/manage-students.css"> 
 </head>
 
 <body>
+    
+    <?php if (isset($_GET['success'])): ?>
+        <div class="alert alert-success" id="alertBox">
+            <i class="fa-solid fa-circle-check"></i> 
+            <?= htmlspecialchars($_GET['success']) ?>
+            <button class="close-btn" onclick="document.getElementById('alertBox').style.display='none'">&times;</button>
+        </div>
+    <?php endif; ?>
+
+    <?php if (isset($_GET['error'])): ?>
+        <div class="alert alert-danger" id="alertBox">
+            <i class="fa-solid fa-circle-exclamation"></i> 
+            <?= htmlspecialchars($_GET['error']) ?>
+            <button class="close-btn" onclick="document.getElementById('alertBox').style.display='none'">&times;</button>
+        </div>
+    <?php endif; ?>
 
 <div class="main-container">
 
-    <!-- ================= SIDEBAR ================= -->
-     <nav class="sidebar" id="sidebar" role="navigation" aria-label="Main Navigation">
-        <div class="sidebar-header">
-            <button id="toggleSidebar" class="hamburger-btn" aria-label="Toggle Sidebar">
-                <i class="fa-solid fa-bars"></i>
-            </button>
-            <span class="sidebar-title">UC-MAIN CCJ</span>
-        </div>
+    <?php 
+    include("../includes/sidebar.php");
+    ?>
 
-        <ul>
-            <li role="menuitem" onclick="window.location.href='admin-dashboard.php'">
-                <i class="fa-solid fa-chart-line"></i> 
-                <span>Dashboard</span>
-            </li>
-            <li class="active" role="menuitem" onclick="window.location.href='admin-students.php'" >
-                <i class="fa-solid fa-users"></i> 
-                <span>Students</span>
-            </li>
-            <li role="menuitem">
-                <i class="fa-solid fa-user-tie"></i> 
-                <span>Faculty</span>
-            </li>
-            <li role="menuitem">
-                <i class="fa-solid fa-briefcase"></i> 
-                <span>Internship</span>
-            </li>
-            <li role="menuitem">
-                <i class="fa-solid fa-folder"></i> 
-                <span>Organizations</span>
-            </li>
-            <li role="menuitem">
-                <i class="fa-solid fa-house"></i> 
-                <span>Community Extension</span>
-            </li>
-            <li role="menuitem">
-                <i class="fa-solid fa-file"></i> 
-                <span>Indiana Jones</span>
-            </li>
-        </ul>
-
-        <div class="profile-menu">
-            <a href="../auth/logout.php" role="menuitem">
-                <i class="fa-solid fa-sign-out-alt"></i> 
-                <span>Logout</span>
-            </a>
-        </div>
-    </nav>
-
-
-    <!-- ================= MAIN CONTENT ================= -->
     <main class="dashboard-container" id="mainContent" role="main">
 
-        <!-- Welcome Section -->
         <section class="card welcome-card" aria-label="Welcome Section">
             <div class="welcome-content">
                 <h2>Manage Students</h2>
@@ -141,19 +108,12 @@ $total_results = $result->num_rows;
             </div>
         </section>
 
-        <!-- Messages -->
         <?php if(isset($_GET['message'])): ?>
             <div style="background: #d4edda; border: 1px solid #c3e6cb; color: #155724; padding: 12px 15px; border-radius: 8px; margin-bottom: 20px;">
                 <i class="fa-solid fa-check-circle"></i> <?= htmlspecialchars($_GET['message']) ?>
             </div>
         <?php endif; ?>
-        <?php if(isset($_GET['error'])): ?>
-            <div style="background: #f8d7da; border: 1px solid #f5c6cb; color: #721c24; padding: 12px 15px; border-radius: 8px; margin-bottom: 20px;">
-                <i class="fa-solid fa-exclamation-circle"></i> <?= htmlspecialchars($_GET['error']) ?>
-            </div>
-        <?php endif; ?>
 
-        <!-- ================= FILTERS ================= -->
         <section class="card filters-container" aria-label="Search and Filter">
             <div class="filters-header">
                 <h3><i class="fa-solid fa-filter"></i> Search & Filter</h3>
@@ -168,7 +128,7 @@ $total_results = $result->num_rows;
                 <div class="filter-group">
                     <label for="year_level">Year Level</label>
                     <select id="year_level" name="year_level">
-                        <option value="">All Year Levels</option>
+                        <option value="" disabled selected>All Year Levels</option>
                         <option value="1st Year" <?= $year_level_filter === '1st Year' ? 'selected' : '' ?>>1st Year</option>
                         <option value="2nd Year" <?= $year_level_filter === '2nd Year' ? 'selected' : '' ?>>2nd Year</option>
                         <option value="3rd Year" <?= $year_level_filter === '3rd Year' ? 'selected' : '' ?>>3rd Year</option>
@@ -183,12 +143,10 @@ $total_results = $result->num_rows;
             </form>
         </section>
 
-        <!-- Result Count -->
         <div class="result-count">
             Showing <strong><?= $total_results ?></strong> student<?= $total_results !== 1 ? 's' : '' ?>
         </div>
 
-        <!-- Students Table -->
         <section class="card table-container" aria-label="Students List">
             <div class="table-wrapper">
                 <?php if($total_results > 0): ?>
@@ -235,10 +193,9 @@ $total_results = $result->num_rows;
             </div>
         </section>
 
-        <!-- Action Buttons -->
         <div class="button-container">
-            <button class="view-btn" onclick="window.location.href='admin-dashboard.php'">
-                <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+            <button class="view-btn" onclick="window.location.href='admin-students.php'">
+                <i class="fa-solid fa-arrow-left"></i> Back 
             </button>
         </div>
 
@@ -247,14 +204,15 @@ $total_results = $result->num_rows;
 </div>
 
 <script>
-    // Sidebar Toggle Logic
-    document.getElementById('toggleSidebar').addEventListener('click', function() {
-        const sidebar = document.getElementById('sidebar');
-        const mainContent = document.getElementById('mainContent');
-        
-        sidebar.classList.toggle('collapsed');
-        mainContent.classList.toggle('expanded');
-    });
+    // Automatically hide the alert box after 4 seconds
+    setTimeout(function() {
+        const alertBox = document.getElementById('alertBox');
+        if (alertBox) {
+            alertBox.style.transition = "opacity 0.5s ease";
+            alertBox.style.opacity = "0";
+            setTimeout(() => alertBox.style.display = "none", 500);
+        }
+    }, 4000);
 </script>
 
 </body>

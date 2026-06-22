@@ -224,6 +224,9 @@ body {
 
 /* ================= CARDS ================= */
 .card {
+    display: flex ;
+    flex-direction: column ; 
+    align-items: flex-start ; 
     background: var(--card-bg);
     padding: 25px;
     border-radius: 15px;
@@ -233,7 +236,7 @@ body {
 }
 
 .welcome-card h2 {
-    font-size: 27px;
+    font-size: 24px;
     margin-bottom: -2px;
 }
 
@@ -322,8 +325,8 @@ body {
     background: #fff;
     width: 100%;
     max-width: 1200px;
-    margin: 40px auto;
-    padding: 40px;
+    margin: 25px auto;
+    padding: 25px;
     border-radius: 15px;
     position: relative;
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
@@ -357,7 +360,8 @@ body {
     width: 30px;
     height: 30px;
     display: flex;
-    align-items: center;
+    padding-top: 0;
+    margin-top: 0;
     justify-content: center;
     border-radius: 8px;
     cursor: pointer;
