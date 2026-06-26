@@ -1,0 +1,150 @@
+/* Base Layout & Document Wrappers */
+.record-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+    box-sizing: border-box;
+}
+
+.back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    color: black;
+    font-weight: 600;
+    text-decoration: none;
+    margin-bottom: 20px;
+}
+
+.back-link:hover {
+    text-decoration: underline;
+    color: #374151;
+}
+
+/* Faculty Profile Profile Details Panel Header */
+.profile-card-header {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 30px;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    margin-bottom: 25px;
+}
+
+.avatar-circle {
+    width: 90px;
+    height: 90px;
+    border-radius: 50%;
+    background: #f3f4f6;
+    border: 3px solid #f59e0b;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    color: #9ca3af;
+}
+
+.header-details h1 {
+    margin: 0 0 6px 0;
+    font-size: 2rem;
+    color: #111827;
+    font-weight: 700;
+}
+
+.header-details p {
+    margin: 0;
+    color: #6b7280;
+    font-weight: 500;
+    font-size: 1.05rem;
+}
+
+.header-details p span {
+    font-weight: 600;
+    color: #374151;
+}
+
+/* Informational Layout Cards & Inner Grids */
+.info-panel {
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.panel-title {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: #111827;
+    margin: 0 0 20px 0;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid #f3f4f6;
+    padding-bottom: 12px;
+}
+
+.info-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 24px;
+    margin-bottom: 30px;
+}
+
+.info-item label {
+    display: block;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #6b7280;
+    letter-spacing: 0.05em;
+    margin-bottom: 6px;
+}
+
+.info-item p {
+    font-size: 1.1rem;
+    color: #111827;
+    margin: 0;
+    font-weight: 600;
+}
+
+.spacer-item {
+    grid-column: span 1;
+}
+
+.section-divider {
+    grid-column: span 2;
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #d97706;
+    letter-spacing: 0.05em;
+    border-bottom: 1px dashed #e5e7eb;
+    padding-bottom: 6px;
+    margin-top: 10px;
+}
+
+/* Portfolio Attachements & File Presentation States */
+.doc-link-attached {
+    color: #10b981;
+    font-weight: 600;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    transition: opacity 0.2s, text-decoration 0.2s;
+}
+
+.doc-link-attached:hover {
+    text-decoration: underline;
+    opacity: 0.85;
+}
+
+.doc-not-attached {
+    color: #9ca3af;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+}

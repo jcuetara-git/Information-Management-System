@@ -24,7 +24,7 @@ if(isset($_GET['delete'])){
 
 // Get filter parameters
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
-$year_level_filter = isset($_GET['year_level']) ? $_GET['year_level'] : '';
+$year_level_filter = isset($_GET['year_level']) ? trim($_GET['year_level']) : '';
 
 // Build query with filters
 $query = "SELECT u.student_no, u.first_name, u.last_name, u.email, p.contact_number, u.year_level
@@ -39,11 +39,11 @@ $types = '';
 if(!empty($search)){
     $query .= " AND (u.student_no LIKE ? OR u.first_name LIKE ? OR u.last_name LIKE ? OR u.email LIKE ?)";
     $search_param = '%' . $search . '%';
-    $params = [$search_param, $search_param, $search_param, $search_param];
-    $types = 'ssss';
+    array_push($params, $search_param, $search_param, $search_param, $search_param);
+    $types .= 'ssss';
 }
 
-// Add year level filter
+// Add year level filter (matches database format)
 if(!empty($year_level_filter)){
     $query .= " AND u.year_level = ?";
     $params[] = $year_level_filter;
@@ -128,11 +128,11 @@ $total_results = $result->num_rows;
                 <div class="filter-group">
                     <label for="year_level">Year Level</label>
                     <select id="year_level" name="year_level">
-                        <option value="" disabled selected>All Year Levels</option>
-                        <option value="1st Year" <?= $year_level_filter === '1st Year' ? 'selected' : '' ?>>1st Year</option>
-                        <option value="2nd Year" <?= $year_level_filter === '2nd Year' ? 'selected' : '' ?>>2nd Year</option>
-                        <option value="3rd Year" <?= $year_level_filter === '3rd Year' ? 'selected' : '' ?>>3rd Year</option>
-                        <option value="4th Year" <?= $year_level_filter === '4th Year' ? 'selected' : '' ?>>4th Year</option>
+                        <option value="">All Year Levels</option>
+                        <option value="1" <?= $year_level_filter === '1' ? 'selected' : '' ?>>1st Year</option>
+                        <option value="2" <?= $year_level_filter === '2' ? 'selected' : '' ?>>2nd Year</option>
+                        <option value="3" <?= $year_level_filter === '3' ? 'selected' : '' ?>>3rd Year</option>
+                        <option value="4" <?= $year_level_filter === '4' ? 'selected' : '' ?>>4th Year</option>
                     </select>
                 </div>
 

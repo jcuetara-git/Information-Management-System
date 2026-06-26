@@ -3,7 +3,7 @@
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Segoe UI', Arial, sans-serif;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 body {
@@ -148,7 +148,7 @@ body {
 }
 
 .welcome-card p {
-    color: #555;
+    color: #64748b;
     font-size: 15px;
 }
 
@@ -325,7 +325,7 @@ body {
 }
 
 .form-subtitle {
-    color: #555;
+    color: #64748b;
     font-size: 15px;
     border-bottom: 1px solid rgba(0, 0, 0, 0.08);
     padding-bottom: 20px;
@@ -336,8 +336,8 @@ body {
 .close-form-btn {
     background-color: #b31414;
     color: #ffffff;
-    width: 32px;
-    height: 32px;
+    width: 28px;
+    height: 28px;
     border-radius: 6px;
     display: inline-flex;
     align-items: center;
@@ -385,7 +385,6 @@ body {
     font-size: 16px;
     font-weight: 700;
     color: #000;
-    text-transform: uppercase;
     letter-spacing: 0.5px;
 }
 
@@ -458,7 +457,7 @@ body {
     background: #b10202;
     color: white;
     border: none;
-    padding: 16px 60px;
+    padding: 15px 30px;
     border-radius: 10px;
     font-size: 16px;
     font-weight: 600;
@@ -507,8 +506,8 @@ body {
         align-items: flex-start;
     }
     .close-form-btn {
-        width: 24px;
-        height: 24px;
+        width: 22px;
+        height: 22px;
         font-size: 14px;
     }
     .form-header-title h1 { 
@@ -537,7 +536,8 @@ body {
     }
     
     .cancel-action-btn, .view-btn {
-        width: 100%;
+        width: 95%;
         padding: 14px 0;
     }
+
 }

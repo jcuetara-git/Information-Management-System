@@ -20,7 +20,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 html, body {
@@ -263,7 +263,7 @@ body {
 
 .logo-text p {
     font-size: 14px;
-    color: var(--text-muted);
+    color: var(--text-color); 
     font-weight: 500;
 }
 

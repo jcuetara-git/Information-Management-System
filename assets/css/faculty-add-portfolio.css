@@ -1,0 +1,36 @@
+/* Form Field Overrides & Uniform Sizing */
+.form-group input[type="text"],
+.form-group input[type="email"],
+.form-group select {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid #d1d5db;
+    border-radius: 6px;
+    font-size: 0.95rem;
+    color: #1f2937;
+    box-sizing: border-box;
+    background-color: #fff;
+    transition: border-color 0.2s;
+    height: 42px;
+}
+
+.form-group input[type="text"]:focus,
+.form-group input[type="email"]:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #eab308;
+}
+
+.form-group input[readonly] {
+    background-color: #f3f4f6;
+    color: #6b7280;
+    cursor: not-allowed;
+    border-color: #e5e7eb;
+}
+
+/* Hidden grid balancer spacing block */
+.form-group.hidden-spacer {
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+}

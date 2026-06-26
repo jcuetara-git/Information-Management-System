@@ -1,4 +1,3 @@
-
 <link rel="stylesheet" href="../assets/css/admin-dashboard.css">
 <?php 
     $current_page = basename($_SERVER['PHP_SELF']);
@@ -35,7 +34,9 @@
             ['file' => 'admin-internship.php', 'icon' => 'fa-briefcase', 'label' => 'Internship'],
             ['file' => 'admin-orgs.php', 'icon' => 'fa-folder', 'label' => 'Organizations'],
             ['file' => 'admin-comm-ext.php', 'icon' => 'fa-house', 'label' => 'Community Extension'],
-            ['file' => 'admin-jones.php', 'icon' => 'fa-file', 'label' => 'Indiana Jones']
+            ['file' => 'admin-jones.php', 'icon' => 'fa-file', 'label' => 'Indiana Jones'],
+            ['file' => 'admin-retention.php', 'icon' => 'fa-user-check', 'label' => 'Retention Policy'],
+            ['file' => 'admin-alumni.php', 'icon' => 'fa-user-graduate', 'label' => 'Alumni']
         ];
 
         foreach ($menu_items as $item) {
