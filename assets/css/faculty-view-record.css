@@ -1,4 +1,6 @@
-/* Base Layout & Document Wrappers */
+/* ==========================================================================
+   1. BASE LAYOUT & WRAPPERS
+   ========================================================================== */
 .record-container {
     max-width: 1200px;
     margin: 0 auto;
@@ -10,10 +12,11 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    color: black;
+    color: #000000;
     font-weight: 600;
     text-decoration: none;
     margin-bottom: 20px;
+    transition: color 0.2s ease;
 }
 
 .back-link:hover {
@@ -21,44 +24,89 @@
     color: #374151;
 }
 
-/* Faculty Profile Profile Details Panel Header */
-.profile-card-header {
-    background: #fff;
-    border: 1px solid #e5e7eb;
+/* ==========================================================================
+   2. PROFILE CARD 
+   ========================================================================== */
+.profile-card {
+    background: #ffffff;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
     border-radius: 12px;
-    padding: 30px;
+    padding: 25px;
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    gap: 24px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-    margin-bottom: 25px;
+    margin-bottom: 20px;
+    animation: fadeInScale 0.6s ease both;
 }
 
-.avatar-circle {
-    width: 90px;
-    height: 90px;
+.profile-left {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+/* Profile Picture Upload Circle */
+.student-pic-container {
+    position: relative;
+    width: 80px;
+    height: 80px;
+    cursor: pointer;
+}
+
+.student-pic {
+    width: 100%;
+    height: 100%;
     border-radius: 50%;
-    background: #f3f4f6;
-    border: 3px solid #f59e0b;
+    object-fit: cover;
+    border: 3px solid #f4b42a; /* Gold theme accent */
+    transition: transform 0.3s ease, border-color 0.3s ease;
+}
+
+.student-pic-container:hover .student-pic {
+    transform: scale(1.05);
+    border-color: #fdd76f;
+}
+
+/* Overlapping FontAwesome Camera Icon */
+.student-pic-container::after {
+    content: '\f030';
+    font-family: 'Font Awesome 6 Free';
+    font-weight: 900;
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: #f4b42a;
+    color: #ffffff;
+    width: 25px;
+    height: 25px;
+    border-radius: 50%;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2.5rem;
-    color: #9ca3af;
+    font-size: 11px;
+    border: 2px solid #ffffff;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none; /* Prevents interrupting label interaction click triggers */
 }
 
-.header-details h1 {
-    margin: 0 0 6px 0;
-    font-size: 2rem;
-    color: #111827;
+.student-pic-container:hover::after {
+    opacity: 1;
+}
+
+/* Profile Header Metadata Text */
+.header-details h3 {
+    font-size: 25px;
+    color: #222222;
+    margin: 0 0 4px 0;
     font-weight: 700;
 }
 
 .header-details p {
     margin: 0;
-    color: #6b7280;
+    color: #333;
     font-weight: 500;
-    font-size: 1.05rem;
+    font-size: 14px;
 }
 
 .header-details p span {
@@ -66,13 +114,15 @@
     color: #374151;
 }
 
-/* Informational Layout Cards & Inner Grids */
+/* ==========================================================================
+   3. INFORMATIONAL LAYOUT PANELS & GRIDS
+   ========================================================================== */
 .info-panel {
-    background: #fff;
+    background: #ffffff;
     border: 1px solid #e5e7eb;
     border-radius: 12px;
     padding: 30px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
 .panel-title {
@@ -101,6 +151,7 @@
     color: #6b7280;
     letter-spacing: 0.05em;
     margin-bottom: 6px;
+    text-transform: capitalize;
 }
 
 .info-item p {
@@ -118,14 +169,16 @@
     grid-column: span 2;
     font-size: 0.9rem;
     font-weight: 700;
-    color: #d97706;
+    color: #d97706; /* Elegant burnt amber accent */
     letter-spacing: 0.05em;
     border-bottom: 1px dashed #e5e7eb;
     padding-bottom: 6px;
     margin-top: 10px;
 }
 
-/* Portfolio Attachements & File Presentation States */
+/* ==========================================================================
+   4. PORTFOLIO ATTACHMENTS & STATUS INDICATORS
+   ========================================================================== */
 .doc-link-attached {
     color: #10b981;
     font-weight: 600;
@@ -133,7 +186,7 @@
     display: inline-flex;
     align-items: center;
     gap: 6px;
-    transition: opacity 0.2s, text-decoration 0.2s;
+    transition: opacity 0.2s ease, text-decoration 0.2s ease;
 }
 
 .doc-link-attached:hover {

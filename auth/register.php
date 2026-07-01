@@ -5,19 +5,20 @@ include("../config/db.php");
 $error = "";
 
 if(isset($_POST['register'])) {
-    $student_no = trim($_POST['student_no']); // Acts as ID Number for both Roles
+    $student_no = trim($_POST['student_no']); // Acts as ID Number for all roles
     $first_name = trim($_POST['first_name']);
     $last_name  = trim($_POST['last_name']);
     $email      = trim($_POST['email']);
     
     // 1. Capture the selected role and fall back to student if empty or tampered with
     $role = isset($_POST['role']) ? trim($_POST['role']) : 'student';
-    if (empty($role) || !in_array($role, ['student', 'faculty'])) {
+    // Updated to include 'alumni' in the allowed roles array
+    if (empty($role) || !in_array($role, ['student', 'faculty', 'alumni'])) {
         $role = 'student';
     }
     
-    // 2. Set year level to null for faculty, otherwise capture it for students
-    $year_level = ($role === 'faculty') ? null : (isset($_POST['year_level']) ? trim($_POST['year_level']) : '');
+    // 2. Set year level to null for faculty and alumni, otherwise capture it for students
+    $year_level = ($role === 'faculty' || $role === 'alumni') ? null : (isset($_POST['year_level']) ? trim($_POST['year_level']) : '');
     
     $password   = $_POST['password'];
     $confirm    = $_POST['confirm_password'];
@@ -82,6 +83,8 @@ if(isset($_POST['register'])) {
             <select name="role" id="roleSelector" onchange="toggleYearLevel(this.value)" required>
                 <option value="student" selected>Register as Student</option>
                 <option value="faculty">Register as Faculty Member</option>
+                <!-- Added Alumni Option -->
+                <option value="alumni">Register as Alumnus</option>
             </select>
         </div>
 
@@ -129,10 +132,11 @@ if(isset($_POST['register'])) {
 
 <script src="../assets/js/script.js"></script>
 <script>
-    // Disables and styles the year level field when 'faculty' is selected
+    // Disables and styles the year level field when 'faculty' or 'alumni' is selected
     function toggleYearLevel(role) {
         const yearSelector = document.getElementById('yearLevelSelector');
-        if (role === 'faculty') {
+        // Updated to include alumni in the check
+        if (role === 'faculty' || role === 'alumni') {
             yearSelector.selectedIndex = 0;
             yearSelector.disabled = true;
             yearSelector.style.opacity = '0.5';

@@ -30,7 +30,11 @@ if(isset($_POST['login'])){
             } elseif($user['role'] == "faculty") {
                 header("Location: ../faculty/faculty-dashboard.php");
                 exit();
+            } elseif($user['role'] == "alumni") {
+                header("Location: ../alumni/alumni-dashboard.php");
+                exit();
             } else {
+                // Defaults to student
                 header("Location: ../student/student-dashboard.php");
                 exit();
             }

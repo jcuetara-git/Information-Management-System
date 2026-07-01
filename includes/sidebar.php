@@ -21,10 +21,17 @@
         
         // 2. Map sub-pages & management pages to their parent menu items
         $active_page = $current_page;
-        $student_pages = ['admin-students.php', 'manage-students.php', 'admin-edit-student.php', 'admin-view-student.php'];
         
+        // Student pages tracking group
+        $student_pages = ['admin-students.php', 'manage-students.php', 'admin-edit-student.php', 'admin-view-student.php'];
         if (in_array($current_page, $student_pages)) {
-            $active_page = 'admin-students.php'; // Keeps "Students" highlighted for all student-related files
+            $active_page = 'admin-students.php'; 
+        }
+
+        // Faculty pages tracking group (Keeps "Faculty" highlighted)
+        $faculty_pages = ['admin-faculty.php', 'manage-faculty.php', 'admin-edit-faculty.php', 'admin-view-faculty.php'];
+        if (in_array($current_page, $faculty_pages)) {
+            $active_page = 'admin-faculty.php';
         }
 
         $menu_items = [

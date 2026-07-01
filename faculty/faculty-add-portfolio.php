@@ -70,35 +70,73 @@ if (isset($_POST['submit_portfolio'])) {
     $uploaded_paths = [];
     $upload_error = false;
 
-    // 3. Process structural file streams iteratively
+    // 3. Process structural file streams iteratively (supporting 2 or more uploads per field)
     foreach ($file_fields as $field) {
-        if (isset($_FILES[$field]) && $_FILES[$field]['error'] == 0) {
-            $file_tmp   = $_FILES[$field]['tmp_name'];
-            $orig_name  = basename($_FILES[$field]["name"]);
-            $file_ext   = strtolower(pathinfo($orig_name, PATHINFO_EXTENSION));
+        if (isset($_FILES[$field])) {
+            // Check if it's an array of multiple files
+            if (is_array($_FILES[$field]['name'])) {
+                $file_count = count($_FILES[$field]['name']);
+                $paths_arr = [];
 
-            if (in_array($file_ext, $allowed_extensions)) {
-                $clean_filename = time() . "_" . preg_replace("/[^a-zA-Z0-9._-]/", "_", $orig_name);
-                $target_file    = $target_dir . $clean_filename;
-                
-                if (move_uploaded_file($file_tmp, $target_file)) {
-                    $uploaded_paths[$field] = $target_file;
-                } else {
-                    $msg = "<p class='alert-msg system-error'>System failed to save file: $orig_name</p>";
-                    $upload_error = true;
-                    break;
+                for ($i = 0; $i < $file_count; $i++) {
+                    if ($_FILES[$field]['error'][$i] == 0) {
+                        $file_tmp   = $_FILES[$field]['tmp_name'][$i];
+                        $orig_name  = basename($_FILES[$field]["name"][$i]);
+                        $file_ext   = strtolower(pathinfo($orig_name, PATHINFO_EXTENSION));
+
+                        if (in_array($file_ext, $allowed_extensions)) {
+                            // Unique filename parsing per index loop step
+                            $clean_filename = time() . "_" . $i . "_" . preg_replace("/[^a-zA-Z0-9._-]/", "_", $orig_name);
+                            $target_file    = $target_dir . $clean_filename;
+                            
+                            if (move_uploaded_file($file_tmp, $target_file)) {
+                                $paths_arr[] = $target_file;
+                            } else {
+                                $msg = "<p class='alert-msg system-error'>System failed to save file: $orig_name</p>";
+                                $upload_error = true;
+                                break 2; // Break out of file counter iteration loop cleanly
+                            }
+                        } else {
+                            $msg = "<p class='alert-msg validation-error'>Invalid file format for $orig_name. Allowed: PDF, DOC, DOCX, PNG, JPG.</p>";
+                            $upload_error = true;
+                            break 2;
+                        }
+                    }
                 }
+                // Save list of multiple file paths as a JSON string to fit nicely into database text column structure
+                $uploaded_paths[$field] = !empty($paths_arr) ? json_encode($paths_arr) : null;
+
             } else {
-                $msg = "<p class='alert-msg validation-error'>Invalid file format for $orig_name. Allowed: PDF, DOC, DOCX, PNG, JPG.</p>";
-                $upload_error = true;
-                break;
+                // Fallback standard single file stream handling
+                if ($_FILES[$field]['error'] == 0) {
+                    $file_tmp   = $_FILES[$field]['tmp_name'];
+                    $orig_name  = basename($_FILES[$field]["name"]);
+                    $file_ext   = strtolower(pathinfo($orig_name, PATHINFO_EXTENSION));
+
+                    if (in_array($file_ext, $allowed_extensions)) {
+                        $clean_filename = time() . "_" . preg_replace("/[^a-zA-Z0-9._-]/", "_", $orig_name);
+                        $target_file    = $target_dir . $clean_filename;
+                        
+                        if (move_uploaded_file($file_tmp, $target_file)) {
+                            $uploaded_paths[$field] = $target_file;
+                        } else {
+                            $msg = "<p class='alert-msg system-error'>System failed to save file: $orig_name</p>";
+                            $upload_error = true;
+                            break;
+                        }
+                    } else {
+                        $msg = "<p class='alert-msg validation-error'>Invalid file format for $orig_name. Allowed: PDF, DOC, DOCX, PNG, JPG.</p>";
+                        $upload_error = true;
+                        break;
+                    }
+                } else {
+                    $uploaded_paths[$field] = null;
+                }
             }
-        } else {
-            $uploaded_paths[$field] = null;
         }
     }
 
-    // 4. Update data store mapping upon successful file parsing
+    // 4. Update database tables upon validation check completion
     if (!$upload_error) {
         $check = $conn->prepare("SELECT id FROM faculty_profile WHERE faculty_no = ?");
         $check->bind_param("s", $faculty_id);
@@ -118,7 +156,6 @@ if (isset($_POST['submit_portfolio'])) {
                       WHERE faculty_no = ?";
             $stmt = $conn->prepare($query);
             
-            // FIXED: Provided exactly 18 types to match the 18 parameter arguments cleanly
             $stmt->bind_param("ssssssssssssssssss", 
                 $form_email, $form_contact, $form_status,
                 $uploaded_paths['cv'], $uploaded_paths['tor'], $uploaded_paths['diploma'], $uploaded_paths['prc_license'],
@@ -141,10 +178,7 @@ if (isset($_POST['submit_portfolio'])) {
         }
 
         if ($stmt->execute()) {
-            // Setup dashboard notification alert string
             $_SESSION['portfolio_success_msg'] = "Faculty Portfolio Successfully Submitted and Updated!";
-            
-            // Cleanly redirect to the dashboard page upon successful execution
             header("Location: faculty-dashboard.php");
             exit();
         } else {
@@ -161,9 +195,9 @@ if (isset($_POST['submit_portfolio'])) {
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>add-faculty-portfolio</title>
+    <link class="img-cdn" rel="shortcut icon" href="../assets/logo.png" type="image/x-icon">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/faculty-dashboard.css?v=1.8">
-    <!-- Link to Separate Custom Sheet -->
     <link rel="stylesheet" href="../assets/css/faculty-add-portfolio.css?v=1.0">
     <script>
         function confirmSubmission() {
@@ -209,7 +243,8 @@ if (isset($_POST['submit_portfolio'])) {
                 </a>
             </div>
             
-            <p class="form-subtitle">Please select and upload your official credentials and academic file work here.</p>
+            <!-- Clear instructions showing user they can pick 2 or more files -->
+            <p class="form-subtitle">Please select and upload your official credentials and academic file work here. <span class="highlight-subtitle">You can select 2 or more files at the same time for any field below by holding down Ctrl or Cmd while picking files.</span></p>
             
             <?= $msg ?>
 
@@ -243,68 +278,68 @@ if (isset($_POST['submit_portfolio'])) {
 
                     <div class="section-title"><span>Personal Records</span></div>
                     <div class="form-group">
-                        <label>Curriculum Vitae (CV) <span class="required-asterisk">*</span></label>
-                        <input type="file" name="cv" <?= empty($existing_contact) ? 'required' : '' ?>>
+                        <label>Curriculum Vitae (CV) <span class="required-asterisk">*</span><span class="optional-hint">(2 or more files allowed)</span></label>
+                        <input type="file" name="cv[]" multiple <?= empty($existing_contact) ? 'required' : '' ?>>
                     </div>
                     <div class="form-group">
-                        <label>Updated PRC License <span class="required-asterisk">*</span></label>
-                        <input type="file" name="prc_license" <?= empty($existing_contact) ? 'required' : '' ?>>
+                        <label>Updated PRC License <span class="required-asterisk">*</span><span class="optional-hint">(2 or more files allowed)</span></label>
+                        <input type="file" name="prc_license[]" multiple <?= empty($existing_contact) ? 'required' : '' ?>>
                     </div>
 
                     <div class="section-title"><span>Academic Credentials</span></div>
                     <div class="form-group">
-                        <label>Transcript of Records (TOR) <span class="required-asterisk">*</span></label>
-                        <input type="file" name="tor" <?= empty($existing_contact) ? 'required' : '' ?>>
+                        <label>Transcript of Records (TOR) <span class="required-asterisk">*</span><span class="optional-hint">(2 or more files allowed)</span></label>
+                        <input type="file" name="tor[]" multiple <?= empty($existing_contact) ? 'required' : '' ?>>
                     </div>
                     <div class="form-group">
-                        <label>Diploma <span class="required-asterisk">*</span></label>
-                        <input type="file" name="diploma" <?= empty($existing_contact) ? 'required' : '' ?>>
+                        <label>Diploma <span class="required-asterisk">*</span><span class="optional-hint">(2 or more files allowed)</span></label>
+                        <input type="file" name="diploma[]" multiple <?= empty($existing_contact) ? 'required' : '' ?>>
                     </div>
 
                     <div class="section-title"><span>Professional Associations & Trainings</span></div>
                     <div class="form-group">
-                        <label>Certificate of Professional Membership</label>
-                        <input type="file" name="certificates_membership">
+                        <label>Certificate of Professional Membership <span class="optional-hint">(2 or more files allowed)</span></label>
+                        <input type="file" name="certificates_membership[]" multiple>
                     </div>
                     <div class="form-group">
-                        <label>Seminars & Trainings Attended (Regional)</label>
-                        <input type="file" name="seminars_regional">
+                        <label>Seminars & Trainings Attended (Regional) <span class="optional-hint">(2 or more files allowed)</span></label>
+                        <input type="file" name="seminars_regional[]" multiple>
                     </div>
                     <div class="form-group">
-                        <label>Seminars & Trainings Attended (National)</label>
-                        <input type="file" name="seminars_national">
+                        <label>Seminars & Trainings Attended (National) <span class="optional-hint">(2 or more files allowed)</span></label>
+                        <input type="file" name="seminars_national[]" multiple>
                     </div>
                     <div class="form-group">
-                        <label>Seminars & Trainings Attended (International)</label>
-                        <input type="file" name="seminars_international">
+                        <label>Seminars & Trainings Attended (International) <span class="optional-hint">(2 or more files allowed)</span></label>
+                        <input type="file" name="seminars_international[]" multiple>
                     </div>
 
                     <div class="section-title"><span>Research Works</span></div>
                     <div class="form-group">
-                        <label>Certificate of Researchers</label>
-                        <input type="file" name="research_cert">
+                        <label>Certificate of Researchers <span class="optional-hint">(2 or more files allowed)</span></label>
+                        <input type="file" name="research_cert[]" multiple>
                     </div>
                     <div class="form-group">
-                        <label>Certificate as Research Presenter</label>
-                        <input type="file" name="research_presenter">
+                        <label>Certificate as Research Presenter <span class="optional-hint">(2 or more files allowed)</span></label>
+                        <input type="file" name="research_presenter[]" multiple>
                     </div>
 
                     <div class="section-title"><span>Instructional & Extension Materials</span></div>
                     <div class="form-group">
-                        <label>Community Extension Documentation</label>
-                        <input type="file" name="community_extension">
+                        <label>Community Extension Documentation <span class="optional-hint">(2 or more files allowed)</span></label>
+                        <input type="file" name="community_extension[]" multiple>
                     </div>
                     <div class="form-group">
-                        <label>Syllabi</label>
-                        <input type="file" name="syllabi">
+                        <label>Syllabi <span class="optional-hint">(2 or more files allowed)</span></label>
+                        <input type="file" name="syllabi[]" multiple>
                     </div>
                     <div class="form-group">
-                        <label>Test Questionnaires</label>
-                        <input type="file" name="test_questionnaires">
+                        <label>Test Questionnaires <span class="optional-hint">(2 or more files allowed)</span></label>
+                        <input type="file" name="test_questionnaires[]" multiple>
                     </div>
                     <div class="form-group">
-                        <label>Table of Specifications (TOS)</label>
-                        <input type="file" name="tos">
+                        <label>Table of Specifications (TOS) <span class="optional-hint">(2 or more files allowed)</span></label>
+                        <input type="file" name="tos[]" multiple>
                     </div>
 
                 </div>

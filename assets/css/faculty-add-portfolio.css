@@ -34,3 +34,30 @@
     opacity: 0;
     pointer-events: none;
 }
+
+/* Custom Hints and Layout elements for Portfolio Submission */
+
+.optional-hint {
+    font-size: 0.85rem;
+    color: #6c757d;
+    font-weight: normal;
+    margin-left: 4px;
+}
+
+.highlight-subtitle {
+    color: #f4b42c;
+    font-weight: bold;
+}
+
+/* Base Form Structure Fallbacks if needed */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+}
+
+@media (max-width: 768px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+}
