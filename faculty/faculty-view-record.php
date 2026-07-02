@@ -61,7 +61,7 @@ $portfolio = [
     'syllabi' => null, 'tos' => null
 ];
 
-// Fetch faculty profile details (Removed first_name and last_name from here since they live in the session/user table)
+// Fetch faculty profile details
 $query = "SELECT email, contact_no, status, profile_pic, cv, tor, diploma, prc_license, certificates_membership, seminars_regional, seminars_national, seminars_international, research_cert, research_presenter, community_extension, test_questionnaires, syllabi, tos FROM faculty_profile WHERE faculty_no = ? LIMIT 1";
 
 $stmt = $conn->prepare($query);
@@ -102,14 +102,14 @@ function renderDocumentStatus($filePath) {
 
         $viewerUrl = 'view-file.php?file=' . urlencode($filePath);
 
-        return '<a href="' . htmlspecialchars($viewerUrl) . '" target="_blank" class="doc-link-attached">
+        return '<p><a href="' . htmlspecialchars($viewerUrl) . '" target="_blank" style="color: #10b981; font-weight: 600; text-decoration: none;">
                     <i class="fa-solid fa-circle-check"></i> View Document
-                </a>';
+                </a></p>';
     }
     
-    return '<span class="doc-not-attached">
+    return '<p style="color: #ef4444; font-weight: 500;">
                 <i class="fa-solid fa-circle-xmark"></i> Not Attached
-            </span>';
+            </p>';
 }
 ?>
 
@@ -117,176 +117,192 @@ function renderDocumentStatus($filePath) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <title>faculty record</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>faculty-view-record</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="../assets/css/faculty-dashboard.css?v=1.5">
-    <link rel="stylesheet" href="../assets/css/faculty-view-record.css?v=2.0">
+    <!-- Using the exact same styling template base as student-view-record -->
+    <link rel="stylesheet" href="../assets/css/student-view-record.css">
 </head>
+
 <body>
 
-    <header class="logo-section">
-        <div class="logo-left">
-            <div class="logo-circle">
-                <img src="../assets/logo.png" alt="Logo">
-            </div>
-            <div class="logo-text">
-                <h2>College of Criminal Justice</h2>
-                <p>Center of Development in Criminology</p>
-            </div>
+<div class="logo-section">
+    <div class="logo-left">
+        <div class="logo-circle">
+            <img src="../assets/logo.png" alt="Logo">
         </div>
-        <div class="profile-menu">
-            <a href="../auth/logout.php" title="Logout">
-                <i class="fa-solid fa-sign-out-alt"></i>
-                <span class="logout-text">Logout</span>
-            </a>
+        <div class="logo-text">
+            <h2>College of Criminal Justice</h2>
+            <p>Center of Development in Criminology</p>
         </div>
-    </header>
-
-    <main class="record-container">
-        
-        <a href="faculty-dashboard.php" class="back-link">
-            <i class="fa-solid fa-arrow-left"></i> Back to Dashboard
+    </div>
+    <div class="profile-menu">
+        <a href="../auth/logout.php">
+            <i class="fa-solid fa-sign-out-alt"></i> 
+            <span class="logout-text">Logout</span>
         </a>
+    </div>
+</div>
 
-       <!-- Faculty Header Card Matching Student Style Layout -->
-        <div class="profile-card">
-            <div class="profile-left">
-                <div class="student-pic-container">
-                    <form id="avatarForm" action="faculty-view-record.php" method="POST" enctype="multipart/form-data">
-                        <label for="profile_pic_input" style="cursor: pointer;">
-                            <?php if (!empty($profile_pic) && file_exists("../" . $profile_pic)): ?>
-                                <img src="../<?= htmlspecialchars($profile_pic) ?>" alt="Profile Picture" class="student-pic">
-                            <?php else: ?>
-                                <div class="student-pic" style="display: flex; align-items: center; justify-content: center; background: #e2e8f0; font-size: 2rem; color: #a0a0a0; height: 100%; border-radius: 50%;">
-                                    <i class="fa-solid fa-user"></i>
-                                </div>
-                            <?php endif; ?>
-                        </label>
-                        <input type="file" name="profile_pic" id="profile_pic_input" accept="image/*" onchange="document.getElementById('avatarForm').submit();" style="display: none;">
-                    </form>
-                </div>
-                <div class="header-details">
-                    <h3><?= htmlspecialchars($full_name) ?></h3>
-                    <p>ID Number: <span><?= htmlspecialchars($faculty_id) ?></span></p>
-                </div>
+<div class="container">
+    <h2>My Faculty Record</h2>
+
+    <?php if(!empty($email) || !empty($contact_no)): ?>
+
+    <!-- PROFILE LAYOUT CARD MATCHING STUDENT VIEW STYLE -->
+    <div class="profile-card">
+        <div class="profile-left">
+
+            <form id="avatarForm" action="faculty-view-record.php" method="POST" enctype="multipart/form-data">
+                <input type="file" name="profile_pic" id="photoInput" hidden onchange="document.getElementById('avatarForm').submit()">
+            </form>
+
+            <div class="student-pic-container" onclick="document.getElementById('photoInput').click();" title="Click to change photo">
+                <img 
+                src="<?= (!empty($profile_pic) && file_exists('../' . $profile_pic)) ? '../' . htmlspecialchars($profile_pic) : '../assets/student.jpg'; ?>" 
+                class="student-pic"
+                alt="Faculty Photo"
+                >
+            </div>
+
+            <div>
+                <h3><?= htmlspecialchars($full_name); ?></h3>
+                <p>ID Number: <?= htmlspecialchars($faculty_id); ?></p>
             </div>
         </div>
+    </div>
 
-        <!-- Portfolio Documentation Information Details -->
-        <div class="info-panel">
-            <h2 class="panel-title">
-                <i class="fa-solid fa-id-card"></i> Portfolio Information
-            </h2>
+    <!-- ACCORDION COMPONENT -->
+    <div class="accordion">
 
+        <!-- PANEL 1: ACCOUNT DETAILS -->
+        <button class="accordion-btn">Profile Information</button>
+        <div class="accordion-content">
             <div class="info-grid">
-                
-                <div class="info-item">
-                    <label>Status</label>
+                <div class="field">
+                    <label>Employment Status</label>
                     <p><?= !empty($status) ? htmlspecialchars($status) : '---' ?></p>
                 </div>
-
-                <div class="info-item">
+                <div class="field">
                     <label>Email Address</label>
                     <p><?= !empty($email) ? htmlspecialchars($email) : '---' ?></p>
                 </div>
-
-                <div class="info-item">
+                <div class="field">
                     <label>Contact Number</label>
                     <p><?= !empty($contact_no) ? htmlspecialchars($contact_no) : '---' ?></p>
                 </div>
-
-                <div class="spacer-item"></div>
-
-                <!-- PERSONAL RECORDS SECTION -->
-                <div class="section-divider">Personal Records</div>
-
-                <div class="info-item">
-                    <label>Curriculum Vitae (CV)</label>
-                    <?= renderDocumentStatus($portfolio['cv']) ?>
-                </div>
-
-                <div class="info-item">
-                    <label>Updated PRC License</label>
-                    <?= renderDocumentStatus($portfolio['prc_license']) ?>
-                </div>
-
-                <!-- ACADEMIC CREDENTIALS SECTION -->
-                <div class="section-divider">Academic Credentials</div>
-
-                <div class="info-item">
-                    <label>Transcript of Records (TOR)</label>
-                    <?= renderDocumentStatus($portfolio['tor']) ?>
-                </div>
-
-                <div class="info-item">
-                    <label>Diploma</label>
-                    <?= renderDocumentStatus($portfolio['diploma']) ?>
-                </div>
-
-                <!-- PROFESSIONAL ASSOCIATIONS SECTION -->
-                <div class="section-divider">Professional Associations & Trainings</div>
-
-                <div class="info-item">
-                    <label>Certificate of Professional Membership</label>
-                    <?= renderDocumentStatus($portfolio['certificates_membership']) ?>
-                </div>
-
-                <div class="info-item">
-                    <label>Seminars & Trainings Attended (Regional)</label>
-                    <?= renderDocumentStatus($portfolio['seminars_regional']) ?>
-                </div>
-
-                <div class="info-item">
-                    <label>Seminars & Trainings Attended (National)</label>
-                    <?= renderDocumentStatus($portfolio['seminars_national']) ?>
-                </div>
-
-                <div class="info-item">
-                    <label>Seminars & Trainings Attended (International)</label>
-                    <?= renderDocumentStatus($portfolio['seminars_international']) ?>
-                </div>
-
-                <!-- RESEARCH WORKS SECTION -->
-                <div class="section-divider">Research Works</div>
-
-                <div class="info-item">
-                    <label>Certificate of Researchers</label>
-                    <?= renderDocumentStatus($portfolio['research_cert']) ?>
-                </div>
-
-                <div class="info-item">
-                    <label>Certificate as Research Presenter</label>
-                    <?= renderDocumentStatus($portfolio['research_presenter']) ?>
-                </div>
-
-                <!-- INSTRUCTIONAL MATERIALS SECTION -->
-                <div class="section-divider">Instructional & Extension Materials</div>
-
-                <div class="info-item">
-                    <label>Community Extension Documentation</label>
-                    <?= renderDocumentStatus($portfolio['community_extension']) ?>
-                </div>
-
-                <div class="info-item">
-                    <label>Syllabi</label>
-                    <?= renderDocumentStatus($portfolio['syllabi']) ?>
-                </div>
-
-                <div class="info-item">
-                    <label>Test Questionnaires</label>
-                    <?= renderDocumentStatus($portfolio['test_questionnaires']) ?>
-                </div>
-
-                <div class="info-item">
-                    <label>Table of Specifications (TOS)</label>
-                    <?= renderDocumentStatus($portfolio['tos']) ?>
-                </div>
-
             </div>
         </div>
 
-    </main>
+        <!-- PANEL 2: PERSONAL & ACADEMIC DOCUMENTS -->
+        <button class="accordion-btn">Personal & Academic Credentials</button>
+        <div class="accordion-content">
+            <div class="info-grid">
+                <div class="field">
+                    <label>Curriculum Vitae (CV)</label>
+                    <?= renderDocumentStatus($portfolio['cv']) ?>
+                </div>
+                <div class="field">
+                    <label>Updated PRC License</label>
+                    <?= renderDocumentStatus($portfolio['prc_license']) ?>
+                </div>
+                <div class="field">
+                    <label>Transcript of Records (TOR)</label>
+                    <?= renderDocumentStatus($portfolio['tor']) ?>
+                </div>
+                <div class="field">
+                    <label>Diploma</label>
+                    <?= renderDocumentStatus($portfolio['diploma']) ?>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL 3: TRAININGS & PROFESSIONAL MEMBERSHIPS -->
+        <button class="accordion-btn">Professional Associations & Trainings</button>
+        <div class="accordion-content">
+            <div class="info-grid">
+                <div class="field">
+                    <label>Certificate of Professional Membership</label>
+                    <?= renderDocumentStatus($portfolio['certificates_membership']) ?>
+                </div>
+                <div class="field">
+                    <label>Seminars Attended (Regional)</label>
+                    <?= renderDocumentStatus($portfolio['seminars_regional']) ?>
+                </div>
+                <div class="field">
+                    <label>Seminars Attended (National)</label>
+                    <?= renderDocumentStatus($portfolio['seminars_national']) ?>
+                </div>
+                <div class="field">
+                    <label>Seminars Attended (International)</label>
+                    <?= renderDocumentStatus($portfolio['seminars_international']) ?>
+                </div>
+            </div>
+        </div>
+
+        <!-- PANEL 4: RESEARCH & INSTRUCTIONAL MATERIALS -->
+        <button class="accordion-btn">Research Works & Instructional Materials</button>
+        <div class="accordion-content">
+            <div class="info-grid">
+                <div class="field">
+                    <label>Certificate of Researchers</label>
+                    <?= renderDocumentStatus($portfolio['research_cert']) ?>
+                </div>
+                <div class="field">
+                    <label>Certificate as Research Presenter</label>
+                    <?= renderDocumentStatus($portfolio['research_presenter']) ?>
+                </div>
+                <div class="field">
+                    <label>Community Extension Documentation</label>
+                    <?= renderDocumentStatus($portfolio['community_extension']) ?>
+                </div>
+                <div class="field">
+                    <label>Syllabi</label>
+                    <?= renderDocumentStatus($portfolio['syllabi']) ?>
+                </div>
+                <div class="field">
+                    <label>Test Questionnaires</label>
+                    <?= renderDocumentStatus($portfolio['test_questionnaires']) ?>
+                </div>
+                <div class="field">
+                    <label>Table of Specifications (TOS)</label>
+                    <?= renderDocumentStatus($portfolio['tos']) ?>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <?php else: ?>
+        <div class="card" style="text-align: center; padding: 40px; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px;">
+            <p style="color: #6b7280; font-size: 1.1rem; margin-bottom: 20px;">No record found. <br> Please add your faculty portfolio records information first.</p>
+            <a href="faculty-add-portfolio.php">Add FacultyPortfolio Record</a>
+        </div>
+    <?php endif; ?>
+
+    <!-- BACK BUTTON AT BOTTOM -->
+    <div class="back-container">
+        <a href="faculty-dashboard.php" class="back-btn">
+            <i class="fa-solid fa-arrow-left"></i> Back 
+        </a>
+    </div>
+
+</div>
+
+<!-- ACCORDION INTERACTION CONTROL SCRIPT -->
+<script>
+document.querySelectorAll(".accordion-btn").forEach(btn => {
+    btn.addEventListener("click", function(){
+        this.classList.toggle("active");
+        let panel = this.nextElementSibling;
+        if (panel.style.maxHeight) {
+            panel.style.maxHeight = null;
+        } else {
+            panel.style.maxHeight = panel.scrollHeight + "px";
+        }
+    });
+});
+</script>
 
 </body>
 </html>

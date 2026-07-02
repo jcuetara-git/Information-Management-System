@@ -44,9 +44,8 @@ if(!$faculty){
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
-    <title>Edit Faculty</title>
+    <title>admin-edit-faculty</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="../assets/css/admin-dashboard.css">
     <link rel="stylesheet" href="../assets/css/admin-edit-student.css">
 </head>
 <body>
@@ -56,8 +55,10 @@ if(!$faculty){
 
     <main class="dashboard-container" id="mainContent" role="main">
         <section class="card welcome-card">
-            <h2>Edit Faculty Information</h2>
-            <p>Update faculty configuration and account details.</p>
+            <div class="welcome-content">
+                <h2>Edit Faculty Information</h2>
+                <p>Update faculty configuration and account details.</p>
+            </div>
         </section>
 
         <section class="card edit-form-card">

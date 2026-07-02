@@ -38,10 +38,11 @@ if($_SESSION['role'] != "admin"){
     ?>
     
     <main class="dashboard-container" id="mainContent" role="main">
-
         <section class="card welcome-card" aria-label="Welcome Section">
-            <h2>Add Students</h2>
-            <p>Add students and manage their account.</p>
+            <div class="welcome-content">
+                <h2>Add Students</h2>
+                <p>Add students and manage their account.</p>
+            </div>
         </section>
 
         <section class="card add-info-card" id="openModalBtn" role="button" tabindex="0" aria-label="Add Student">
@@ -280,9 +281,8 @@ if($_SESSION['role'] != "admin"){
         }
     });
 
-    // ==========================================
+
     // SUBMIT BUTTON / REQUIRED FIELD VALIDATION
-    // ==========================================
     form.addEventListener("submit", function(event) {
         let isValid = true;
         const requiredFields = form.querySelectorAll("[required]");
@@ -304,9 +304,8 @@ if($_SESSION['role'] != "admin"){
         }
     });
 
-    // ==========================================
+   
     // MODAL LOGIC
-    // ==========================================
     const modal = document.getElementById("studentModal");
     const openBtn = document.getElementById("openModalBtn");
     const closeBtn = document.querySelector(".close");

@@ -47,13 +47,11 @@ if(!$faculty){
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <meta name="description" content="View Faculty Details - College of Criminal Justice">
     <meta name="theme-color" content="#f4b42c">
-    <title>View Faculty</title>
+    <title>admin-view-faculty</title>
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <!-- Custom CSS -->
     <link rel="stylesheet" href="../assets/css/admin-dashboard.css">
-    <!-- Reusing your clean viewing stylesheets -->
     <link rel="stylesheet" href="../assets/css/admin-view-student.css">
 </head>
 <body>
@@ -87,8 +85,8 @@ if(!$faculty){
                 <h3><i class="fa-solid fa-briefcase"></i> Employment & Contact</h3>
                 <div class="view-grid">
                     <div class="view-item">
-                        <label>Employment Designation:</label>
-                        <p><strong><?= htmlspecialchars($faculty['status'] ?? 'N/A') ?></strong></p>
+                        <label>Employment Status:</label>
+                        <p><?= htmlspecialchars($faculty['status'] ?? 'N/A') ?></p>
                     </div>
                     <div class="view-item">
                         <label>Email Address:</label>

@@ -94,13 +94,11 @@ if (!empty($student_no)) {
         </a>
     <?php endif; ?>
 
-    <!-- VIEW RECORD -->
     <div class="button-container">
-        <a href="student-view-record.php">
-            <button class="view-btn">View Record</button>
-        </a>
+        <button class="view-btn" onclick="window.location.href='student-view-record.php'">
+            <i class="fa-solid fa-file-lines"></i> View Record
+        </button>
     </div>
-
 </div>
 
 <script src="../assets/js/script.js"></script>

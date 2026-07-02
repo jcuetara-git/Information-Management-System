@@ -29,7 +29,6 @@ if($_SESSION['role'] != "admin"){
     ?>
     
     <main class="dashboard-container" id="mainContent" role="main">
-
         <section class="card welcome-card" aria-label="Welcome Section">
             <div class="welcome-content">
                 <h2>Add Faculty Members</h2>

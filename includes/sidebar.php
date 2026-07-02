@@ -2,8 +2,8 @@
 <?php 
     $current_page = basename($_SERVER['PHP_SELF']);
     if ($current_page == 'admin-students.php') echo '<link rel="stylesheet" href="../assets/css/admin-students.css">';
-    if ($current_page == 'admin-edit-student.php') echo '<link rel="stylesheet" href="../assets/css/admin-edit-student.css">';
-    if ($current_page == 'admin-view-student.php') echo '<link rel="stylesheet" href="../assets/css/admin-view-student.css">';
+    if ($current_page == 'admin-edit-student.php' || $current_page == 'admin-edit-alumni.php') echo '<link rel="stylesheet" href="../assets/css/admin-edit-student.css">';
+    if ($current_page == 'admin-view-student.php' || $current_page == 'admin-view-alumni.php') echo '<link rel="stylesheet" href="../assets/css/admin-view-student.css">';
 ?>
 
 <nav class="sidebar" id="sidebar" role="navigation" aria-label="Main Navigation">
@@ -28,10 +28,16 @@
             $active_page = 'admin-students.php'; 
         }
 
-        // Faculty pages tracking group (Keeps "Faculty" highlighted)
+        // Faculty pages tracking group
         $faculty_pages = ['admin-faculty.php', 'manage-faculty.php', 'admin-edit-faculty.php', 'admin-view-faculty.php'];
         if (in_array($current_page, $faculty_pages)) {
             $active_page = 'admin-faculty.php';
+        }
+
+        // Alumni pages tracking group (Keeps "Alumni" highlighted)
+        $alumni_pages = ['admin-alumni.php', 'manage-alumni.php', 'admin-edit-alumni.php', 'admin-view-alumni.php'];
+        if (in_array($current_page, $alumni_pages)) {
+            $active_page = 'admin-alumni.php';
         }
 
         $menu_items = [

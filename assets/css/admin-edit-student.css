@@ -1,29 +1,28 @@
 /* ================= EDIT STUDENT STYLES ================= */
-.card{
-    padding-top: 22px;
-    padding-bottom: 22px;
-    margin-top: 8px;
-    margin-bottom: 30px;
-}
 
 .welcome-card {
-    display: flex ;
-    flex-direction: column ; 
-    align-items: flex-start ; 
-    background: linear-gradient(135deg, #ffffff 0%, #fdfcfb 100%);
+    display: flex;
+    flex-direction: column;         
+    justify-content: center;
+    align-items: flex-start;        
+    padding: 30px 30px;             
+    gap: 8px;                       
 }
 
-.welcome-card h2 {
+.welcome-card h2 {                     
     font-size: 24px;
-    margin-bottom: -6px;
     font-weight: 700;
+    color: #1a1a1a;
+    letter-spacing: 0.5px;
 }
 
-.welcome-card p {
-    color: var(--text-muted);
-    font-size: 14px;
+.welcome-card p {                 
+    font-size: 13px;
+    color: #64748b;
+    margin-top: 0;
+    letter-spacing: 0.3px;
+    text-align: left;               
 }
-
 .edit-form-card {
     max-width: 1400px;
     margin: 20px auto;

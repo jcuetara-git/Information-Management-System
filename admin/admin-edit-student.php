@@ -43,7 +43,6 @@ if(!$student){
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <!-- Custom CSS -->
-    <link rel="stylesheet" href="../assets/css/admin-dashboard.css">
     <link rel="stylesheet" href="../assets/css/admin-edit-student.css">
 </head>
 
@@ -57,10 +56,11 @@ if(!$student){
 
     <!-- ================= MAIN CONTENT ================= -->
     <main class="dashboard-container" id="mainContent" role="main">
-        <!-- Welcome Section -->
-        <section class="card welcome-card" aria-label="Welcome Section">
-            <h2>Edit Student Information</h2>
-            <p>Update student profile information.</p>
+        <section class="card welcome-card">
+            <div class="welcome-content">
+                <h2>Edit Student Information</h2>
+                <p>Update student profile information.</p>
+            </div>
         </section>
 
         <!-- EDIT FORM -->
