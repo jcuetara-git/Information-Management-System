@@ -113,7 +113,7 @@ $total_results = $result->num_rows;
         <section class="card welcome-card" aria-label="Welcome Section">
             <div class="welcome-content">
                 <h2>Manage Faculty Records</h2>
-                <p>Filter, view, edit, and manage system faculty account designations.</p>
+                <p>Filter, view, edit, and manage faculty profile.</p>
             </div>
         </section>
 

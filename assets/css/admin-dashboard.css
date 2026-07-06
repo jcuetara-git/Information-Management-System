@@ -233,7 +233,7 @@ body {
     padding: 20px;
     border-radius: 16px;
     box-shadow: var(--shadow-md);
-    margin-top: 30px;
+    margin-top: 0;
     margin-bottom: 30px;
 }
 
@@ -255,16 +255,16 @@ body {
 }
 
 .logo-text h1 {
-    font-size: 24px;
+    font-size: 25px;
     font-weight: 750;
     margin-bottom: -6px;
     letter-spacing: -0.5px;
 }
 
 .logo-text p {
-    font-size: 14px;
+    font-size: 15px;
     color: var(--text-color); 
-    font-weight: 500;
+    font-weight: 450;
 }
 
 /* ================= WELCOME CARD ================= */
@@ -273,7 +273,7 @@ body {
     justify-content: space-between;
     flex-direction: row; 
     background: linear-gradient(135deg, #ffffff 0%, #fdfcfb 100%);
-    padding: 25px 30px;
+    padding: 20px 25px;
     border-radius: 16px;
     box-shadow: var(--shadow-md);
 }

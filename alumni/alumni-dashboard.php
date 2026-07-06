@@ -30,7 +30,7 @@ $stmt->close();
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>alumni-dashboard</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="../assets/css/faculty-dashboard.css?v=1.4">
+    <link rel="stylesheet" href="../assets/css/faculty-dashboard.css">
 </head>
 <body>
 
@@ -52,11 +52,11 @@ $stmt->close();
         </div>
     </header>
 
-    <main style="max-width: 1200px; margin: 0 auto; padding: 0 20px; box-sizing: border-box;">
+    <main style="max-width: 1200px; margin: 0 auto; padding: 0 20px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: calc(100vh - 90px);">
 
         <!-- ================= MATCHING FACULTY SUCCESS BANNER ================= -->
         <?php if (isset($_SESSION['success_message'])): ?>
-            <div id="successAlertBanner" style="background-color: #d1fae5; color: #065f46; padding: 15px 20px; border-radius: 12px; margin: 20px 0 0 0; border: 1px solid #a7f3d0; font-weight: 500; display: flex; align-items: center; justify-content: space-between; gap: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); font-family: sans-serif; transition: opacity 0.5s ease, margin 0.5s ease, padding 0.5s ease, height 0.5s ease; overflow: hidden; opacity: 1;">
+            <div id="successAlertBanner" style="background-color: #d1fae5; color: #065f46; padding: 15px 20px; border-radius: 12px; margin: 20px 0 0 0; border: 1px solid #a7f3d0; font-weight: 500; display: flex; align-items: center; justify-content: space-between; gap: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); font-family: sans-serif; transition: opacity 0.5s ease, margin 0.5s ease, padding 0.5s ease, height 0.5s ease; overflow: hidden; opacity: 1; width: 100%; max-width: 1100px;">
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <i class="fa-solid fa-circle-check" style="color: #10b981; font-size: 1.2rem;"></i>
                     <span><?= htmlspecialchars($_SESSION['success_message']); ?></span>
@@ -79,7 +79,7 @@ $stmt->close();
                 <p>Alumni Profile Completed</p>
             </section>
         <?php else: ?>
-            <a href="alumni-add-portfolio.php" class="add-info-link">
+            <a href="alumni-add-portfolio.php" class="add-info-link" style="width: 100%; display: flex; justify-content: center;">
                 <section class="card add-info-card">
                     <div class="plus-icon"></div>
                     <p>Add Alumni Information</p>

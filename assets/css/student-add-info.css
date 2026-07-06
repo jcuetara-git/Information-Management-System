@@ -128,24 +128,16 @@ body {
 }
 
 .close-btn {
-    position: absolute;
-    top: 20px;
-    right: 35px;
-    font-size: 16px;
-    cursor: pointer;
-    background: #b10202;
-    color: white;
-    padding: 3px 8px;
-    border-radius: 5px;
-    transition: 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+   position: absolute; 
+    right: 25px; 
+    top: 20px; 
+    cursor: pointer; 
+    font-size: 25px; 
+    color: #333;
 }
 
 .close-btn:hover {
-    background: #8e0202;
-    transform: scale(1.1);
+    color: #999;
 }
 
 /* FORM TITLE */

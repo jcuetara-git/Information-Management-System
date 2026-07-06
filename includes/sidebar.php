@@ -1,9 +1,21 @@
 <link rel="stylesheet" href="../assets/css/admin-dashboard.css">
 <?php 
     $current_page = basename($_SERVER['PHP_SELF']);
-    if ($current_page == 'admin-students.php') echo '<link rel="stylesheet" href="../assets/css/admin-students.css">';
-    if ($current_page == 'admin-edit-student.php' || $current_page == 'admin-edit-alumni.php') echo '<link rel="stylesheet" href="../assets/css/admin-edit-student.css">';
-    if ($current_page == 'admin-view-student.php' || $current_page == 'admin-view-alumni.php') echo '<link rel="stylesheet" href="../assets/css/admin-view-student.css">';
+    
+    // Dynamically load CSS based on the current page
+    if ($current_page == 'admin-students.php') {
+        echo '<link rel="stylesheet" href="../assets/css/admin-students.css">';
+    }
+    if ($current_page == 'admin-edit-student.php' || $current_page == 'admin-edit-alumni.php') {
+        echo '<link rel="stylesheet" href="../assets/css/admin-edit-student.css">';
+    }
+    if ($current_page == 'admin-view-student.php' || $current_page == 'admin-view-alumni.php') {
+        echo '<link rel="stylesheet" href="../assets/css/admin-view-student.css">';
+    }
+    // Added rule for Announcements CSS
+    if (in_array($current_page, ['admin-announcement.php', 'manage-announcement.php', 'admin-edit-announcement.php', 'admin-view-announcement.php'])) {
+        echo '<link rel="stylesheet" href="../assets/css/admin-announcement.css">';
+    }
 ?>
 
 <nav class="sidebar" id="sidebar" role="navigation" aria-label="Main Navigation">
@@ -40,13 +52,21 @@
             $active_page = 'admin-alumni.php';
         }
 
+        // Announcement pages tracking group (Keeps "Announcements" highlighted)
+        $announcement_pages = ['admin-announcement.php', 'manage-announcement.php', 'admin-edit-announcement.php', 'admin-view-announcement.php'];
+        if (in_array($current_page, $announcement_pages)) {
+            $active_page = 'admin-announcement.php';
+        }
+
+        // Cleaned up icon names to prevent conflicting with the fa-solid class injected in the loop
         $menu_items = [
             ['file' => 'admin-dashboard.php', 'icon' => 'fa-chart-line', 'label' => 'Dashboard'],
+            ['file' => 'admin-announcement.php', 'icon' => 'fa-bullhorn', 'label' => 'Announcements'],
             ['file' => 'admin-students.php', 'icon' => 'fa-users', 'label' => 'Students'],
             ['file' => 'admin-faculty.php', 'icon' => 'fa-user-tie', 'label' => 'Faculty'],
             ['file' => 'admin-internship.php', 'icon' => 'fa-briefcase', 'label' => 'Internship'],
             ['file' => 'admin-orgs.php', 'icon' => 'fa-folder', 'label' => 'Organizations'],
-            ['file' => 'admin-comm-ext.php', 'icon' => 'fa-house', 'label' => 'Community Extension'],
+            ['file' => 'admin-comex.php', 'icon' => 'fa-hands-holding-circle', 'label' => 'Community Extension'],
             ['file' => 'admin-jones.php', 'icon' => 'fa-file', 'label' => 'Indiana Jones'],
             ['file' => 'admin-retention.php', 'icon' => 'fa-user-check', 'label' => 'Retention Policy'],
             ['file' => 'admin-alumni.php', 'icon' => 'fa-user-graduate', 'label' => 'Alumni']

@@ -40,7 +40,7 @@ if($_SESSION['role'] != "admin"){
             <div class="plus-icon">
                 <i class="fa-solid fa-plus"></i>
             </div>
-            <p>Add Faculty Profile</p>
+            <p>Add Faculty Member</p>
         </section>
          
         <div class="button-container">

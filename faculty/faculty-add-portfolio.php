@@ -238,7 +238,7 @@ if (isset($_POST['submit_portfolio'])) {
                 <div class="form-header-title">
                     <h1>Upload Faculty Portfolio</h1>
                 </div>
-                <a href="faculty-dashboard.php" class="close-form-btn" title="Close Form" onclick="return confirmCancel(event);">
+                <a href="faculty-dashboard.php" class="close-btn" title="Close Form" onclick="return confirmCancel(event);">
                     <i class="fa-solid fa-xmark"></i>
                 </a>
             </div>

@@ -211,7 +211,6 @@ body {
 /* ================= DASHBOARD ================= */
 .dashboard-container {
     margin-left: var(--sidebar-width);
-    padding: 30px 40px;
     width: calc(100% - var(--sidebar-width));
     min-height: 100vh;
     transition: margin-left var(--transition), width var(--transition);

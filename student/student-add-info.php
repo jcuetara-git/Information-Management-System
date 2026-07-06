@@ -40,8 +40,8 @@ session_start();
         <div class="personal-modal">
 
             <!-- Close Button with redirect -->
-            <div class="close-btn" onclick="goBackToDashboard()">✖</div>
-
+             <span class="close-btn" onclick="goBackToDashboard().style.display='none'">&times;</span>
+           <!-- <div class="close-btn" onclick="goBackToDashboard()">✖</div> -->
             <form class="personal-form" method="POST" action="save-student.php" onsubmit="return confirmSave()">
 
                 <h3 class="form-title">Student Personal Information</h3>

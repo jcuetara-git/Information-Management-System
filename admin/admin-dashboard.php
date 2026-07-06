@@ -8,7 +8,7 @@ if($_SESSION['role'] != "admin"){
 }
 
 // 1. Fetch Student Counts by Year Level
-$summary_query = "SELECT year_level, COUNT(*) as count FROM users WHERE role = 'student' GROUP BY year_level ORDER BY year_level ASC";
+$summary_query = "SELECT year_level, COUNT(*) as count FROM users WHERE LOWER(role) = 'student' GROUP BY year_level ORDER BY year_level ASC";
 $summary_result = $conn->query($summary_query);
 
 $stats = [
@@ -33,7 +33,7 @@ while($row = $summary_result->fetch_assoc()) {
     else $stats['Unknown'] += $count;
 }
 
-// 2. Fetch Faculty Subcategory Counts
+// 2. Fetch Faculty Subcategory Counts (FIXED: Added LEFT JOIN to fetch status from faculty_profile)
 $faculty_stats = [
     'Full-time Regular' => 0,
     'Full-time Probationary' => 0,
@@ -42,25 +42,36 @@ $faculty_stats = [
 ];
 $total_faculty = 0;
 
-$faculty_query = "SELECT status, COUNT(*) as count FROM users WHERE role = 'faculty' GROUP BY status";
+$faculty_query = "SELECT p.status, COUNT(u.id) as count 
+                  FROM users u 
+                  LEFT JOIN faculty_profile p ON u.student_no = p.faculty_no 
+                  WHERE LOWER(u.role) = 'faculty' 
+                  GROUP BY p.status";
 $faculty_result = $conn->query($faculty_query);
 
 if ($faculty_result) {
     while($row = $faculty_result->fetch_assoc()) {
-        $status = $row['status'];
+        $status = strtolower(trim($row['status'] ?? ''));
         $count = (int)$row['count'];
         $total_faculty += $count;
 
-        if (strtolower(trim($status)) === 'full-time regular') $faculty_stats['Full-time Regular'] = $count;
-        if (strtolower(trim($status)) === 'full-time probationary') $faculty_stats['Full-time Probationary'] = $count;
-        if (strtolower(trim($status)) === 'part-time lawyer') $faculty_stats['Part-time Lawyer'] = $count;
-        if (strtolower(trim($status)) === 'part-time instructor') $faculty_stats['Part-time Instructor'] = $count;
+        // Flexible keyword matching to catch all variations or spacing styles
+        if (strpos($status, 'regular') !== false) {
+            $faculty_stats['Full-time Regular'] += $count;
+        } elseif (strpos($status, 'probationary') !== false) {
+            $faculty_stats['Full-time Probationary'] += $count;
+        } elseif (strpos($status, 'lawyer') !== false || strpos($status, 'law') !== false) {
+            $faculty_stats['Part-time Lawyer'] += $count;
+        } else {
+            // Fallback: If it doesn't match any keyword or is empty, group it under Instructor so it displays
+            $faculty_stats['Part-time Instructor'] += $count;
+        }
     }
 }
 
 // 3. Fetch Total Alumni Registered Count
 $total_alumni = 0;
-$alumni_query = "SELECT COUNT(*) as count FROM users WHERE role = 'alumni'";
+$alumni_query = "SELECT COUNT(*) as count FROM users WHERE LOWER(role) = 'alumni'";
 $alumni_result = $conn->query($alumni_query);
 if ($alumni_result) {
     $alumni_row = $alumni_result->fetch_assoc();
@@ -123,7 +134,7 @@ if ($alumni_result) {
         <div class="stats-grid">
             
             <!-- 1st Group: Student Records -->
-            <div class="grid-group-header">Student Records Breakdown</div>
+            <div class="grid-group-header">Students By Year Level</div>
             
             <div class="stat-card">
                 <div class="stat-icon"><i class="fa-solid fa-graduation-cap"></i></div>
@@ -155,7 +166,7 @@ if ($alumni_result) {
             </div>
 
             <!-- 2nd Group: Faculty Classifications -->
-            <div class="grid-group-header">Faculty Classifications</div>
+            <div class="grid-group-header">Faculty Members by Employment Status</div>
 
             <div class="stat-card">
                 <div class="stat-icon"><i class="fa-solid fa-user-tie"></i></div>
@@ -174,14 +185,14 @@ if ($alumni_result) {
             <div class="stat-card">
                 <div class="stat-icon"><i class="fa-solid fa-scale-balanced"></i></div>
                 <div class="stat-info">
-                    <h3>Partime Lawyers</h3>
+                    <h3>Part-Time Lawyers</h3>
                     <p><?= number_format($faculty_stats['Part-time Lawyer']) ?></p>
                 </div>
             </div>
             <div class="stat-card">
                 <div class="stat-icon"><i class="fa-solid fa-chalkboard-user"></i></div>
                 <div class="stat-info">
-                    <h3>Partime Instructors</h3>
+                    <h3>Part-Time Instructors</h3>
                     <p><?= number_format($faculty_stats['Part-time Instructor']) ?></p>
                 </div>
             </div>

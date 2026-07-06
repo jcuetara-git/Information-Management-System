@@ -17,7 +17,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $email_address           = trim($_POST['email_address'] ?? '');
     $year_graduated          = intval($_POST['year_graduated'] ?? 0);
     $date_of_licensure_exam  = !empty($_POST['date_of_licensure_exam']) ? $_POST['date_of_licensure_exam'] : null;
-    $prc_board__rating   = !empty($_POST['prc_board_rating']) ? floatval($_POST['prc_board_exam_rating']) : null;
+    $prc_board_rating   = !empty($_POST['prc_board_rating']) ? floatval($_POST['prc_board_rating']) : null;
     $current_job             = trim($_POST['current_job'] ?? '');
 
     // Form Server-side Validation

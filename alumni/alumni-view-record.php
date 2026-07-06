@@ -38,9 +38,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_FILES['photo'])) {
         }
     }
 }
-
-// Query the alumni_profile table for the logged-in alumni's record
-$stmt = $conn->prepare("SELECT * FROM alumni_profile WHERE student_no = ?");
+// Query the latest record for the logged-in alumni
+$stmt = $conn->prepare("SELECT * FROM alumni_profile WHERE student_no = ? ORDER BY id DESC LIMIT 1");
 $stmt->bind_param("s", $student_no);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -187,7 +186,7 @@ $stmt->close();
     <?php else: ?>
         <div class="card" style="text-align: center; padding: 40px; background: white; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); margin-bottom: 20px;">
             <p style="color: #6b7280; font-size: 1.1rem; margin-bottom: 20px;">No records found. <br> Please complete your alumni profile information first.</p>
-            <a href="alumni-add-portfolio.php"  >Add Alumni Profile Information</a>
+            <a href="alumni-add-portfolio.php">Add Alumni Profile Information</a>
         </div>
     <?php endif; ?>
 

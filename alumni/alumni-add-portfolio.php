@@ -99,7 +99,7 @@ include('../config/db.php');
 
                         <div class="form-group">
                             <label for="email_address">Email Address</label>
-                            <input type="email" id="email_address" name="email_address" required>
+                            <input type="email" id="email_address" name="email_address" value="<?= htmlspecialchars($_SESSION['email'] ?? ''); ?>" required>
                         </div>
 
                         <div class="form-group">
@@ -118,8 +118,8 @@ include('../config/db.php');
                         </div>
 
                         <div class="form-group">
-                            <label for="prc_board_exam_rating">PRC Board Exam Rating (%)</label>
-                            <input type="number" step="0.01" id="prc_board_exam_rating" name="prc_board_exam_rating" placeholder="e.g., 85.50">
+                            <label for="prc_board_rating">PRC Board Exam Rating (%)</label>
+                            <input type="number" step="0.01" id="prc_board_rating" name="prc_board_rating" placeholder="e.g., 85.50">
                         </div>
 
                     </div>

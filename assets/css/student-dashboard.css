@@ -200,7 +200,7 @@ body {
     box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
     padding: 35px;
     margin: 25px auto;         
-    width: 90%;
+    width: 100%;
     max-width: 1100px;
     animation: fadeIn 0.6s ease;
     transition: box-shadow 0.3s ease, transform 0.3s ease;
@@ -241,6 +241,18 @@ body {
 
 .add-info-card:active {
     transform: scale(0.98);
+}
+
+.announcements-section {
+    background: #FFF8E1;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    margin-top: 20px;
+}
+
+.announcement-item:last-child {
+    border-bottom: none !important;
 }
 
 /* PLUS ICON - GEOMETRIC VERSION FOR PERFECT ROTATION */
