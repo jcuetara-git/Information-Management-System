@@ -151,6 +151,18 @@ body {
     font-size: 15px;
 }
 
+.announcements-section {
+    background: #FFF8E1;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    margin: 5px auto 5px auto; /* FIXED: Changed side margins from 0 to auto for centering */
+}
+
+.announcement-item:last-child {
+    border-bottom: none !important;
+}
+
 /* INTERACTIVE INPUT CONTROL CARDS */
 .add-info-card {
     height: 310px;
@@ -259,7 +271,7 @@ body {
 /* ACTION ROUTING SYSTEM BUTTONS */
 .button-container {
     text-align: center;
-    margin-top: 40px;
+    margin-top: 15px;
     animation: scaleUp 0.8s ease 0.3s both;
 }
 

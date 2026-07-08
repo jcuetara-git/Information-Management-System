@@ -2,8 +2,8 @@
 :root {
     --primary-color: #f4b42c;
     --primary-hover: #e0a822;
-    --bg-color: #f0f2f5; /* Slightly softer background */
-    --card-bg: #ffffff;  /* Pure white for cleaner look */
+    --bg-color: #f0f2f5; 
+    --card-bg: #ffffff; 
     --text-color: #1a1a1a;
     --text-muted: #64748b;
     --danger-color: #b10202;

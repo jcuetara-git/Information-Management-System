@@ -2,7 +2,7 @@
 $host = "localhost";
 $user = "root";
 $password = "";
-$database = "ccj_sms";
+$database = "ccj_ims";
 
 $conn = new mysqli($host, $user, $password, $database);
 

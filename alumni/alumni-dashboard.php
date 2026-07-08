@@ -68,28 +68,71 @@ $stmt->close();
         endif; 
         ?>
         
-        <section class="card welcome-card" style="margin-top: 20px;">
+        <section class="card welcome-card" style="margin-top: 20px; width: 100%; max-width: 1100px; box-sizing: border-box;">
             <h1>Welcome, <?= htmlspecialchars($first_name) ?>!</h1>
             <p>Keep your alumni records updated and stay connected.</p>
         </section>
 
+        <!-- ANNOUNCEMENTS FEED -->
+        <section class="card announcements-section" style="width: 100%; max-width: 1100px; box-sizing: border-box;">
+            <h2 style="margin-bottom: 15px; margin-top: 0;"><i class="fa-solid fa-bullhorn" style="color: #f3b12b; margin-right: 0;"></i> Recent Announcements</h2>
+            
+            <?php
+            // Enforce synchronization of the time zone connection environment with PHP's timezone context
+            $conn->query("SET time_zone = '+08:00'");
+
+            // Announcements Query tailored for Alumni audience
+            $query = "SELECT title, message, created_at, 
+                      (created_at >= NOW() - INTERVAL 1 DAY) AS is_new 
+                      FROM announcements 
+                      WHERE status = 'published' 
+                      AND (target_audience = 'all' OR target_audience = 'alumni' OR (target_audience = 'specific_user' AND target_user_id = ?))
+                      ORDER BY created_at DESC LIMIT 5";
+
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param("s", $student_no);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($result && $result->num_rows > 0): 
+                while ($row = $result->fetch_assoc()): ?>
+                    <div class="announcement-item" style="border-bottom: 1px solid #eee; padding: 10px 0; text-align: left;">
+                        <h3 style="font-size: 16px; margin: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
+                            <?= htmlspecialchars($row['title']) ?>
+                            <?php if ($row['is_new'] == 1): ?>
+                                <span style="background: #f4b42c; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px;">NEW</span>
+                            <?php endif; ?>
+                            <span style="font-size: 11px; color: #999; font-weight: normal;">
+                                • <?= date('M d, Y h:i A', strtotime($row['created_at'])) ?>
+                            </span>
+                        </h3>
+                        <p style="font-size: 14px; color: #666; margin: 5px 0; line-height: 1.4;"><?= htmlspecialchars($row['message']) ?></p>
+                    </div>
+                <?php endwhile; 
+            else: ?>
+                <p style='color:#777; text-align: left;'>No new announcements at this time.</p>
+            <?php endif; 
+            $stmt->close();
+            ?>
+        </section>
+
         <?php if ($portfolio_exists): ?>
-            <section class="card add-info-card disabled">
+            <section class="card add-info-card disabled" style="margin-top: 20px; width: 100%; max-width: 1100px; box-sizing: border-box;">
                 <div class="check-icon"></div>
                 <p>Alumni Profile Completed</p>
             </section>
         <?php else: ?>
             <a href="alumni-add-portfolio.php" class="add-info-link" style="width: 100%; display: flex; justify-content: center;">
-                <section class="card add-info-card">
+                <section class="card add-info-card" style="margin-top: 20px; width: 100%; max-width: 1100px; box-sizing: border-box;">
                     <div class="plus-icon"></div>
                     <p>Add Alumni Information</p>
                 </section>
             </a>
         <?php endif; ?>
 
-        <div class="button-container">
+        <div class="button-container" style="width: 100%; max-width: 1100px; text-align: center;">
             <button class="view-btn" onclick="window.location.href='alumni-view-record.php'">
-                <i class="fa-solid fa-file-lines"></i> View My Record
+                <i class="fa-solid fa-file-lines"></i> View Record
             </button>
         </div>
 
@@ -116,7 +159,7 @@ $stmt->close();
             if (banner) {
                 setTimeout(() => {
                     dismissAlertBanner();
-                }, 5000); // Automatically slide up after 5 seconds
+                }, 5000);
             }
         });
     </script>

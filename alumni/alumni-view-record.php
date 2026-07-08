@@ -101,7 +101,7 @@ $stmt->close();
 
             <div>
                 <h3><?= htmlspecialchars($row['first_name'] . " " . (!empty($row['middle_name']) ? $row['middle_name'] . " " : "") . $row['last_name']); ?></h3>
-                <p>Alumni ID: <?= htmlspecialchars($row['student_no']); ?></p>
+                <p>ID Number: <?= htmlspecialchars($row['student_no']); ?></p>
             </div>
         </div>
     </div>

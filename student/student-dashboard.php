@@ -84,6 +84,9 @@ if (!empty($student_no)) {
         <h2 style="margin-bottom: 15px;"><i class="fa-solid fa-bullhorn" style="color: #f3b12b; margin-right: 0;"></i> Recent Announcements</h2>
         
         <?php
+        // Enforce synchronization of the time zone environment connection with PHP's timezone context
+        $conn->query("SET time_zone = '+08:00'");
+
         // Your Query
         $query = "SELECT title, message, created_at, 
                   (created_at >= NOW() - INTERVAL 1 DAY) AS is_new 
@@ -100,11 +103,14 @@ if (!empty($student_no)) {
         if ($result && $result->num_rows > 0): 
             while ($row = $result->fetch_assoc()): ?>
                 <div class="announcement-item" style="border-bottom: 1px solid #eee; padding: 10px 0;">
-                    <h3 style="font-size: 16px; margin: 0;">
+                    <h3 style="font-size: 16px; margin: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
                         <?= htmlspecialchars($row['title']) ?>
-                        <?php if ($row['is_new']): ?>
-                            <span style="background: #f4b42c; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px; margin-left: 5px;">NEW</span>
+                        <?php if ($row['is_new'] == 1): ?>
+                            <span style="background: #f4b42c; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px;">NEW</span>
                         <?php endif; ?>
+                        <span style="font-size: 11px; color: #999; font-weight: normal;">
+                            • <?= date('M d, Y h:i A', strtotime($row['created_at'])) ?>
+                        </span>
                     </h3>
                     <p style="font-size: 14px; color: #666; margin: 5px 0;"><?= htmlspecialchars($row['message']) ?></p>
                 </div>

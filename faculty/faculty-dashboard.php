@@ -69,22 +69,65 @@ $stmt->close();
         endif; 
         ?>
         
-        <section class="card welcome-card" style="margin-top: 20px;">
+        <div class="card welcome-card" style="margin-top: 20px;">
             <h1>Welcome, <?= htmlspecialchars($first_name) ?>!</h1>
             <p>Manage your professional portfolio information and view your teaching record.</p>
-        </section>
+        </div>
+
+        <!-- ANNOUNCEMENTS FEED -->
+        <div class="card announcements-section" style="margin-top: 20px;">
+            <h2 style="margin-bottom: 15px;"><i class="fa-solid fa-bullhorn" style="color: #f3b12b; margin-right: 0;"></i> Recent Announcements</h2>
+            
+            <?php
+            // Enforce synchronization of the time zone connection environment with PHP's timezone context
+            $conn->query("SET time_zone = '+08:00'");
+
+            // Announcements Query tailored for Faculty audience
+            $query = "SELECT title, message, created_at, 
+                      (created_at >= NOW() - INTERVAL 1 DAY) AS is_new 
+                      FROM announcements 
+                      WHERE status = 'published' 
+                      AND (target_audience = 'all' OR target_audience = 'faculty' OR (target_audience = 'specific_user' AND target_user_id = ?))
+                      ORDER BY created_at DESC LIMIT 5";
+
+            $stmt = $conn->prepare($query);
+            $stmt->bind_param("s", $faculty_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            if ($result && $result->num_rows > 0): 
+                while ($row = $result->fetch_assoc()): ?>
+                    <div class="announcement-item" style="border-bottom: 1px solid #eee; padding: 10px 0;">
+                        <h3 style="font-size: 16px; margin: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
+                            <?= htmlspecialchars($row['title']) ?>
+                            <?php if ($row['is_new'] == 1): ?>
+                                <span style="background: #f4b42c; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px;">NEW</span>
+                            <?php endif; ?>
+                            <span style="font-size: 11px; color: #999; font-weight: normal;">
+                                • <?= date('M d, Y h:i A', strtotime($row['created_at'])) ?>
+                            </span>
+                        </h3>
+                        <p style="font-size: 14px; color: #666; margin: 5px 0; line-height: 1.4;"><?= htmlspecialchars($row['message']) ?></p>
+                    </div>
+                <?php endwhile; 
+            else: ?>
+                <p style='color:#777;'>No new announcements at this time.</p>
+            <?php endif; 
+            $stmt->close();
+            ?>
+        </div>
 
         <?php if ($portfolio_exists): ?>
-            <section class="card add-info-card disabled">
+            <div class="card add-info-card disabled" style="margin-top: 20px;">
                 <div class="check-icon"></div>
                 <p>Faculty Portfolio Added</p>
-            </section>
+            </div>
         <?php else: ?>
             <a href="faculty-add-portfolio.php" class="add-info-link">
-                <section class="card add-info-card">
+                <div class="card add-info-card" style="margin-top: 20px;">
                     <div class="plus-icon"></div>
                     <p>Add Faculty Portfolio</p>
-                </section>
+                </div>
             </a>
         <?php endif; ?>
 
@@ -111,13 +154,12 @@ $stmt->close();
             }
         }
 
-        // Wait for document to load completely before executing the 5 second auto-dismiss countdown
         document.addEventListener('DOMContentLoaded', () => {
             const banner = document.getElementById('successAlertBanner');
             if (banner) {
                 setTimeout(() => {
                     dismissAlertBanner();
-                }, 5000); // 5000 milliseconds = 5 seconds
+                }, 5000);
             }
         });
     </script>
