@@ -154,8 +154,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                     </span>
                                 </td>
                                 <td data-label="Actions" class="action-btns">
-                                    <!-- Added data attributes to map row details directly to the edit/delete modals -->
+                                    <!-- Added data attributes and title context for hover support -->
                                     <button class="edit-btn-table" 
+                                            title="Edit Announcement"
                                             data-id="<?= $row['id'] ?>"
                                             data-title="<?= htmlspecialchars($row['title']) ?>"
                                             data-audience="<?= htmlspecialchars($row['target_audience']) ?>"
@@ -165,6 +166,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                         <i class="fa-solid fa-edit"></i>
                                     </button>
                                     <button class="delete-btn" 
+                                            title="Delete Announcement"
                                             data-id="<?= $row['id'] ?>"
                                             data-title="<?= htmlspecialchars($row['title']) ?>">
                                         <i class="fa-solid fa-trash"></i>

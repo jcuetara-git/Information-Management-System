@@ -1,4 +1,4 @@
-<?php
+<?php 
 include("../config/db.php");
 include("../config/auth.php");
 
@@ -122,7 +122,7 @@ if ($alumni_result) {
         <!-- Welcome Section -->
         <section class="card welcome-card" aria-label="Welcome Section">
             <div class="welcome-content">
-                <h2>Welcome, Admin!</h2>
+                <h2>Welcome, Admin! 👋</h2>
                 <p>View administrative overview data counters across accounts.</p>
             </div>
             <div class="welcome-date">

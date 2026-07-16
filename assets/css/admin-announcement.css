@@ -213,7 +213,7 @@ table tbody tr:nth-child(even) {
 .action-btns {
     display: flex;
     gap: 8px;
-    justify-content: center;
+    justify-content: flex-start;
 }
 
 .edit-btn-table, .delete-btn {
@@ -275,7 +275,8 @@ table tbody tr:nth-child(even) {
     margin-bottom: 20px;
     font-size: 20px;
     color: var(--text-dark);
-    border-bottom: 1px solid #f3b12b;
+    border-bottom: 2px solid #f3b12b;
+    display: inline-block;
 }
 
 .modal-content label { 

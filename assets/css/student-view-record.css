@@ -31,73 +31,6 @@ body {
     100% { transform: scale(1); }
 }
 
-/* ================= HEADER ================= */
-.logo-section {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px 50px;
-    background: #f4b42a; 
-    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    animation: slideDown 0.5s ease;
-}
-
-.logo-left {
-    display: flex;
-    align-items: center;
-    padding-left: 35px;
-    gap: 18px;
-}
-
-.logo-circle {
-    background: white;
-    border-radius: 50%;
-    padding: 8px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: transform 0.3s ease;
-}
-
-.logo-circle img {
-    width: 50px;
-    display: block;
-}
-
-.logo-text h2 {
-    font-size: 22px;
-    font-weight: bold;
-}
-
-.logo-text p {
-    font-size: 14px;
-    color: #333;
-}
-.profile-menu a {
-    text-decoration: none;
-    color: black;
-    display: inline-flex;
-    align-items: center;
-    padding: 8px 30px;
-    transition: 0.3s ease;
-    border-radius: 5px;
-}
-
-.logout-text {
-    visibility: hidden;
-    opacity: 0;
-    width: 0;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    white-space: nowrap;
-}
-
-.profile-menu a:hover .logout-text {
-    visibility: visible;
-    opacity: 5;
-    width: auto;
-    margin-left: 8px; /* Spacing between icon and text */
-}
 
 /* ================= CONTAINER ================= */
 .container {
@@ -110,9 +43,11 @@ body {
 .container h2 {
     font-size: 22px;
     margin-bottom: 20px;
-    border-left: 5px solid #f4b42a;
-    padding-left: 15px;
+    padding-top: 0;
+    padding-left: 0;
     animation: slideInUp 0.5s ease both;
+    border-bottom: 2px solid #f4b42a;
+    display: inline-block;
 }
 
 /* ================= PROFILE CARD ================= */
@@ -315,30 +250,23 @@ body {
     animation: slideInUp 0.6s ease 0.4s both;
 }
 
-.back-btn {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 4px; /* Put closer back icon and back text */
-    text-decoration: none;
-    color: #000;
-    font-weight: bold;
-    font-size: 15px;
-    background: #f4b42a;
-    padding: 14px 40px;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(244, 180, 42, 0.3);
-    transition: all 0.3s ease;
+/* Hide the view record modal by default */
+#viewRecordModal {
+    display: none;
 }
-
-.back-btn:hover {
-    background: #fdd76f;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 16px rgba(244, 180, 42, 0.4);
+/* Adjust modal content for view record to ensure it scrolls if too long */
+#viewRecordModal .personal-modal {
+    max-width: 800px;
+    max-height: 90vh;
+    overflow-y: auto;
+    padding: 5px 20px 5px 20px;
+}
+/* Remove the back button from the modal since we have a close button */
+#viewRecordModal .back-container {
+display: none;
 }
 
 /* RESPONSIVE */
-
 @media (max-width: 768px) {
     .logo-section { padding: 12px 20px; }
     .logo-left { padding-left: 0; gap: 12px; }

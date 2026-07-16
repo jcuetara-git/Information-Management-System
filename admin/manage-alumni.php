@@ -1,4 +1,4 @@
-<?php
+<?php 
 include("../config/db.php");
 include("../config/auth.php");
 
@@ -166,13 +166,13 @@ $total_results = $result->num_rows;
                             <td data-label="Year Graduated"><?= htmlspecialchars($row['year_graduated'] ?? 'N/A') ?></td>
                             <td data-label="Current Job"><?= htmlspecialchars($row['current_job'] ?: 'Unspecified') ?></td>
                             <td data-label="Actions" class="action-btns">
-                                <a href="admin-view-alumni.php?id=<?= urlencode($row['student_no']) ?>" class="view-btn-table" title="View Alumni" aria-label="View alumni profile">
+                                <a href="admin-view-alumni.php?id=<?= urlencode($row['student_no']) ?>" class="view-btn-table" title="View Alumni Profile" aria-label="View alumni profile">
                                     <i class="fa-solid fa-eye"></i>
                                 </a>
-                                <a href="admin-edit-alumni.php?id=<?= urlencode($row['student_no']) ?>" class="edit-btn-table" title="Edit Alumni" aria-label="Edit alumni profile">
+                                <a href="admin-edit-alumni.php?id=<?= urlencode($row['student_no']) ?>" class="edit-btn-table" title="Edit Alumni Profile" aria-label="Edit alumni profile">
                                     <i class="fa-solid fa-edit"></i>
                                 </a>
-                                <a href="manage-alumni.php?delete=<?= urlencode($row['student_no']) ?>" class="delete-btn" onclick="return confirm('Are you sure you want to completely remove this alumni record?')" title="Delete Alumni" aria-label="Delete alumni record">
+                                <a href="manage-alumni.php?delete=<?= urlencode($row['student_no']) ?>" class="delete-btn" onclick="return confirm('Are you sure you want to completely remove this alumni record?')" title="Delete Alumni Record" aria-label="Delete alumni record">
                                     <i class="fa-solid fa-trash"></i>
                                 </a>
                             </td>

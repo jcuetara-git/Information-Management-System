@@ -2,14 +2,14 @@
 :root {
     --primary-color: #ffb400;
     --primary-hover: #ffc107;
-    --bg-page: #f0f2f5; 
+    --bg-page: #e0e4e9; 
     --bg-card: #ffffff; 
     --bg-input: #e8e8e8;
     --text-main: #313131;
     --text-muted: #64748b;
-    --error-bg: #ecc4c4;
+    --error-bg: #ffdbdb;
     --error-text: #a40000;
-    --shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+    --shadow: 0 20px 35px rgba(0, 0, 0, 0.08);
     --radius: 20px;
 }
 
@@ -204,7 +204,6 @@ select {
     border-radius: 8px;
     font-size: 14px;
     margin-bottom: 20px;
-    border-left: 4px solid var(--error-text);
     text-align: left;
 }
 

@@ -59,7 +59,7 @@ if(!$faculty){
 <div class="view-container">
     <div class="view-card">
         <div class="view-header">
-            <a href="manage-faculty.php" class="close-btn"><i class="fa-solid fa-times"></i></a>
+            <a href="manage-faculty.php" class="close-btn">&times;</a>
         </div>
         
         <div class="view-body">

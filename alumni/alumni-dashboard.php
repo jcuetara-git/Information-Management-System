@@ -69,7 +69,7 @@ $stmt->close();
         ?>
         
         <section class="card welcome-card" style="margin-top: 20px; width: 100%; max-width: 1100px; box-sizing: border-box;">
-            <h1>Welcome, <?= htmlspecialchars($first_name) ?>!</h1>
+            <h1>Hi, <?= htmlspecialchars($first_name) ?>!👋</h1>
             <p>Keep your alumni records updated and stay connected.</p>
         </section>
 

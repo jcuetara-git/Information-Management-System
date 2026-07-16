@@ -70,7 +70,7 @@ $stmt->close();
         ?>
         
         <div class="card welcome-card" style="margin-top: 20px;">
-            <h1>Welcome, <?= htmlspecialchars($first_name) ?>!</h1>
+            <h1>Hi, <?= htmlspecialchars($first_name) ?>!👋</h1>
             <p>Manage your professional portfolio information and view your teaching record.</p>
         </div>
 
