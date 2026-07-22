@@ -7,7 +7,8 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] != "admin") {
     exit();
 }
 
-$query = "SELECT * FROM retention_records ORDER BY date_recorded DESC";
+// FIX 1: Changed 'date_recorded' to 'created_at' to match the database column name
+$query = "SELECT * FROM retention_records ORDER BY created_at DESC";
 $result = $conn->query($query);
 $submissions = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
 
@@ -111,11 +112,13 @@ $stats = $stat_result ? $stat_result->fetch_assoc() : ['total' => 0, 'pending' =
                                     <tr>
                                         <td data-label="Student ID"><?= htmlspecialchars($row['student_no']); ?></td>
                                         <td data-label="Name">
-                                            <?= htmlspecialchars($row['first_name'] . ' ' . $row['last_name']); ?></td>
-                                        <td data-label="Date Submitted"><?= date('M d, Y', strtotime($row['submitted_at'])); ?>
+                                            <!-- FIX 2: Changed from first_name/last_name to firstname/lastname -->
+                                            <?= htmlspecialchars($row['firstname'] . ' ' . $row['lastname']); ?></td>
+                                        <td data-label="Date Submitted"><?= date('M d, Y', strtotime($row['created_at'])); ?>
                                         </td>
                                         <td data-label="Document">
-                                            <a href="../uploads/lou/<?= htmlspecialchars($row['file_path']); ?>" target="_blank"
+                                            <!-- FIX 3: Changed from file_path to undertaking_file_path -->
+                                            <a href="../uploads/lou/<?= htmlspecialchars($row['undertaking_file_path']); ?>" target="_blank"
                                                 class="document-link">
                                                 <i class="fa-solid fa-file-pdf"></i> View PDF
                                             </a>

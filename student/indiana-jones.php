@@ -3,7 +3,7 @@
     <div class="personal-modal" style="max-width: 500px;">
         <span class="close-btn" onclick="closeIndianaJonesModal()">&times;</span>
         
-        <form class="personal-form" method="POST" action="process-indiana-jones.php" enctype="multipart/form-data">
+        <form class="personal-form" method="POST" action="save-indiana-jones.php" enctype="multipart/form-data">
             <h3 class="form-title"><i class="fa-solid fa-calendar-days"></i> Submit Indiana Jones LOU</h3>
             
             <p style="font-size: 13px; color: #64748b; margin-bottom: 20px;">

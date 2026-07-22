@@ -11,14 +11,14 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] != "admin") {
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $submission_id = $_POST['submission_id'] ?? null;
     $status        = $_POST['status'] ?? 'Pending';
-    $return_url    = $_POST['return_url'] ?? 'admin-retention.php';
+    $return_url    = $_POST['return_url'] ?? 'admin-jones.php';
 
     if (!$submission_id) {
         header("Location: " . $return_url . "?error=Invalid submission ID.");
         exit();
     }
 
-    $query = "UPDATE retention_records SET status = ? WHERE id = ?";
+    $query = "UPDATE indiana_jones_records SET status = ? WHERE id = ?";
     
     $stmt = $conn->prepare($query);
 
@@ -39,7 +39,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     $conn->close();
     exit();
 } else {
-    header("Location: admin-retention.php");
+    header("Location: admin-jones.php");
     exit();
 }
 ?>

@@ -34,14 +34,14 @@
                     </select>
                 </div>
                 <div class="form-group">
-                    <label>Number of Absences</label>
-                    <input type="number" name="number_of_absences" min="3" placeholder="e.g. 3" required style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;">
+                    <label>Number of  Failed Subjects</label>
+                    <input type="number" name="failed_subjects_count" min="3" placeholder="e.g. 3" required style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;">
                 </div>
             </div>
 
             <div class="form-group" style="margin-bottom: 15px;">
                 <label>Date Memo was Issued</label>
-                <input type="date" name="date_recorded" value="<?= date('Y-m-d'); ?>" required style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;">
+                <input type="date" name="memo_issued_date" value="<?= date('Y-m-d'); ?>" required style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;">
             </div>
 
             <div class="form-group" style="margin-bottom: 25px;">

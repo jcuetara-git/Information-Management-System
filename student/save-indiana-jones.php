@@ -10,14 +10,13 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] != "student") {
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     
-    // Retrieve inputs securely
     $student_no         = $_SESSION['student_no']; 
-    $firstname          = $_POST['first_name']; 
-    $lastname           = $_POST['last_name'];  
+    $firstname          = $_POST['first_name'] ?? ''; 
+    $lastname           = $_POST['last_name'] ?? '';  
     $middlename         = ""; 
-    $year_level         = $_POST['year_level'];
-    $number_of_absences = (int)$_POST['number_of_absences'];
-    $date_recorded      = $_POST['date_recorded'];
+    $year_level         = $_POST['year_level'] ?? '';
+    $number_of_absences = isset($_POST['number_of_absences']) ? (int)$_POST['number_of_absences'] : 0;
+    $date_recorded      = $_POST['date_recorded'] ?? date('Y-m-d');
     $status             = 'Pending';
 
     // Handle File Upload
@@ -33,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         }
 
         $new_file_name = time() . '_' . $student_no . '_Jones.' . $file_ext;
-        $upload_dir = '../uploads/jones/';
+        $upload_dir = '../uploads/lou/';
 
         if (!is_dir($upload_dir)) {
             mkdir($upload_dir, 0777, true);
@@ -42,16 +41,16 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         if (move_uploaded_file($file_tmp, $upload_dir . $new_file_name)) {
             
             $query = "INSERT INTO indiana_jones_records
-                      (student_no, firstname, lastname, middlename, year_level, number_of_absences, date_recorded, undertaking_file_path, status) 
+                      (student_no, firstname, lastname, middlename, year_level, date_recorded, number_of_absences, undertaking_file_path, status) 
                       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
                       
             $stmt = $conn->prepare($query);
             
             if ($stmt) {
-                $stmt->bind_param("sssssisss", $student_no, $firstname, $lastname, $middlename, $year_level, $number_of_absences, $date_recorded, $new_file_name, $status);
+                $stmt->bind_param("ssssssiss", $student_no, $firstname, $lastname, $middlename, $year_level, $date_recorded, $number_of_absences, $new_file_name, $status);
                 
                 if ($stmt->execute()) {
-                    header("Location: student-dashboard.php?success=Indiana Jones Submission uploaded successfully! Awaiting Admin review.");
+                    header("Location: student-dashboard.php?success=Indiana Jones Submission uploaded successfully!");
                 } else {
                     header("Location: student-dashboard.php?error=Database error. Failed to save submission.");
                 }
