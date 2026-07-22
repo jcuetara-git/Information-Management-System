@@ -120,7 +120,7 @@ table tbody tr:nth-child(even) {
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-/* Alert Box Styles - Top Center */
+/* Alert Box Styles */
 .alert {
     padding: 15px 20px;
     border-radius: 6px;
@@ -128,16 +128,13 @@ table tbody tr:nth-child(even) {
     align-items: center;
     gap: 10px;
     font-weight: bold;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.15); /* Slightly larger shadow for depth */
-    
-    /* Centering and Positioning Logic */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.15); 
     position: fixed; 
-    top: 20px;       /* Distance from the top of the screen */
-    left: 50%;       /* Push to the middle */
-    transform: translateX(-50%); /* Pull back exactly half its own width to center it perfectly */
-    z-index: 9999;   /* Ensures it stays on top of your sidebar and other content */
-    min-width: 300px; /* Ensures it doesn't look too squished */
-    
+    top: 20px;     
+    left: 50%;     
+    transform: translateX(-50%); 
+    z-index: 9999;  
+    min-width: 300px; 
     animation: slideDown 0.4s ease-out forwards;
 }
 

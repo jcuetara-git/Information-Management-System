@@ -16,6 +16,10 @@
     if (in_array($current_page, ['admin-announcement.php', 'manage-announcement.php', 'admin-edit-announcement.php', 'admin-view-announcement.php'])) {
         echo '<link rel="stylesheet" href="../assets/css/admin-announcement.css">';
     }
+    // ADDED: Rule for Retention Policy CSS
+    if (in_array($current_page, ['admin-retention.php', 'manage-retention.php', 'admin-edit-retention.php', 'admin-view-retention.php'])) {
+        echo '<link rel="stylesheet" href="../assets/css/admin-retention.css">';
+    }
 ?>
 
 <nav class="sidebar" id="sidebar" role="navigation" aria-label="Main Navigation">
@@ -46,16 +50,22 @@
             $active_page = 'admin-faculty.php';
         }
 
-        // Alumni pages tracking group (Keeps "Alumni" highlighted)
+        // Alumni pages tracking group
         $alumni_pages = ['admin-alumni.php', 'manage-alumni.php', 'admin-edit-alumni.php', 'admin-view-alumni.php'];
         if (in_array($current_page, $alumni_pages)) {
             $active_page = 'admin-alumni.php';
         }
 
-        // Announcement pages tracking group (Keeps "Announcements" highlighted)
+        // Announcement pages tracking group
         $announcement_pages = ['admin-announcement.php', 'manage-announcement.php', 'admin-edit-announcement.php', 'admin-view-announcement.php'];
         if (in_array($current_page, $announcement_pages)) {
             $active_page = 'admin-announcement.php';
+        }
+
+        // ADDED: Retention Policy pages tracking group
+        $retention_pages = ['admin-retention.php', 'manage-retention.php', 'admin-edit-retention.php', 'admin-view-retention.php'];
+        if (in_array($current_page, $retention_pages)) {
+            $active_page = 'admin-retention.php';
         }
 
         // Cleaned up icon names to prevent conflicting with the fa-solid class injected in the loop

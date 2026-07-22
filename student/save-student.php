@@ -74,7 +74,7 @@ if($_SERVER['REQUEST_METHOD'] == 'POST'){
     }
 
     if($stmt->execute()){
-        header("Location: student-dashboard.php?success=1");
+        header("Location: student-dashboard.php?success=Student+Information+saved+successfully");
     } else {
         echo "Error: " . $conn->error;
     }

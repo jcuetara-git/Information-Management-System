@@ -76,7 +76,6 @@ $total_results = $result->num_rows;
 </head>
 
 <body>
-    
     <?php if (isset($_GET['success'])): ?>
         <div class="alert alert-success" id="alertBox">
             <i class="fa-solid fa-circle-check"></i> 
@@ -94,7 +93,6 @@ $total_results = $result->num_rows;
     <?php endif; ?>
 
 <div class="main-container">
-
     <?php 
     include("../includes/sidebar.php");
     ?>

@@ -1,7 +1,6 @@
 <?php
 include("../config/auth.php");
 include("../config/db.php"); 
-include 'retention-policy.php';
 
 // Ensure logged in as student
 if(!isset($_SESSION['role']) || $_SESSION['role'] != "student"){
@@ -81,17 +80,24 @@ $stmt_profile->close();
 </head>
 <body>
 
-<?php if(isset($_GET['success'])): ?>
-    <div class="success-overlay">
-        <div class="success-box">
-            <p>Student information saved successfully!</p>
-            <button onclick="this.parentElement.parentElement.style.display='none'">OK</button>
+<!-- Success Alert -->
+    <?php if (isset($_GET['success'])): ?>
+        <div class="alert alert-success" id="alertBox">
+            <i class="fa-solid fa-circle-check"></i> 
+            <span>Student information saved successfully!</span>
+            <button class="close-btn" onclick="document.getElementById('alertBox').style.display='none'">&times;</button>
         </div>
-    </div>
-<?php endif; ?>
+    <?php endif; ?>
+
+    <?php if (isset($_GET['error'])): ?>
+        <div class="alert alert-danger" id="alertBox">
+            <i class="fa-solid fa-circle-exclamation"></i> 
+            <?= htmlspecialchars($_GET['error']) ?>
+            <button class="close-btn" onclick="document.getElementById('alertBox').style.display='none'">&times;</button>
+        </div>
+    <?php endif; ?>
 
 <div class="dashboard-container">
-
     <!-- HEADER -->
     <div class="logo-section">
         <div class="logo-left">
@@ -109,7 +115,7 @@ $stmt_profile->close();
             <!-- NOTIFICATION DROPDOWN -->
             <div class="notification-container">
                 <button class="notification-btn" id="notifBtn">
-                    <i class="fa-solid fa-bell"></i><span class="notif-badge"><?= count($announcements); ?></span>
+                    <i class="fa-solid fa-bell"></i><span class="notif-badge" id="notifBadge" <?= count($announcements) == 0 ? 'style="display:none;"' : '' ?>><?= count($announcements); ?></span>
                 </button>
                 <div class="notification-dropdown" id="notifDropdown">
                     <div class="notification-header">Recent Notifications</div>
@@ -150,7 +156,8 @@ $stmt_profile->close();
                             <p><?= htmlspecialchars($student_no); ?></p>
                         </div>
                     </div>
-                    <div class="profile-logout" onclick="window.location.href='../auth/logout.php'">
+                    <!-- FIX: Updated Logout button with a clear ID for JS handling -->
+                    <div class="profile-logout" id="logoutBtn" style="cursor: pointer;">
                         <i class="fa-solid fa-sign-out-alt"></i> Logout
                     </div>
                 </div>
@@ -167,7 +174,7 @@ $stmt_profile->close();
     <!-- PROGRAM CARDS GRID -->
     <div class="program-grid">
         
-        <!-- Personal Information -->
+            <!-- Personal Information Card -->
         <div class="program-card">
             <div class="card-header">
                 <div class="icon-circle">
@@ -175,12 +182,20 @@ $stmt_profile->close();
                 </div>
                 <div class="card-title-area">
                     <h3>Personal Information</h3>
-                    <p class="card-desc">Add your student personal information.</p>
+                    <p class="card-desc">
+                        <?php echo $info_filled ? "Your information is already saved." : "Add your student personal information."; ?>
+                    </p>
                 </div>
             </div>
             <div class="btn-container">
-                <a href="javascript:void(0)" class="program-btn" onclick="openInfoModal()">
-                    <span><i class="fa-solid fa-user-gear"></i> Add Information</span>
+                <a href="javascript:void(0)" 
+                class="program-btn <?php echo $info_filled ? 'disabled-btn' : ''; ?>" 
+                onclick="<?php echo $info_filled ? '' : 'openInfoModal()'; ?>"
+                <?php echo $info_filled ? 'style="pointer-events: none; opacity: 0.6; cursor: not-allowed;"' : ''; ?>>
+                    <span>
+                        <i class="fa-solid fa-user-gear"></i> 
+                        <?php echo $info_filled ? 'Information Saved' : 'Add Information'; ?>
+                    </span>
                     <i class="fa-solid fa-chevron-right"></i>
                 </a>
             </div>
@@ -250,7 +265,7 @@ $stmt_profile->close();
                 </div>
             </div>
             <div class="btn-container">
-                <button class="program-btn">
+                <button class="program-btn" onclick="document.getElementById('indianaJonesModal').style.display='block'">
                     <span><i class="fa-solid fa-file-signature"></i> View Details / Submit LOU</span>
                     <i class="fa-solid fa-chevron-right"></i>
                 </button>
@@ -263,6 +278,54 @@ $stmt_profile->close();
         ©2026 College of Criminal Justice | Version 1.1
     </div>
 
+</div>
+
+<!-- === STUDENT CONCERN FLOATING ACTION BUTTON === -->
+<div class="fab-container">
+    <a href="javascript:void(0)" class="fab" title="Submit a Concern" onclick="openConcernForm()">
+        <span class="fab-icon">?</span>
+    </a>
+</div>
+
+<div class="modal-overlay" id="concernModal">
+    <div class="personal-modal" style="max-width: 500px;">
+        <span class="close-btn" onclick="closeConcernForm()">&times;</span>
+        <form class="personal-form" method="POST" action="submit-concern.php" enctype="multipart/form-data">
+            <h3 class="form-title">Submit a Concern</h3>
+            
+            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                <div class="form-group" style="margin-bottom: 10px;">
+                    <label>First Name</label>
+                    <input type="text" name="first_name" value="<?= htmlspecialchars($first_name); ?>" required>
+                </div>
+                <div class="form-group" style="margin-bottom: 10px;">
+                    <label>Last Name</label>
+                    <input type="text" name="last_name" value="<?= htmlspecialchars($last_name); ?>" required>
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 15px;">
+                <label>Year Level</label>
+                <select name="year_level" required style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit;">
+                    <option value="" disabled selected>Select</option>
+                    <option value="1st Year">1</option>
+                    <option value="2nd Year">2</option>
+                    <option value="3rd Year">3</option>
+                    <option value="4th Year">4</option>
+                </select>
+            </div>
+
+            <div class="form-group" style="margin-bottom: 25px;">
+                <label>Upload Concern (Document/Image)</label>
+                <input type="file" name="concern_file" required style="width: 100%; padding: 10px; border: 1px dashed #94a3b8; border-radius: 6px; background-color: #f8fafc; cursor: pointer;">
+            </div>
+
+            <div class="modal-buttons">
+                <button type="button" class="cancel-btn" onclick="closeConcernForm()">Cancel</button>
+                <button type="submit" class="save-btn">Submit Concern</button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <!-- ================= ADD INFO MODAL ================= -->
@@ -526,8 +589,25 @@ $stmt_profile->close();
     </div>
 </div>
 
+<?php   
+include("../student/retention-policy.php");
+include("../student/indiana-jones.php");
+ ?>
+
 <script src="../assets/js/script.js"></script>
 <script>
+// === STUDENT CONCERN FUNCTIONS ===
+    function openConcernForm() {
+        document.getElementById('concernModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closeConcernForm() {
+        document.getElementById('concernModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+    // ================================
+
     // Add Info Modal
     function openInfoModal() {
         document.getElementById('infoModal').style.display = 'flex';
@@ -554,6 +634,36 @@ $stmt_profile->close();
         return confirm("Are you sure you want to save this information?");
     }
 
+    function openRetentionModal() {
+    document.getElementById('retentionModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    }
+
+    function closeRetentionModal() {
+        document.getElementById('retentionModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    function openIndianaJonesModal() {
+    document.getElementById('indianaJonesModal').style.display = 'flex';
+    document.body.style.overflow = 'hidden';
+    }
+
+    function closeIndianaJonesModal() {
+        document.getElementById('indianaJonesModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
+    }
+
+    // Add this to your existing script block
+    setTimeout(function() {
+        const alertBox = document.getElementById('alertBox');
+        if (alertBox) {
+            alertBox.style.transition = "opacity 0.5s ease";
+            alertBox.style.opacity = "0";
+            setTimeout(() => alertBox.style.display = "none", 500);
+        }
+    }, 4000); // 4 seconds
+
     document.addEventListener('DOMContentLoaded', function() {
         const notifBtn = document.getElementById('notifBtn');
         const notifDropdown = document.getElementById('notifDropdown');
@@ -561,12 +671,35 @@ $stmt_profile->close();
         const profileDropdown = document.getElementById('profileDropdown');
         const infoModal = document.getElementById('infoModal');
         const viewRecordModal = document.getElementById('viewRecordModal');
+        const notifBadge = document.getElementById('notifBadge');
+        const logoutBtn = document.getElementById('logoutBtn');
+
+        const urlParams = new URLSearchParams(window.location.search);
+        if (urlParams.get('modal') === 'open') {
+            openViewRecordModal(); 
+        }
+
+        // JS click handler for robust Logout logic
+        if (logoutBtn) {
+            logoutBtn.addEventListener('click', function(e) {
+                e.preventDefault();
+                // Close dropdown instantly for UI responsiveness
+                if (profileDropdown) profileDropdown.classList.remove('active');
+                // Use .replace to avoid bfcache/back-button issues after log out
+                window.location.replace('../auth/logout.php');
+            });
+        }
 
         if (notifBtn) {
             notifBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 notifDropdown.classList.toggle('active');
-                profileDropdown.classList.remove('active');
+                if (profileDropdown) profileDropdown.classList.remove('active');
+
+                // Hide the notification badge once opened/read
+                if (notifBadge && notifDropdown.classList.contains('active')) {
+                    notifBadge.style.display = 'none';
+                }
             });
         }
 
@@ -574,7 +707,7 @@ $stmt_profile->close();
             profileBtn.addEventListener('click', function(e) {
                 e.stopPropagation();
                 profileDropdown.classList.toggle('active');
-                notifDropdown.classList.remove('active');
+                if (notifDropdown) notifDropdown.classList.remove('active');
             });
         }
 
@@ -590,6 +723,10 @@ $stmt_profile->close();
             }
             if (event.target === viewRecordModal) {
                 closeViewRecordModal();
+            }
+            const concernModal = document.getElementById('concernModal');
+            if (event.target === concernModal) {
+                closeConcernForm();
             }
         });
 

@@ -1,13 +1,13 @@
-<!-- ================= RETENTION MODAL ================= -->
-<div class="modal-overlay" id="retentionModal" style="display:none;">
+<!-- ================= INDIANA JONES MODAL ================= -->
+<div class="modal-overlay" id="indianaJonesModal" style="display:none;">
     <div class="personal-modal" style="max-width: 500px;">
-        <span class="close-btn" onclick="closeRetentionModal()">&times;</span>
+        <span class="close-btn" onclick="closeIndianaJonesModal()">&times;</span>
         
-        <form class="personal-form" method="POST" action="save-retention.php" enctype="multipart/form-data">
-            <h3 class="form-title"><i class="fa-solid fa-calendar-days"></i> Submit Retention LOU</h3>
+        <form class="personal-form" method="POST" action="process-indiana-jones.php" enctype="multipart/form-data">
+            <h3 class="form-title"><i class="fa-solid fa-calendar-days"></i> Submit Indiana Jones LOU</h3>
             
             <p style="font-size: 13px; color: #64748b; margin-bottom: 20px;">
-                Submit your Letter of Undertaking if you have accumulated three (3) or more failed professional subjects.
+                Submit your Letter of Undertaking if you have accumulated three (3) or more consecutive absences.
             </p>
 
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
@@ -40,7 +40,7 @@
             </div>
 
             <div class="form-group" style="margin-bottom: 15px;">
-                <label>Date Memo was Issued</label>
+                <label>Date of Submission (Date Recorded)</label>
                 <input type="date" name="date_recorded" value="<?= date('Y-m-d'); ?>" required style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;">
             </div>
 
@@ -50,7 +50,7 @@
             </div>
 
             <div class="modal-buttons">
-                <button type="button" class="cancel-btn" onclick="closeRetentionModal()">Cancel</button>
+                <button type="button" class="cancel-btn" onclick="closeIndianaJonesModal()">Cancel</button>
                 <button type="submit" class="save-btn">Submit Document</button>
             </div>
         </form>

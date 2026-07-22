@@ -81,9 +81,10 @@ if(isset($_POST['register'])) {
 
         <div class="form-group">
             <select name="role" id="roleSelector" onchange="toggleYearLevel(this.value)" required>
-                <option value="student" selected>Register as Student</option>
-                <option value="faculty">Register as Faculty Member</option>
-                <option value="alumni">Register as Alumnus</option>
+                <option value="" disabled selected>Register As</option>
+                <option value="student">Student</option>
+                <option value="faculty">Faculty Member</option>
+                <option value="alumni">Alumnus</option>
             </select>
         </div>
 
