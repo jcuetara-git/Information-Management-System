@@ -156,10 +156,10 @@ $stmt_profile->close();
                             <p><?= htmlspecialchars($student_no); ?></p>
                         </div>
                     </div>
-                    <!-- FIX: Updated Logout button with a clear ID for JS handling -->
-                    <div class="profile-logout" id="logoutBtn" style="cursor: pointer;">
+                    <!-- FIX: Changed from <div> to <a> tag for native clicking -->
+                    <a href="../auth/logout.php" class="profile-logout" id="logoutBtn" style="cursor: pointer; display: block; text-decoration: none; color: inherit;">
                         <i class="fa-solid fa-sign-out-alt"></i> Logout
-                    </div>
+                    </a>
                 </div>
             </div>
         </div>
@@ -582,7 +582,7 @@ $stmt_profile->close();
             <?php else: ?>
                 <div class="card" style="text-align: center; padding: 40px 20px;">
                     <p style="color: #64748b; margin-bottom: 15px;">No record found. <br> Please add your personal information first.</p>
-                    <a href="javascript:void(0)" onclick="closeViewRecordModal(); openInfoModal();" style="display: inline-block; background: #1e293b; color: white; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-size: 14px;">Add Personal Information</a>
+                    <a href="javascript:void(0)" onclick="closeViewRecordModal(); openInfoModal();" style="display: inline-block; background: #f4b42c; color: black; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-size: 14px;">Add Personal Information</a>
                 </div>
             <?php endif; ?>
         </div>
@@ -679,14 +679,12 @@ include("../student/indiana-jones.php");
             openViewRecordModal(); 
         }
 
-        // JS click handler for robust Logout logic
+        // FIX: Adjusted JS so the anchor tag naturally navigates to logout.php
         if (logoutBtn) {
             logoutBtn.addEventListener('click', function(e) {
-                e.preventDefault();
-                // Close dropdown instantly for UI responsiveness
+                // Just close the dropdown instantly for a snappy UI feeling
+                // The browser will naturally follow the href attribute to log out
                 if (profileDropdown) profileDropdown.classList.remove('active');
-                // Use .replace to avoid bfcache/back-button issues after log out
-                window.location.replace('../auth/logout.php');
             });
         }
 

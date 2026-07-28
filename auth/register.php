@@ -48,7 +48,8 @@ if(isset($_POST['register'])) {
                 header("Location: login.php?success=" . urlencode("Account registered successfully!"));
                 exit();
             } else {
-                $error = "Registration failed. Please try again.";
+                // MODIFIED: This will now print the EXACT database error so you know what's wrong!
+                $error = "Database Error: " . $stmt->error;
             }
         }
     }
@@ -74,36 +75,38 @@ if(isset($_POST['register'])) {
     <p class="subtitle">Register to get started with your account.</p>
 
     <?php if (!empty($error)): ?>
-        <p class="error"><?= htmlspecialchars($error) ?></p>
+        <p class="error" style="color: red; background: #ffe6e6; padding: 10px; border-radius: 5px; font-size: 14px; text-align: center; margin-bottom: 15px;">
+            <?= htmlspecialchars($error) ?>
+        </p>
     <?php endif; ?>
 
     <form method="POST" class="auth-form">
 
         <div class="form-group">
             <select name="role" id="roleSelector" onchange="toggleYearLevel(this.value)" required>
-                <option value="" disabled selected>Register As</option>
-                <option value="student">Student</option>
-                <option value="faculty">Faculty Member</option>
-                <option value="alumni">Alumnus</option>
+                <option value="" disabled <?= empty($_POST['role']) ? 'selected' : '' ?>>Register As</option>
+                <option value="student" <?= (isset($_POST['role']) && $_POST['role'] == 'student') ? 'selected' : '' ?>>Student</option>
+                <option value="faculty" <?= (isset($_POST['role']) && $_POST['role'] == 'faculty') ? 'selected' : '' ?>>Faculty Member</option>
+                <option value="alumni" <?= (isset($_POST['role']) && $_POST['role'] == 'alumni') ? 'selected' : '' ?>>Alumnus</option>
             </select>
         </div>
 
-        <input type="text" name="student_no" placeholder="ID Number" class="id-input" required>
+        <input type="text" name="student_no" placeholder="ID Number" class="id-input" value="<?= isset($_POST['student_no']) ? htmlspecialchars($_POST['student_no']) : '' ?>" required>
 
         <div class="two-col">
-            <input type="text" name="first_name" placeholder="First Name" required>
-            <input type="text" name="last_name" placeholder="Last Name" required>
+            <input type="text" name="first_name" placeholder="First Name" value="<?= isset($_POST['first_name']) ? htmlspecialchars($_POST['first_name']) : '' ?>" required>
+            <input type="text" name="last_name" placeholder="Last Name" value="<?= isset($_POST['last_name']) ? htmlspecialchars($_POST['last_name']) : '' ?>" required>
         </div>
 
         <div class="two-col">
-            <input type="email" name="email" placeholder="Email Address" required>
+            <input type="email" name="email" placeholder="Email Address" value="<?= isset($_POST['email']) ? htmlspecialchars($_POST['email']) : '' ?>" required>
 
             <select name="year_level" id="yearLevelSelector" required>
-                <option value="" disabled selected>Year Level</option>
-                <option value="1">1</option>
-                <option value="2">2</option>
-                <option value="3">3</option>
-                <option value="4">4</option>
+                <option value="" disabled <?= empty($_POST['year_level']) ? 'selected' : '' ?>>Year Level</option>
+                <option value="1" <?= (isset($_POST['year_level']) && $_POST['year_level'] == '1') ? 'selected' : '' ?>>1</option>
+                <option value="2" <?= (isset($_POST['year_level']) && $_POST['year_level'] == '2') ? 'selected' : '' ?>>2</option>
+                <option value="3" <?= (isset($_POST['year_level']) && $_POST['year_level'] == '3') ? 'selected' : '' ?>>3</option>
+                <option value="4" <?= (isset($_POST['year_level']) && $_POST['year_level'] == '4') ? 'selected' : '' ?>>4</option>
             </select>
         </div>
 
@@ -149,6 +152,14 @@ if(isset($_POST['register'])) {
             yearSelector.setAttribute('required', 'required');
         }
     }
+
+    // Run on page load to keep disabled state if form fails and reloads with faculty/alumni selected
+    window.onload = function() {
+        const roleSelector = document.getElementById('roleSelector');
+        if(roleSelector.value) {
+            toggleYearLevel(roleSelector.value);
+        }
+    };
 </script>
 
 </body>
