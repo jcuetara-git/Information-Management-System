@@ -2,7 +2,6 @@
 include("../config/auth.php");
 include("../config/db.php"); 
 
-// Ensure logged in as student
 if(!isset($_SESSION['role']) || $_SESSION['role'] != "student"){
     header("Location: ../auth/login.php");
     exit();
@@ -12,21 +11,16 @@ $student_no = $_SESSION['student_no'] ?? '';
 $first_name = $_SESSION['first_name'] ?? '';
 $last_name  = $_SESSION['last_name'] ?? '';
 
-// Check if student has already filled up personal information
-$info_filled = false;
-if (!empty($student_no)) {
-    $query = "SELECT id FROM student_profile WHERE student_no = ?";
-    $stmt = $conn->prepare($query);
-    
-    if ($stmt) {
-        $stmt->bind_param("s", $student_no); 
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows > 0) {
-            $info_filled = true;
-        }
-        $stmt->close();
+// Check if student has already added records
+$record_filled = false;
+$stmt = $conn->prepare("SELECT id FROM student_records WHERE student_no = ?");
+if ($stmt) {
+    $stmt->bind_param("s", $student_no);
+    $stmt->execute();
+    if ($stmt->get_result()->num_rows > 0) {
+        $record_filled = true;
     }
+    $stmt->close();
 }
 
 // Fetch announcements for dropdown
@@ -57,29 +51,11 @@ $stmt->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>student-dashboard</title>
+    <title>student-record</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/student-dashboard.css">
-    <link rel="stylesheet" href="../assets/css/student-view-record.css">
 </head>
 <body>
-
-<!-- Success Alert -->
-    <?php if (isset($_GET['success'])): ?>
-        <div class="alert alert-success" id="alertBox">
-            <i class="fa-solid fa-circle-check"></i> 
-            <span>Student information saved successfully!</span>
-            <button class="close-btn" onclick="document.getElementById('alertBox').style.display='none'">&times;</button>
-        </div>
-    <?php endif; ?>
-
-    <?php if (isset($_GET['error'])): ?>
-        <div class="alert alert-danger" id="alertBox">
-            <i class="fa-solid fa-circle-exclamation"></i> 
-            <?= htmlspecialchars($_GET['error']) ?>
-            <button class="close-btn" onclick="document.getElementById('alertBox').style.display='none'">&times;</button>
-        </div>
-    <?php endif; ?>
 
 <div class="dashboard-container">
     <!-- HEADER -->
@@ -88,7 +64,6 @@ $stmt->close();
             <div class="logo-circle">
                 <img src="../assets/logo.png" alt="Logo">
             </div>
-
             <div class="logo-text">
                 <h2>College of Criminal Justice</h2>
                 <p>Center of Development in Criminology</p>
@@ -148,98 +123,62 @@ $stmt->close();
         </div>
     </div>
 
-    <!-- LAYOUT: Sidebar + Main -->
+    <!-- LAYOUT -->
     <div class="dashboard-layout">
-
         <?php include("../includes/student-sidebar.php"); ?>
         
-        <!-- MAIN -->
         <main class="main-content">
-            <!-- WELCOME BANNER -->
             <div class="card welcome-card">
-                <h1>Welcome back, <?= htmlspecialchars($first_name); ?>! 👋</h1>
-                <p>Use the sidebar navigation menu on the left to manage your student profile, view your records, and check academic guidelines.</p>
+                <h1>Student Record Management</h1>
+                <p>Manage, review, and submit your official academic documents and student records.</p>
             </div>
 
-            <!-- Quick Status Summary Widget -->
-            <div class="dashboard-status-banner">
-                <div class="status-item">
-                    <i class="fa-solid fa-id-card"></i>
-                    <div>
-                        <span>Student Number</span>
-                        <strong><?= htmlspecialchars($student_no); ?></strong>
-                    </div>
-                </div>
-                <div class="status-item">
-                    <i class="fa-solid fa-circle-check" style="color: <?= $info_filled ? '#10b981' : '#f59e0b' ?>;"></i>
-                    <div>
-                        <span>Profile Status</span>
-                        <strong><?= $info_filled ? 'Completed & Saved' : 'Pending Information' ?></strong>
-                    </div>
-                </div>
+            <div class="card" style="text-align: center; padding: 40px;">
+                <i class="fa-solid fa-folder-open" style="font-size: 48px; color: #f4b42a; margin-bottom: 15px;"></i>
+                <h3>Record Status: <strong><?= $record_filled ? 'Submitted' : 'No Records Added' ?></strong></h3>
+                <p style="color: #64748b; margin: 10px 0 20px 0;">
+                    <?= $record_filled ? 'Your student records are up to date.' : 'View your student record' ?>
+                </p>
+                
+                <?php if (!$record_filled): ?>
+                    <button type="button" class="save-btn" onclick="openRecordModal()" style="display: inline-block; padding: 12px 30px; font-size: 15px;">
+                     View My Student Information
+                    </button>
+                <?php else: ?>
+                    <button type="button" class="save-btn" onclick="openRecordModal()" style="display: inline-block; padding: 10px 24px; font-size: 14px; background: #3b82f6;">
+                        <i class="fa-solid fa-eye"></i> View/Update Record
+                    </button>
+                <?php endif; ?>
             </div>
         </main>
     </div>
 </div>
 
-<!-- ================= ADD INFO MODAL ================= -->
-<?php include("student-personal-info-modal.php"); ?>
+<!-- ================= ADD RECORD MODAL ================= -->
+<?php include("student-record-modal.php"); ?>
 
 <script src="../assets/js/script.js"></script>
 <script>
-// === SIDEBAR TOGGLE SCRIPT ===
-    document.addEventListener('DOMContentLoaded', function() {
-        const sidebarToggle = document.getElementById('sidebarToggle');
-        const appSidebar = document.getElementById('appSidebar');
-
-        if (sidebarToggle && appSidebar) {
-            sidebarToggle.addEventListener('click', function(e) {
-                e.stopPropagation();
-                appSidebar.classList.toggle('collapsed');
-            });
-        }
-        
-        // Handle Sidebar item active click states
-        const navItems = document.querySelectorAll('.sidebar-nav .nav-item');
-        navItems.forEach(item => {
-            item.addEventListener('click', function() {
-                if(this.hasAttribute('disabled')) return;
-                navItems.forEach(nav => nav.classList.remove('nav-active'));
-                this.classList.add('nav-active');
-            });
-        });
-    });
-
-    // Add Info Modal Functions
-    function openInfoModal() {
-        document.getElementById('infoModal').style.display = 'flex';
+    function openRecordModal() {
+        document.getElementById('recordModal').style.display = 'flex';
         document.body.style.overflow = 'hidden';
     }
 
-    function closeModal() {
-        document.getElementById('infoModal').style.display = 'none';
+    function closeRecordModal() {
+        document.getElementById('recordModal').style.display = 'none';
         document.body.style.overflow = 'auto';
     }
 
-    function confirmSave() {
-        return confirm("Are you sure you want to save this information?");
+    function confirmSaveRecord() {
+        return confirm("Are you sure you want to save this student record?");
     }
-
-    setTimeout(function() {
-        const alertBox = document.getElementById('alertBox');
-        if (alertBox) {
-            alertBox.style.transition = "opacity 0.5s ease";
-            alertBox.style.opacity = "0";
-            setTimeout(() => alertBox.style.display = "none", 500);
-        }
-    }, 4000);
 
     document.addEventListener('DOMContentLoaded', function() {
         const notifBtn = document.getElementById('notifBtn');
         const notifDropdown = document.getElementById('notifDropdown');
         const profileBtn = document.getElementById('profileBtn');
         const profileDropdown = document.getElementById('profileDropdown');
-        const infoModal = document.getElementById('infoModal');
+        const recordModal = document.getElementById('recordModal');
         const notifBadge = document.getElementById('notifBadge');
         const logoutBtn = document.getElementById('logoutBtn');
 
@@ -276,23 +215,10 @@ $stmt->close();
             if (profileDropdown && !profileBtn.contains(event.target) && !profileDropdown.contains(event.target)) {
                 profileDropdown.classList.remove('active');
             }
-            if (event.target === infoModal) {
-                closeModal();
+            if (event.target === recordModal) {
+                closeRecordModal();
             }
         });
-
-        const dobInput = document.getElementById('dob');
-        const ageInput = document.getElementById('age');
-        if (dobInput && ageInput) {
-            dobInput.addEventListener('change', function() {
-                const dob = new Date(this.value);
-                const today = new Date();
-                let age = today.getFullYear() - dob.getFullYear();
-                const m = today.getMonth() - dob.getMonth();
-                if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) { age--; }
-                ageInput.value = age;
-            });
-        }
     });
 </script>
 </body>

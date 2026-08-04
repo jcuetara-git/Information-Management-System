@@ -2,7 +2,6 @@
 include("../config/auth.php");
 include("../config/db.php"); 
 
-// Ensure logged in as student
 if(!isset($_SESSION['role']) || $_SESSION['role'] != "student"){
     header("Location: ../auth/login.php");
     exit();
@@ -14,20 +13,13 @@ $last_name  = $_SESSION['last_name'] ?? '';
 
 // Check if student has already filled up personal information
 $info_filled = false;
-if (!empty($student_no)) {
-    $query = "SELECT id FROM student_profile WHERE student_no = ?";
-    $stmt = $conn->prepare($query);
-    
-    if ($stmt) {
-        $stmt->bind_param("s", $student_no); 
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows > 0) {
-            $info_filled = true;
-        }
-        $stmt->close();
-    }
+$stmt = $conn->prepare("SELECT id FROM student_profile WHERE student_no = ?");
+$stmt->bind_param("s", $student_no);
+$stmt->execute();
+if ($stmt->get_result()->num_rows > 0) {
+    $info_filled = true;
 }
+$stmt->close();
 
 // Fetch announcements for dropdown
 $announcements = [];
@@ -57,29 +49,26 @@ $stmt->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>student-dashboard</title>
+    <title>Student Personal Information</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/student-dashboard.css">
-    <link rel="stylesheet" href="../assets/css/student-view-record.css">
+    <style>
+        /* Ensure sidebar links have no underlines and maintain active styling */
+        .sidebar-nav .nav-item {
+            text-decoration: none !important;
+        }
+        .sidebar-nav .nav-item.nav-active,
+        .sidebar-nav a[href="student-personal-info.php"] {
+            background: #f4b42a !important;
+            color: #000000 !important;
+            font-weight: 700 !important;
+        }
+        .sidebar-nav a[href="student-personal-info.php"] .nav-icon {
+            color: #000000 !important;
+        }
+    </style>
 </head>
 <body>
-
-<!-- Success Alert -->
-    <?php if (isset($_GET['success'])): ?>
-        <div class="alert alert-success" id="alertBox">
-            <i class="fa-solid fa-circle-check"></i> 
-            <span>Student information saved successfully!</span>
-            <button class="close-btn" onclick="document.getElementById('alertBox').style.display='none'">&times;</button>
-        </div>
-    <?php endif; ?>
-
-    <?php if (isset($_GET['error'])): ?>
-        <div class="alert alert-danger" id="alertBox">
-            <i class="fa-solid fa-circle-exclamation"></i> 
-            <?= htmlspecialchars($_GET['error']) ?>
-            <button class="close-btn" onclick="document.getElementById('alertBox').style.display='none'">&times;</button>
-        </div>
-    <?php endif; ?>
 
 <div class="dashboard-container">
     <!-- HEADER -->
@@ -88,7 +77,6 @@ $stmt->close();
             <div class="logo-circle">
                 <img src="../assets/logo.png" alt="Logo">
             </div>
-
             <div class="logo-text">
                 <h2>College of Criminal Justice</h2>
                 <p>Center of Development in Criminology</p>
@@ -148,35 +136,30 @@ $stmt->close();
         </div>
     </div>
 
-    <!-- LAYOUT: Sidebar + Main -->
+    <!-- LAYOUT -->
     <div class="dashboard-layout">
-
         <?php include("../includes/student-sidebar.php"); ?>
         
-        <!-- MAIN -->
         <main class="main-content">
-            <!-- WELCOME BANNER -->
             <div class="card welcome-card">
-                <h1>Welcome back, <?= htmlspecialchars($first_name); ?>! 👋</h1>
-                <p>Use the sidebar navigation menu on the left to manage your student profile, view your records, and check academic guidelines.</p>
+                <h1>Personal Information Management</h1>
+                <p>Manage and complete your student profile details required by the institution.</p>
             </div>
 
-            <!-- Quick Status Summary Widget -->
-            <div class="dashboard-status-banner">
-                <div class="status-item">
-                    <i class="fa-solid fa-id-card"></i>
-                    <div>
-                        <span>Student Number</span>
-                        <strong><?= htmlspecialchars($student_no); ?></strong>
-                    </div>
-                </div>
-                <div class="status-item">
-                    <i class="fa-solid fa-circle-check" style="color: <?= $info_filled ? '#10b981' : '#f59e0b' ?>;"></i>
-                    <div>
-                        <span>Profile Status</span>
-                        <strong><?= $info_filled ? 'Completed & Saved' : 'Pending Information' ?></strong>
-                    </div>
-                </div>
+            <div class="card" style="text-align: center; padding: 40px;">
+                <i class="fa-solid fa-id-card-clip" style="font-size: 48px; color: #f4b42a; margin-bottom: 15px;"></i>
+                <h3>Student Profile Status: <strong><?= $info_filled ? 'Completed' : 'Pending Information' ?></strong></h3>
+                <p style="color: #64748b; margin: 10px 0 20px 0;">
+                    <?= $info_filled ? 'Your information has been saved successfully.' : 'Please provide your personal, residential, and family background data.' ?>
+                </p>
+                
+                <?php if (!$info_filled): ?>
+                    <button type="button" class="save-btn" onclick="openInfoModal()" style="display: inline-block; padding: 12px 30px; font-size: 15px;">
+                        <i class="fa-solid fa-plus"></i> Add Information
+                    </button>
+                <?php else: ?>
+                    <p style="color: #10b981; font-weight: 600;"><i class="fa-solid fa-circle-check"></i> Information already submitted.</p>
+                <?php endif; ?>
             </div>
         </main>
     </div>
@@ -187,30 +170,6 @@ $stmt->close();
 
 <script src="../assets/js/script.js"></script>
 <script>
-// === SIDEBAR TOGGLE SCRIPT ===
-    document.addEventListener('DOMContentLoaded', function() {
-        const sidebarToggle = document.getElementById('sidebarToggle');
-        const appSidebar = document.getElementById('appSidebar');
-
-        if (sidebarToggle && appSidebar) {
-            sidebarToggle.addEventListener('click', function(e) {
-                e.stopPropagation();
-                appSidebar.classList.toggle('collapsed');
-            });
-        }
-        
-        // Handle Sidebar item active click states
-        const navItems = document.querySelectorAll('.sidebar-nav .nav-item');
-        navItems.forEach(item => {
-            item.addEventListener('click', function() {
-                if(this.hasAttribute('disabled')) return;
-                navItems.forEach(nav => nav.classList.remove('nav-active'));
-                this.classList.add('nav-active');
-            });
-        });
-    });
-
-    // Add Info Modal Functions
     function openInfoModal() {
         document.getElementById('infoModal').style.display = 'flex';
         document.body.style.overflow = 'hidden';
@@ -224,15 +183,6 @@ $stmt->close();
     function confirmSave() {
         return confirm("Are you sure you want to save this information?");
     }
-
-    setTimeout(function() {
-        const alertBox = document.getElementById('alertBox');
-        if (alertBox) {
-            alertBox.style.transition = "opacity 0.5s ease";
-            alertBox.style.opacity = "0";
-            setTimeout(() => alertBox.style.display = "none", 500);
-        }
-    }, 4000);
 
     document.addEventListener('DOMContentLoaded', function() {
         const notifBtn = document.getElementById('notifBtn');
@@ -280,19 +230,6 @@ $stmt->close();
                 closeModal();
             }
         });
-
-        const dobInput = document.getElementById('dob');
-        const ageInput = document.getElementById('age');
-        if (dobInput && ageInput) {
-            dobInput.addEventListener('change', function() {
-                const dob = new Date(this.value);
-                const today = new Date();
-                let age = today.getFullYear() - dob.getFullYear();
-                const m = today.getMonth() - dob.getMonth();
-                if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) { age--; }
-                ageInput.value = age;
-            });
-        }
     });
 </script>
 </body>

@@ -16,9 +16,13 @@
     if (in_array($current_page, ['admin-announcement.php', 'manage-announcement.php', 'admin-edit-announcement.php', 'admin-view-announcement.php'])) {
         echo '<link rel="stylesheet" href="../assets/css/admin-announcement.css">';
     }
-    // ADDED: Rule for Retention Policy CSS
+    // Added rule for Retention Policy CSS
     if (in_array($current_page, ['admin-retention.php', 'manage-retention.php', 'admin-edit-retention.php', 'admin-view-retention.php'])) {
         echo '<link rel="stylesheet" href="../assets/css/admin-retention.css">';
+    }
+    // Added rule for Feedback & Concerns CSS
+    if (in_array($current_page, ['admin-feedback.php', 'manage-feedback.php', 'admin-edit-feedback.php', 'admin-view-feedback.php'])) {
+        echo '<link rel="stylesheet" href="../assets/css/admin-feedback.css">';
     }
 ?>
 
@@ -62,24 +66,30 @@
             $active_page = 'admin-announcement.php';
         }
 
-        // ADDED: Retention Policy pages tracking group
+        // Retention Policy pages tracking group
         $retention_pages = ['admin-retention.php', 'manage-retention.php', 'admin-edit-retention.php', 'admin-view-retention.php'];
         if (in_array($current_page, $retention_pages)) {
             $active_page = 'admin-retention.php';
         }
 
-        // Cleaned up icon names to prevent conflicting with the fa-solid class injected in the loop
+        // Feedback & Concerns pages tracking group
+        $feedback_pages = ['admin-feedback.php', 'manage-feedback.php', 'admin-edit-feedback.php', 'admin-view-feedback.php'];
+        if (in_array($current_page, $feedback_pages)) {
+            $active_page = 'admin-feedback.php';
+        }
+
         $menu_items = [
             ['file' => 'admin-dashboard.php', 'icon' => 'fa-chart-line', 'label' => 'Dashboard'],
-            ['file' => 'admin-announcement.php', 'icon' => 'fa-bullhorn', 'label' => 'Announcements'],
             ['file' => 'admin-students.php', 'icon' => 'fa-users', 'label' => 'Students'],
             ['file' => 'admin-faculty.php', 'icon' => 'fa-user-tie', 'label' => 'Faculty'],
+            ['file' => 'admin-alumni.php', 'icon' => 'fa-user-graduate', 'label' => 'Alumni'],
             ['file' => 'admin-internship.php', 'icon' => 'fa-briefcase', 'label' => 'Internship'],
             ['file' => 'admin-orgs.php', 'icon' => 'fa-folder', 'label' => 'Organizations'],
             ['file' => 'admin-comex.php', 'icon' => 'fa-hands-holding-circle', 'label' => 'Community Extension'],
             ['file' => 'admin-jones.php', 'icon' => 'fa-file', 'label' => 'Indiana Jones'],
             ['file' => 'admin-retention.php', 'icon' => 'fa-user-check', 'label' => 'Retention Policy'],
-            ['file' => 'admin-alumni.php', 'icon' => 'fa-user-graduate', 'label' => 'Alumni']
+            ['file' => 'admin-announcement.php', 'icon' => 'fa-bullhorn', 'label' => 'Updates and Notices'],
+            ['file' => 'admin-feedback.php', 'icon' => 'fa-comments', 'label' => 'Feedback & Concerns']
         ];
 
         foreach ($menu_items as $item) {

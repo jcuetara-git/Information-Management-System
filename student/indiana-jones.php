@@ -1,58 +1,210 @@
-<!-- ================= INDIANA JONES MODAL ================= -->
-<div class="modal-overlay" id="indianaJonesModal" style="display:none;">
-    <div class="personal-modal" style="max-width: 500px;">
-        <span class="close-btn" onclick="closeIndianaJonesModal()">&times;</span>
+<?php
+session_start();
+include("../config/db.php");
+
+// Ensure the student is logged in
+if (!isset($_SESSION['role']) || $_SESSION['role'] != "student") {
+    header("Location: ../auth/login.php");
+    exit();
+}
+
+$student_no = $_SESSION['student_no'] ?? '';
+$first_name = $_SESSION['firstname'] ?? $_SESSION['first_name'] ?? 'John';
+$last_name = $_SESSION['lastname'] ?? $_SESSION['last_name'] ?? 'Doe';
+
+// Fetch submissions for this specific student from the database
+$submissions = [];
+if (!empty($student_no)) {
+    $stmt = $conn->prepare("SELECT * FROM indiana_jones_records WHERE student_no = ? ORDER BY date_recorded DESC, id DESC");
+    if ($stmt) {
+        $stmt->bind_param("s", $student_no);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $submissions = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+        $stmt->close();
+    }
+}
+?>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Indiana Jones Program</title>
+    <!-- Include your global stylesheets -->
+    <link rel="stylesheet" href="../assets/css/student-dashboard.css">
+    <link rel="stylesheet" href="../assets/css/retention-policy.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+</head>
+<body>
+
+    <!-- WRAP THE ENTIRE APP IN THIS FLEX CONTAINER -->
+    <div class="app-layout">
         
-        <form class="personal-form" method="POST" action="save-indiana-jones.php" enctype="multipart/form-data">
-            <h3 class="form-title"><i class="fa-solid fa-calendar-days"></i> Submit Indiana Jones LOU</h3>
+        <!-- Include sidebar -->
+         <?php include("../includes/student-sidebar.php"); ?>
+
+        <!-- MAIN PAGE CONTENT -->
+        <div class="main-content">
+            <div class="content-wrapper">
+                
+                <!-- Display Success/Error Alerts -->
+                <?php if (isset($_GET['success'])): ?>
+                    <div class="alert alert-success" id="alertBox">
+                        <span><i class="fa-solid fa-circle-check"></i> <?= htmlspecialchars($_GET['success']); ?></span>
+                        <button class="close-btn" onclick="document.getElementById('alertBox').style.display='none'">&times;</button>
+                    </div>
+                <?php endif; ?>
+
+                <?php if (isset($_GET['error'])): ?>
+                    <div class="alert alert-danger" id="alertBox">
+                        <span><i class="fa-solid fa-circle-exclamation"></i> <?= htmlspecialchars($_GET['error']); ?></span>
+                        <button class="close-btn" onclick="document.getElementById('alertBox').style.display='none'">&times;</button>
+                    </div>
+                <?php endif; ?>
+
+                <!-- Header & Add Button -->
+                <div class="page-header">
+                    <div>
+                        <h2 class="header-title"><i class="fa-solid fa-hat-cowboy"></i> Indiana Jones Program Submissions</h2>
+                        <p class="header-desc">View the approval status of your submitted Letters of Undertaking for absences.</p>
+                    </div>
+                    
+                    <button type="button" class="btn-add" onclick="openIndianaJonesModal()">
+                        <i class="fa-solid fa-plus"></i> Add New LOU
+                    </button>
+                </div>
+
+                <!-- Status Table -->
+                <div class="table-responsive">
+                    <table class="status-table">
+                        <thead>
+                            <tr>
+                                <th>Date Recorded</th>
+                                <th>Number of Absences</th>
+                                <th>Year Level</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php if (count($submissions) > 0): ?>
+                                <?php foreach ($submissions as $row): ?>
+                                    <?php 
+                                        $status = $row['status'] ?? 'Pending';
+                                        $badge_class = 'badge-pending';
+                                        if (strtolower($status) === 'approved') {
+                                            $badge_class = 'badge-approved';
+                                        } elseif (strtolower($status) === 'rejected') {
+                                            $badge_class = 'badge-rejected';
+                                        }
+                                    ?>
+                                    <tr>
+                                        <td><?= !empty($row['date_recorded']) ? date('M d, Y', strtotime($row['date_recorded'])) : 'N/A'; ?></td>
+                                        <td><?= htmlspecialchars($row['number_of_absences']); ?></td>
+                                        <td><?= htmlspecialchars($row['year_level']); ?></td>
+                                        <td><span class="badge <?= $badge_class; ?>"><?= htmlspecialchars($status); ?></span></td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            <?php else: ?>
+                                <tr>
+                                    <td colspan="4" style="text-align: center; color: #64748b; padding: 25px;">No Indiana Jones submissions found. Click "Add New LOU" to submit one.</td>
+                                </tr>
+                            <?php endif; ?>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        <!-- END MAIN CONTENT -->
+
+    </div> 
+    <!-- END APP LAYOUT -->
+
+    <!-- ================= INDIANA JONES MODAL ================= -->
+    <div class="modal-overlay" id="indianaJonesModal">
+        <div class="personal-modal">
+            <span class="close-btn" onclick="closeIndianaJonesModal()">&times;</span>
             
-            <p style="font-size: 13px; color: #64748b; margin-bottom: 20px;">
-                Submit your Letter of Undertaking if you have accumulated three (3) or more consecutive absences.
-            </p>
+            <form class="personal-form" method="POST" action="save-indiana-jones.php" enctype="multipart/form-data">
+                <h3 class="form-title"><i class="fa-solid fa-calendar-days"></i> Submit Indiana Jones LOU</h3>
+                
+                <p class="form-desc">
+                    Submit your Letter of Undertaking if you have accumulated three (3) or more consecutive absences.
+                </p>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
-                <div class="form-group" style="margin-bottom: 10px;">
-                    <label>First Name</label>
-                    <!-- Pre-filled and read-only to prevent tampering -->
-                    <input type="text" name="first_name" value="<?= htmlspecialchars($first_name); ?>" readonly style="background: #f1f5f9; cursor: not-allowed; border: 1px solid #cbd5e1;">
+                <div class="form-grid">
+                    <div class="form-group no-margin">
+                        <label class="form-label">First Name</label>
+                        <input type="text" name="first_name" class="form-input form-input-readonly" value="<?= htmlspecialchars($first_name); ?>" readonly>
+                    </div>
+                    <div class="form-group no-margin">
+                        <label class="form-label">Last Name</label>
+                        <input type="text" name="last_name" class="form-input form-input-readonly" value="<?= htmlspecialchars($last_name); ?>" readonly>
+                    </div>
                 </div>
-                <div class="form-group" style="margin-bottom: 10px;">
-                    <label>Last Name</label>
-                    <input type="text" name="last_name" value="<?= htmlspecialchars($last_name); ?>" readonly style="background: #f1f5f9; cursor: not-allowed; border: 1px solid #cbd5e1;">
-                </div>
-            </div>
 
-            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px;">
+                <div class="form-grid">
+                    <div class="form-group no-margin">
+                        <label class="form-label">Year Level</label>
+                        <select name="year_level" class="form-input" required>
+                            <option value="" disabled selected>Select</option>
+                            <option value="1st Year">1st Year</option>
+                            <option value="2nd Year">2nd Year</option>
+                            <option value="3rd Year">3rd Year</option>
+                            <option value="4th Year">4th Year</option>
+                        </select>
+                    </div>
+                    <div class="form-group no-margin">
+                        <label class="form-label">Number of Absences</label>
+                        <input type="number" name="number_of_absences" class="form-input" min="3" placeholder="e.g. 3" required>
+                    </div>
+                </div>
+
                 <div class="form-group">
-                    <label>Year Level</label>
-                    <select name="year_level" required style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit;">
-                        <option value="" disabled selected>Select</option>
-                        <option value="1st Year">1</option>
-                        <option value="2nd Year">2</option>
-                        <option value="3rd Year">3</option>
-                        <option value="4th Year">4</option>
-                    </select>
+                    <label class="form-label">Date of Submission (Date Recorded)</label>
+                    <input type="date" name="date_recorded" class="form-input" value="<?= date('Y-m-d'); ?>" required>
                 </div>
+
                 <div class="form-group">
-                    <label>Number of Absences</label>
-                    <input type="number" name="number_of_absences" min="3" placeholder="e.g. 3" required style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;">
+                    <label class="form-label">Upload Letter of Undertaking (PDF only)</label>
+                    <input type="file" name="undertaking_file" class="form-input form-file" accept=".pdf" required>
                 </div>
-            </div>
 
-            <div class="form-group" style="margin-bottom: 15px;">
-                <label>Date of Submission (Date Recorded)</label>
-                <input type="date" name="date_recorded" value="<?= date('Y-m-d'); ?>" required style="width: 100%; padding: 10px; border: 1px solid #cbd5e1; border-radius: 6px;">
-            </div>
-
-            <div class="form-group" style="margin-bottom: 25px;">
-                <label>Upload Letter of Undertaking (PDF only)</label>
-                <input type="file" name="undertaking_file" accept=".pdf" required style="width: 100%; padding: 10px; border: 1px dashed #94a3b8; border-radius: 6px; background-color: #f8fafc; cursor: pointer;">
-            </div>
-
-            <div class="modal-buttons">
-                <button type="button" class="cancel-btn" onclick="closeIndianaJonesModal()">Cancel</button>
-                <button type="submit" class="save-btn">Submit Document</button>
-            </div>
-        </form>
+                <div class="modal-buttons">
+                    <button type="button" class="cancel-btn" onclick="closeIndianaJonesModal()">Cancel</button>
+                    <button type="submit" class="save-btn">Submit Document</button>
+                </div>
+            </form>
+        </div>
     </div>
-</div>
+
+    <!-- JAVASCRIPT FOR MODAL TOGGLE & ALERTS -->
+    <script>
+        function openIndianaJonesModal() {
+            document.getElementById('indianaJonesModal').style.display = 'flex';
+        }
+
+        function closeIndianaJonesModal() {
+            document.getElementById('indianaJonesModal').style.display = 'none';
+        }
+
+        window.onclick = function(event) {
+            var modal = document.getElementById('indianaJonesModal');
+            if (event.target == modal) {
+                modal.style.display = "none";
+            }
+        }
+
+        // Auto-dismiss alert box after 4 seconds
+        setTimeout(function () {
+            const alertBox = document.getElementById('alertBox');
+            if (alertBox) {
+                alertBox.style.transition = "opacity 0.5s ease";
+                alertBox.style.opacity = "0";
+                setTimeout(() => alertBox.style.display = "none", 500);
+            }
+        }, 4000);
+    </script>
+</body>
+</html>

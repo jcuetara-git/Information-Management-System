@@ -1,4 +1,3 @@
-/* Form Field Overrides & Uniform Sizing */
 .form-group input[type="text"],
 .form-group input[type="email"],
 .form-group select {
@@ -28,14 +27,11 @@
     border-color: #e5e7eb;
 }
 
-/* Hidden grid balancer spacing block */
 .form-group.hidden-spacer {
     visibility: hidden;
     opacity: 0;
     pointer-events: none;
 }
-
-/* Custom Hints and Layout elements for Portfolio Submission */
 
 .optional-hint {
     font-size: 0.85rem;
@@ -49,7 +45,6 @@
     font-weight: bold;
 }
 
-/* Base Form Structure Fallbacks if needed */
 .form-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);

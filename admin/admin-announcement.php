@@ -61,8 +61,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         
         <section class="card welcome-card">
             <div class="welcome-content">
-                <h2>Announcements Management</h2>
-                <p>Broadcast updates to students, faculty, and alumni.</p>
+                <h2>Updates and Notices</h2>
+                <p>Manage and broadcast important information, updates, and notices to students, faculty, and alumni.</p>
             </div>
         </section>
 
@@ -96,7 +96,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         </section>
 
         <button class="filter-btn" style="margin-bottom: 20px; width: auto; padding: 12px 25px;" onclick="document.getElementById('announcementModal').style.display='flex'">
-            <i class="fa-solid fa-plus"></i> New Announcement
+            <i class="fa-solid fa-plus"></i> New Update or Notice
         </button>
 
         <section class="card table-container">
@@ -193,7 +193,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 <div id="announcementModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="document.getElementById('announcementModal').style.display='none'">&times;</span>
-        <h2>Create Announcement</h2>
+        <h2>Create Updates and/or Notice</h2>
         <form action="save-announcement.php" method="POST">
             <label>Title</label>
             <input type="text" name="title" placeholder="Enter announcement title" required>
