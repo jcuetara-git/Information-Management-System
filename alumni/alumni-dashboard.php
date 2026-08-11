@@ -2,167 +2,142 @@
 session_start();
 include("../config/db.php");
 
-// Protect page access - ensure user is logged in and is an alumni
+// Ensure the alumni is logged in
 if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'alumni') {
     header("Location: ../auth/login.php");
     exit();
 }
 
-$first_name = $_SESSION['first_name'] ?? 'Alumni';
-$student_no = $_SESSION['student_no'] ?? '';
+// Retrieve the student/alumni number dynamically from the session
+$student_no = $_SESSION['student_no'] ?? $_SESSION['student_number'] ?? '';
+$first_name = $_SESSION['firstname'] ?? $_SESSION['first_name'] ?? 'Alumni';
+$last_name = $_SESSION['lastname'] ?? $_SESSION['last_name'] ?? '';
 
-// Check if portfolio already exists to dynamically toggle view state
-$portfolio_exists = false;
-$stmt = $conn->prepare("SELECT id FROM alumni_profile WHERE student_no = ?");
-$stmt->bind_param("s", $student_no);
+// 1. Check if the alumni has filled out their profile information and retrieve alumni_no
+$is_profile_complete = false;
+$alumni_no = $_SESSION['alumni_no'] ?? $student_no; // Fallback to student_no if session variable is missing
+
+$check_query = "SELECT alumni_no FROM alumni_profile WHERE student_no = ? LIMIT 1"; 
+$check_stmt = $conn->prepare($check_query);
+if ($check_stmt) {
+    $check_stmt->bind_param("s", $student_no);
+    $check_stmt->execute();
+    $check_result = $check_stmt->get_result();
+    if ($check_result && $check_result->num_rows > 0) {
+        $is_profile_complete = true;
+        $row = $check_result->fetch_assoc();
+        if (!empty($row['alumni_no'])) {
+            $alumni_no = $row['alumni_no'];
+        }
+    }
+    $check_stmt->close();
+}
+
+// Fetch announcements for header dropdown
+$announcements = [];
+$conn->query("SET time_zone = '+08:00'");
+
+// Change the session identifier depending on the user type (e.g., alumni_no, student_no, or faculty_no)
+$user_id = $_SESSION['alumni_no'] ?? $_SESSION['student_no'] ?? $_SESSION['faculty_no'] ?? '';
+$role = $_SESSION['role'] ?? 'student'; // 'student', 'faculty', 'alumni'
+
+$query = "SELECT title, message, created_at, 
+          (created_at >= NOW() - INTERVAL 1 DAY) AS is_new 
+          FROM announcements 
+          WHERE status = 'published' 
+          AND (
+              target_audience = 'all' 
+              OR target_audience = ? 
+              OR (target_audience = 'specific_user' AND target_user_id = ?)
+          )
+          ORDER BY created_at DESC LIMIT 10";
+
+$stmt = $conn->prepare($query);
+$stmt->bind_param("ss", $role, $user_id);
 $stmt->execute();
-$res = $stmt->get_result();
-if ($res->num_rows > 0) {
-    $portfolio_exists = true;
+$result = $stmt->get_result();
+
+if ($result && $result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $announcements[] = $row;
+    }
 }
 $stmt->close();
 ?>
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>alumni-dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
-    <link rel="stylesheet" href="../assets/css/faculty-dashboard.css">
+    <!-- Include global stylesheets -->
+    <link rel="stylesheet" href="../assets/css/student-dashboard.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
-    <header class="logo-section">
-        <div class="logo-left">
-            <div class="logo-circle">
-                <img src="../assets/logo.png" alt="Logo">
-            </div>
-            <div class="logo-text">
-                <h2>College of Criminal Justice</h2>
-                <p>Center of Development in Criminology</p>
-            </div>
-        </div>
-        <div class="profile-menu">
-            <a href="../auth/logout.php" title="Logout">
-                <i class="fa-solid fa-sign-out-alt"></i>
-                <span class="logout-text">Logout</span>
-            </a>
-        </div>
-    </header>
+<div class="dashboard-container">
+    
+    <!-- SEPARATED HEADER INCLUDE -->
+    <?php include("../includes/header.php"); ?>
 
-    <main style="max-width: 1200px; margin: 0 auto; padding: 0 20px; box-sizing: border-box; display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: calc(100vh - 90px);">
+    <!-- LAYOUT: Sidebar + Main Content -->
+    <div class="dashboard-layout">
+    
+        <!-- Include alumni sidebar -->
+        <?php include("../includes/alumni-sidebar.php"); ?>
 
-        <!-- ================= MATCHING FACULTY SUCCESS BANNER ================= -->
-        <?php if (isset($_SESSION['success_message'])): ?>
-            <div id="successAlertBanner" style="background-color: #d1fae5; color: #065f46; padding: 15px 20px; border-radius: 12px; margin: 20px 0 0 0; border: 1px solid #a7f3d0; font-weight: 500; display: flex; align-items: center; justify-content: space-between; gap: 10px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); font-family: sans-serif; transition: opacity 0.5s ease, margin 0.5s ease, padding 0.5s ease, height 0.5s ease; overflow: hidden; opacity: 1; width: 100%; max-width: 1100px;">
-                <div style="display: flex; align-items: center; gap: 10px;">
-                    <i class="fa-solid fa-circle-check" style="color: #10b981; font-size: 1.2rem;"></i>
-                    <span><?= htmlspecialchars($_SESSION['success_message']); ?></span>
+        <!-- MAIN PAGE CONTENT -->
+        <main class="main-content">
+            <div class="content-wrapper">
+                
+                <!-- Welcome Banner -->
+                <div style="background: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 24px;">
+                    <h2 style="font-size: 24px; color: #1e293b; margin-bottom: 8px;">Hi, <?= htmlspecialchars($first_name); ?>! 👋</h2>
+                    <p style="color: #64748b; font-size: 14px;">Keep your alumni records updated and stay connected with the college using the sidebar menu.</p>
                 </div>
-                <button type="button" onclick="dismissAlertBanner()" style="background: none; border: none; color: #065f46; font-size: 1.4rem; cursor: pointer; line-height: 1; padding: 0 5px; opacity: 0.7; transition: opacity 0.2s;" onmouseover="this.style.opacity=1" onmouseout="this.style.opacity=0.7;">&times;</button>
-            </div>
-        <?php 
-            unset($_SESSION['success_message']);
-        endif; 
-        ?>
-        
-        <section class="card welcome-card" style="margin-top: 20px; width: 100%; max-width: 1100px; box-sizing: border-box;">
-            <h1>Hi, <?= htmlspecialchars($first_name) ?>!👋</h1>
-            <p>Keep your alumni records updated and stay connected.</p>
-        </section>
 
-        <!-- ANNOUNCEMENTS FEED -->
-        <section class="card announcements-section" style="width: 100%; max-width: 1100px; box-sizing: border-box;">
-            <h2 style="margin-bottom: 15px; margin-top: 0;"><i class="fa-solid fa-bullhorn" style="color: #f3b12b; margin-right: 0;"></i> Recent Announcements</h2>
-            
-            <?php
-            // Enforce synchronization of the time zone connection environment with PHP's timezone context
-            $conn->query("SET time_zone = '+08:00'");
-
-            // Announcements Query tailored for Alumni audience
-            $query = "SELECT title, message, created_at, 
-                      (created_at >= NOW() - INTERVAL 1 DAY) AS is_new 
-                      FROM announcements 
-                      WHERE status = 'published' 
-                      AND (target_audience = 'all' OR target_audience = 'alumni' OR (target_audience = 'specific_user' AND target_user_id = ?))
-                      ORDER BY created_at DESC LIMIT 5";
-
-            $stmt = $conn->prepare($query);
-            $stmt->bind_param("s", $student_no);
-            $stmt->execute();
-            $result = $stmt->get_result();
-
-            if ($result && $result->num_rows > 0): 
-                while ($row = $result->fetch_assoc()): ?>
-                    <div class="announcement-item" style="border-bottom: 1px solid #eee; padding: 10px 0; text-align: left;">
-                        <h3 style="font-size: 16px; margin: 0; display: flex; align-items: center; flex-wrap: wrap; gap: 6px;">
-                            <?= htmlspecialchars($row['title']) ?>
-                            <?php if ($row['is_new'] == 1): ?>
-                                <span style="background: #f4b42c; color: white; padding: 2px 6px; border-radius: 4px; font-size: 10px;">NEW</span>
-                            <?php endif; ?>
-                            <span style="font-size: 11px; color: #999; font-weight: normal;">
-                                • <?= date('M d, Y h:i A', strtotime($row['created_at'])) ?>
-                            </span>
-                        </h3>
-                        <p style="font-size: 14px; color: #666; margin: 5px 0; line-height: 1.4;"><?= htmlspecialchars($row['message']) ?></p>
+                <!-- Quick Stats / Status Grid -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                    <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 16px;">
+                        <div style="background: #eff6ff; color: #2563eb; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                            <i class="fa-solid fa-id-card"></i>
+                        </div>
+                        <div>
+                            <p style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">Alumni ID Number</p>
+                            <h4 style="font-size: 18px; color: #1e293b;"><?= htmlspecialchars($alumni_no); ?></h4>
+                        </div>
                     </div>
-                <?php endwhile; 
-            else: ?>
-                <p style='color:#777; text-align: left;'>No new announcements at this time.</p>
-            <?php endif; 
-            $stmt->close();
-            ?>
-        </section>
 
-        <?php if ($portfolio_exists): ?>
-            <section class="card add-info-card disabled" style="margin-top: 20px; width: 100%; max-width: 1100px; box-sizing: border-box;">
-                <div class="check-icon"></div>
-                <p>Alumni Profile Completed</p>
-            </section>
-        <?php else: ?>
-            <a href="alumni-add-portfolio.php" class="add-info-link" style="width: 100%; display: flex; justify-content: center;">
-                <section class="card add-info-card" style="margin-top: 20px; width: 100%; max-width: 1100px; box-sizing: border-box;">
-                    <div class="plus-icon"></div>
-                    <p>Add Alumni Information</p>
-                </section>
-            </a>
-        <?php endif; ?>
+                    <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 16px;">
+                        <?php if ($is_profile_complete): ?>
+                            <!-- Completed State -->
+                            <div style="background: #f0fdf4; color: #16a34a; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                                <i class="fa-solid fa-circle-check"></i>
+                            </div>
+                            <div>
+                                <p style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">Profile Status</p>
+                                <h4 style="font-size: 18px; color: #1e293b;">Completed & Saved</h4>
+                            </div>
+                        <?php else: ?>
+                            <!-- Pending State -->
+                            <div style="background: #fefce8; color: #ca8a04; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                            <div>
+                                <p style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">Profile Status</p>
+                                <h4 style="font-size: 18px; color: #1e293b;">Pending Information</h4>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </div>
 
-        <div class="button-container" style="width: 100%; max-width: 1100px; text-align: center;">
-            <button class="view-btn" onclick="window.location.href='alumni-view-record.php'">
-                <i class="fa-solid fa-file-lines"></i> View Record
-            </button>
-        </div>
+            </div>
+        </main>
+        <!-- END MAIN CONTENT -->
 
-    </main>
-
-    <!-- ================= MATCHING FACULTY ALERTS DISMISSAL SCRIPT ================= -->
-    <script>
-        function dismissAlertBanner() {
-            const banner = document.getElementById('successAlertBanner');
-            if (banner) {
-                banner.style.opacity = '0';
-                setTimeout(() => {
-                    banner.style.padding = '0px';
-                    banner.style.margin = '0px';
-                    banner.style.height = '0px';
-                    banner.style.border = 'none';
-                    setTimeout(() => banner.remove(), 500);
-                }, 400);
-            }
-        }
-
-        document.addEventListener('DOMContentLoaded', () => {
-            const banner = document.getElementById('successAlertBanner');
-            if (banner) {
-                setTimeout(() => {
-                    dismissAlertBanner();
-                }, 5000);
-            }
-        });
-    </script>
+    </div> 
+</div>
 
 </body>
 </html>

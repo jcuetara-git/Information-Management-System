@@ -5,20 +5,23 @@ include("../config/db.php");
 $error = "";
 
 if(isset($_POST['register'])) {
-    $student_no = trim($_POST['student_no']); // Acts as ID Number for all roles
+    $student_no = trim($_POST['student_no']); 
     $first_name = trim($_POST['first_name']);
     $last_name  = trim($_POST['last_name']);
     $email      = trim($_POST['email']);
     
-    // 1. Capture the selected role and fall back to student if empty or tampered with
+    // 1. Capture and validate the selected role
     $role = isset($_POST['role']) ? trim($_POST['role']) : 'student';
-    // Updated to include 'alumni' in the allowed roles array
     if (empty($role) || !in_array($role, ['student', 'faculty', 'alumni'])) {
         $role = 'student';
     }
     
-    // 2. Set year level to null for faculty and alumni, otherwise capture it for students
-    $year_level = ($role === 'faculty' || $role === 'alumni') ? null : (isset($_POST['year_level']) ? trim($_POST['year_level']) : '');
+    // 2. Explicitly force year_level to PHP null for faculty/alumni so it binds correctly as NULL in SQL
+    if ($role === 'faculty' || $role === 'alumni') {
+        $year_level = null;
+    } else {
+        $year_level = !empty($_POST['year_level']) ? trim($_POST['year_level']) : '';
+    }
     
     $password   = $_POST['password'];
     $confirm    = $_POST['confirm_password'];
@@ -40,15 +43,17 @@ if(isset($_POST['register'])) {
         if($check->num_rows > 0){
             $error = "ID Number is already registered!";
         } else {
-            // 3. Insert into database with the explicitly defined role
+            // 3. Insert into database
             $stmt = $conn->prepare("INSERT INTO users (student_no, first_name, last_name, email, year_level, password, role) VALUES (?,?,?,?,?,?,?)");
+            
+            // Note: Since $year_level can be null, bind it with 's' or handle types properly. 
+            // In MySQLi, passing a PHP null with string type "s" automatically translates to an SQL NULL.
             $stmt->bind_param("sssssss", $student_no, $first_name, $last_name, $email, $year_level, $hash, $role);
 
             if($stmt->execute()){
                 header("Location: login.php?success=" . urlencode("Account registered successfully!"));
                 exit();
             } else {
-                // MODIFIED: This will now print the EXACT database error so you know what's wrong!
                 $error = "Database Error: " . $stmt->error;
             }
         }

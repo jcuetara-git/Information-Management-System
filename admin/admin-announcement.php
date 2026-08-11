@@ -2,9 +2,17 @@
 include("../config/db.php");
 include("../config/auth.php");
 
-// Active search and filter parameters
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $audience_filter = isset($_GET['audience']) ? trim($_GET['audience']) : '';
+
+// Pagination variables
+$limit = isset($_GET['limit']) ? intval($_GET['limit']) : 5;
+if (!in_array($limit, [5, 20, 50])) {
+    $limit = 5; // Fallback default if tampered
+}
+$page = isset($_GET['page']) ? intval($_GET['page']) : 1;
+if ($page < 1) { $page = 1; }
+$offset = ($page - 1) * $limit;
 
 // --- BACKEND PROCESSING LOGIC FOR EDIT & DELETE ---
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
@@ -72,6 +80,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             </div>
             
             <form method="GET" class="filters-grid">
+                <input type="hidden" name="limit" value="<?= $limit ?>">
                 <div class="filter-group search-input">
                     <label for="search">Search Announcement</label>
                     <i class="fa-solid fa-search search-icon"></i>
@@ -99,10 +108,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             <i class="fa-solid fa-plus"></i> New Update or Notice
         </button>
 
-        <section class="card table-container">
+        <section class="card table-container" style="padding: 0; overflow: hidden;">
             <div class="table-wrapper">
                 <?php
-                // Build dynamic SQL query based on search inputs
+                // 1. Get total records count for pagination math
+                $countQuery = "SELECT COUNT(*) as total FROM announcements WHERE 1=1";
+                $countTypes = "";
+                $countParams = [];
+
+                if (!empty($search)) {
+                    $countQuery .= " AND (title LIKE ? OR message LIKE ?)";
+                    $searchTerm = "%" . $search . "%";
+                    $countParams[] = $searchTerm;
+                    $countParams[] = $searchTerm;
+                    $countTypes .= "ss";
+                }
+
+                if (!empty($audience_filter)) {
+                    $countQuery .= " AND target_audience = ?";
+                    $countParams[] = $audience_filter;
+                    $countTypes .= "s";
+                }
+
+                $stmtCount = $conn->prepare($countQuery);
+                if (!empty($countParams)) {
+                    $stmtCount->bind_param($countTypes, ...$countParams);
+                }
+                $stmtCount->execute();
+                $totalRows = $stmtCount->get_result()->fetch_assoc()['total'];
+                $totalPages = ceil($totalRows / $limit);
+                $stmtCount->close();
+
+                // 2. Fetch paginated records
                 $query = "SELECT * FROM announcements WHERE 1=1";
                 $types = "";
                 $params = [];
@@ -121,13 +158,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                     $types .= "s";
                 }
 
-                $query .= " ORDER BY created_at DESC";
+                $query .= " ORDER BY created_at DESC LIMIT ? OFFSET ?";
+                $params[] = $limit;
+                $params[] = $offset;
+                $types .= "ii";
 
-                // Prepare and execute the statement
                 $stmt = $conn->prepare($query);
-                if (!empty($params)) {
-                    $stmt->bind_param($types, ...$params);
-                }
+                $stmt->bind_param($types, ...$params);
                 $stmt->execute();
                 $result = $stmt->get_result();
                 
@@ -154,7 +191,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                                     </span>
                                 </td>
                                 <td data-label="Actions" class="action-btns">
-                                    <!-- Added data attributes and title context for hover support -->
                                     <button class="edit-btn-table" 
                                             title="Edit Announcement"
                                             data-id="<?= $row['id'] ?>"
@@ -176,10 +212,38 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
                         <?php endwhile; ?>
                     </tbody>
                 </table>
+
+                <!-- Pagination Control Bar -->
+                <div class="pagination-container">
+                    <div class="rows-per-page">
+                        <label for="limitSelect">Show:</label>
+                        <select id="limitSelect" onchange="changeRowsPerPage(this.value)">
+                            <option value="5" <?= $limit == 5 ? 'selected' : '' ?>>5</option>
+                            <option value="20" <?= $limit == 20 ? 'selected' : '' ?>>20</option>
+                            <option value="50" <?= $limit == 50 ? 'selected' : '' ?>>50</option>
+                        </select>
+                        <span>entries (Total: <?= $totalRows ?>)</span>
+                    </div>
+
+                    <div class="pagination-links">
+                        <?php if ($page > 1): ?>
+                            <a href="?page=1&limit=<?= $limit ?>&search=<?= urlencode($search) ?>&audience=<?= urlencode($audience_filter) ?>"><i class="fa-solid fa-angle-double-left"></i></a>
+                            <a href="?page=<?= $page - 1 ?>&limit=<?= $limit ?>&search=<?= urlencode($search) ?>&audience=<?= urlencode($audience_filter) ?>"><i class="fa-solid fa-angle-left"></i></a>
+                        <?php endif; ?>
+
+                        <span class="current">Page <?= $page ?> of <?= max(1, $totalPages) ?></span>
+
+                        <?php if ($page < $totalPages): ?>
+                            <a href="?page=<?= $page + 1 ?>&limit=<?= $limit ?>&search=<?= urlencode($search) ?>&audience=<?= urlencode($audience_filter) ?>"><i class="fa-solid fa-angle-right"></i></a>
+                            <a href="?page=<?= $totalPages ?>&limit=<?= $limit ?>&search=<?= urlencode($search) ?>&audience=<?= urlencode($audience_filter) ?>"><i class="fa-solid fa-angle-double-right"></i></a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
                 <?php else: ?>
                 <div id="noDataMessage" style="text-align: center; padding: 40px; color: #777;">
                     <i class="fa-solid fa-folder-open" style="font-size: 40px; margin-bottom: 10px; display: block; opacity: 0.5;"></i>
-                    <p>No announcements found. Click "New Announcement" to create one.</p>
+                    <p>No announcements found. Click "New Update or Notice" to create one.</p>
                 </div>
                 <?php endif; 
                 $stmt->close();
@@ -287,7 +351,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
 </div>
 
 <script>
-    // Handles closing when clicking outside any modal backdrop overlay
+    function changeRowsPerPage(val) {
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('limit', val);
+        urlParams.set('page', 1); // Reset to page 1 on limit change
+        window.location.search = urlParams.toString();
+    }
+
     window.onclick = function(event) {
         let createModal = document.getElementById('announcementModal');
         let editModal = document.getElementById('editAnnouncementModal');
@@ -311,7 +381,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
     }
 
     document.addEventListener('DOMContentLoaded', function () {
-        // Edit Button Click Handlers
         const editButtons = document.querySelectorAll('.edit-btn-table');
         editButtons.forEach(button => {
             button.addEventListener('click', function () {
@@ -335,7 +404,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             });
         });
 
-        // Delete Button Click Handlers
         const deleteButtons = document.querySelectorAll('.delete-btn');
         deleteButtons.forEach(button => {
             button.addEventListener('click', function () {

@@ -2,6 +2,10 @@
 session_start();
 include("../config/db.php");
 
+// Enable error reporting temporarily for debugging redirects/paths
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 $error = "";
 
 if(isset($_POST['login'])){
@@ -18,20 +22,31 @@ if(isset($_POST['login'])){
         $user = $result->fetch_assoc();
         if(password_verify($password, $user['password'])){
             $_SESSION['user_id'] = $user['id'];
-            $_SESSION['student_no'] = $user['student_no'];
             $_SESSION['role'] = $user['role'];
             $_SESSION['first_name'] = $user['first_name'] ?? '';
             $_SESSION['last_name']  = $user['last_name'] ?? '';
             $_SESSION['email'] = $user['email'] ?? '';
 
+            // Normalize role to lowercase to prevent capitalization mismatches
+            $role = strtolower(trim($user['role']));
+
+            // Assign role-specific identification numbers based on user type
+            if($role == "student") {
+                $_SESSION['student_no'] = $user['student_no'];
+            } elseif($role == "faculty") {
+                $_SESSION['faculty_no'] = $user['student_no']; // Maps central ID to faculty_no session
+            } elseif($role == "alumni") {
+                $_SESSION['alumni_no'] = $user['student_no'];  // Maps central ID to alumni_no session
+            }
+
             // Dynamic Path Routing Redirection based on roles
-            if($user['role'] == "admin"){
+            if($role == "admin"){
                 header("Location: ../admin/admin-dashboard.php");
                 exit();
-            } elseif($user['role'] == "faculty") {
+            } elseif($role == "faculty") {
                 header("Location: ../faculty/faculty-dashboard.php");
                 exit();
-            } elseif($user['role'] == "alumni") {
+            } elseif($role == "alumni") {
                 header("Location: ../alumni/alumni-dashboard.php");
                 exit();
             } else {

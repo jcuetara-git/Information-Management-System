@@ -7,10 +7,29 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] != "admin") {
     exit();
 }
 
-// FIX 1: Changed 'date_recorded' to 'created_at' to match the database column name
-$query = "SELECT * FROM retention_records ORDER BY created_at DESC";
-$result = $conn->query($query);
+// Pagination variables
+$limit = isset($_GET['limit']) ? intval($_GET['limit']) : 5;
+if (!in_array($limit, [5, 20, 50])) {
+    $limit = 5; // Fallback default if tampered
+}
+$page = isset($_GET['page']) ? intval($_GET['page']) : 1;
+if ($page < 1) { $page = 1; }
+$offset = ($page - 1) * $limit;
+
+// Fetch total records count for pagination
+$countQuery = "SELECT COUNT(*) as total FROM retention_records";
+$countResult = $conn->query($countQuery);
+$totalRows = $countResult ? $countResult->fetch_assoc()['total'] : 0;
+$totalPages = ceil($totalRows / $limit);
+
+// FIX 1: Changed 'date_recorded' to 'created_at' to match the database column name + added LIMIT & OFFSET
+$query = "SELECT * FROM retention_records ORDER BY created_at DESC LIMIT ? OFFSET ?";
+$stmt = $conn->prepare($query);
+$stmt->bind_param("ii", $limit, $offset);
+$stmt->execute();
+$result = $stmt->get_result();
 $submissions = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+$stmt->close();
 
 // Fetch Stats directly from retention_records table
 $stat_query = "SELECT 
@@ -37,6 +56,7 @@ $stats = $stat_result ? $stat_result->fetch_assoc() : ['total' => 0, 'pending' =
     <link rel="stylesheet" href="../assets/css/admin-dashboard.css">
     <link rel="stylesheet" href="../assets/css/manage-students.css">
     <link rel="stylesheet" href="../assets/css/admin-retention.css">
+    <link rel="stylesheet" href="../assets/css/admin-announcement.css">
 </head>
 
 <body>
@@ -93,7 +113,7 @@ $stats = $stat_result ? $stat_result->fetch_assoc() : ['total' => 0, 'pending' =
             </div>
 
             <!-- Table Container -->
-            <section class="card table-container" aria-label="Submissions List">
+            <section class="card table-container" aria-label="Submissions List" style="padding: 0; overflow: hidden;">
                 <div class="table-wrapper">
                     <?php if (count($submissions) > 0): ?>
                         <table>
@@ -136,8 +156,36 @@ $stats = $stat_result ? $stat_result->fetch_assoc() : ['total' => 0, 'pending' =
                                 <?php endforeach; ?>
                             </tbody>
                         </table>
+
+                        <!-- Pagination Control Bar -->
+                        <div class="pagination-container">
+                            <div class="rows-per-page">
+                                <label for="limitSelect">Show:</label>
+                                <select id="limitSelect" onchange="changeRowsPerPage(this.value)">
+                                    <option value="5" <?= $limit == 5 ? 'selected' : '' ?>>5</option>
+                                    <option value="20" <?= $limit == 20 ? 'selected' : '' ?>>20</option>
+                                    <option value="50" <?= $limit == 50 ? 'selected' : '' ?>>50</option>
+                                </select>
+                                <span>entries (Total: <?= $totalRows ?>)</span>
+                            </div>
+
+                            <div class="pagination-links">
+                                <?php if ($page > 1): ?>
+                                    <a href="?page=1&limit=<?= $limit ?>"><i class="fa-solid fa-angle-double-left"></i></a>
+                                    <a href="?page=<?= $page - 1 ?>&limit=<?= $limit ?>"><i class="fa-solid fa-angle-left"></i></a>
+                                <?php endif; ?>
+
+                                <span class="current">Page <?= $page ?> of <?= max(1, $totalPages) ?></span>
+
+                                <?php if ($page < $totalPages): ?>
+                                    <a href="?page=<?= $page + 1 ?>&limit=<?= $limit ?>"><i class="fa-solid fa-angle-right"></i></a>
+                                    <a href="?page=<?= $totalPages ?>&limit=<?= $limit ?>"><i class="fa-solid fa-angle-double-right"></i></a>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+
                     <?php else: ?>
-                        <div class="no-results">
+                        <div class="no-results" style="padding: 40px; text-align: center;">
                             <div class="no-results-icon"><i class="fa-solid fa-folder-open"></i></div>
                             <p>No retention policy submissions found.</p>
                         </div>
@@ -154,7 +202,7 @@ $stats = $stat_result ? $stat_result->fetch_assoc() : ['total' => 0, 'pending' =
             <h3 class="modal-title"><i class="fa-solid fa-edit"></i> Review Submission</h3>
             <form method="POST" action="update-program-status.php">
                 <input type="hidden" name="submission_id" id="modalSubmissionId">
-                <input type="hidden" name="return_url" value="admin-retention.php">
+                <input type="hidden" name="return_url" value="admin-retention.php?page=<?= $page ?>&limit=<?= $limit ?>">
 
                 <div class="modal-form-group">
                     <label class="modal-label">Update Status</label>
@@ -175,6 +223,13 @@ $stats = $stat_result ? $stat_result->fetch_assoc() : ['total' => 0, 'pending' =
     </div>
 
     <script>
+        function changeRowsPerPage(val) {
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('limit', val);
+            urlParams.set('page', 1); // Reset to page 1 on limit change
+            window.location.search = urlParams.toString();
+        }
+
         function openReviewModal(data) {
             document.getElementById('modalSubmissionId').value = data.id;
             document.getElementById('reviewModal').style.display = 'flex';

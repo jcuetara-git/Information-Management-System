@@ -1,4 +1,4 @@
-<?php 
+<?php
 include("../config/db.php");
 include("../config/auth.php");
 
@@ -7,14 +7,14 @@ if($_SESSION['role'] != "admin"){
     exit();
 }
 
-// Handle Delete
+// Handle Delete Row Data (Updated to use student_no for the users table target for alumni)
 if(isset($_GET['delete'])){
     $id = $_GET['delete'];
     $stmt = $conn->prepare("DELETE FROM users WHERE student_no = ? AND role = 'alumni'");
     $stmt->bind_param("s", $id);
     $stmt->execute();
     
-    $stmt2 = $conn->prepare("DELETE FROM alumni_profile WHERE student_no = ?");
+    $stmt2 = $conn->prepare("DELETE FROM alumni_profile WHERE alumni_no = ?");
     $stmt2->bind_param("s", $id);
     $stmt2->execute();
     
@@ -24,35 +24,41 @@ if(isset($_GET['delete'])){
 
 // Get filter parameters
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
-$year_graduated_filter = isset($_GET['year_graduated']) ? trim($_GET['year_graduated']) : '';
+$year_filter = isset($_GET['year_graduated']) ? trim($_GET['year_graduated']) : '';
 
-// Build query with filters matching your specific alumni schema fields
-$query = "SELECT u.student_no, u.first_name, u.last_name, p.email_address, p.contact_number, p.year_graduated, p.current_job
+$query = "SELECT u.student_no AS alumni_no, u.first_name, u.last_name, u.email, 
+                 p.contact_number, p.year_graduated, p.current_job
           FROM users u 
-          LEFT JOIN alumni_profile p ON u.student_no = p.student_no 
+          LEFT JOIN alumni_profile p ON u.student_no = p.alumni_no 
           WHERE u.role = 'alumni'";
 
 $params = [];
 $types = '';
 
-// Add search filter
+// Add search filter parameters
 if(!empty($search)){
-    $query .= " AND (u.student_no LIKE ? OR u.first_name LIKE ? OR u.last_name LIKE ? OR p.email_address LIKE ? OR p.current_job LIKE ?)";
+    $query .= " AND (u.student_no LIKE ? OR u.first_name LIKE ? OR u.last_name LIKE ? OR u.email LIKE ?)";
     $search_param = '%' . $search . '%';
-    array_push($params, $search_param, $search_param, $search_param, $search_param, $search_param);
-    $types .= 'sssss';
+    array_push($params, $search_param, $search_param, $search_param, $search_param);
+    $types .= 'ssss';
 }
 
-// Add graduation year filter
-if(!empty($year_graduated_filter)){
+// Add year graduated filter
+if(!empty($year_filter)){
     $query .= " AND p.year_graduated = ?";
-    $params[] = $year_graduated_filter;
+    $params[] = $year_filter;
     $types .= 's';
 }
 
 $query .= " ORDER BY u.first_name ASC";
 
 $stmt = $conn->prepare($query);
+
+// Safety checkpoint: catch any alternative syntax mismatches instantly
+if (!$stmt) {
+    die("SQL Error: " . $conn->error);
+}
+
 if(!empty($params)){
     $stmt->bind_param($types, ...$params);
 }
@@ -103,8 +109,8 @@ $total_results = $result->num_rows;
 
         <section class="card welcome-card" aria-label="Welcome Section">
             <div class="welcome-content">
-                <h2>Manage Alumni</h2>
-                <p>Filter, view, edit, and delete alumni information.</p>
+                <h2>Manage Alumni Records</h2>
+                <p>Filter, view, edit, and manage alumni profiles.</p>
             </div>
         </section>
 
@@ -122,12 +128,12 @@ $total_results = $result->num_rows;
             <form method="GET" class="filters-grid">
                 <div class="filter-group search-input">
                     <label for="search">Search Alumni</label>
-                    <input type="text" id="search" name="search" placeholder="ID, Name, Email, or Job" value="<?= htmlspecialchars($search) ?>">
+                    <input type="text" id="search" name="search" placeholder="ID, Name, or Email" value="<?= htmlspecialchars($search) ?>">
                 </div>
 
                 <div class="filter-group">
                     <label for="year_graduated">Year Graduated</label>
-                    <input type="number" id="year_graduated" name="year_graduated" placeholder="e.g. 2024" min="1900" max="2100" value="<?= htmlspecialchars($year_graduated_filter) ?>" style="padding: 10px 14px; border: 1px solid #ccc; border-radius: 6px; font-size: 14px; width: 100%;">
+                    <input type="text" id="year_graduated" name="year_graduated" placeholder="e.g. 2023" value="<?= htmlspecialchars($year_filter) ?>">
                 </div>
 
                 <div class="filter-buttons">
@@ -138,18 +144,18 @@ $total_results = $result->num_rows;
         </section>
 
         <div class="result-count">
-            Showing <strong><?= $total_results ?></strong> alumni record<?= $total_results !== 1 ? 's' : '' ?>
+            Showing <strong><?= $total_results ?></strong> alumni member<?= $total_results !== 1 ? 's' : '' ?>
         </div>
 
-        <section class="card table-container" aria-label="Alumni List">
+        <section class="card table-container" aria-label="Alumni Records List">
             <div class="table-wrapper">
                 <?php if($total_results > 0): ?>
                 <table>
                     <thead>
                         <tr>
-                            <th>ID Number</th>
+                            <th>Alumni No</th>
                             <th>Name</th>
-                            <th>Email Address</th>
+                            <th>Email</th>
                             <th>Contact Number</th>
                             <th>Year Graduated</th>
                             <th>Current Job</th>
@@ -159,20 +165,20 @@ $total_results = $result->num_rows;
                     <tbody>
                         <?php while($row = $result->fetch_assoc()): ?>
                         <tr>
-                            <td data-label="ID Number"><?= htmlspecialchars($row['student_no']) ?></td>
-                            <td data-label="Name"><?= htmlspecialchars($row['first_name'] . " " . $row['last_name']) ?></td>
-                            <td data-label="Email Address"><?= htmlspecialchars($row['email_address'] ?? 'N/A') ?></td>
-                            <td data-label="Contact Number"><?= htmlspecialchars($row['contact_number'] ?? 'N/A') ?></td>
-                            <td data-label="Year Graduated"><?= htmlspecialchars($row['year_graduated'] ?? 'N/A') ?></td>
-                            <td data-label="Current Job"><?= htmlspecialchars($row['current_job'] ?: 'Unspecified') ?></td>
+                            <td><?= htmlspecialchars($row['alumni_no']) ?></td>
+                            <td><?= htmlspecialchars($row['first_name'] . ' ' . $row['last_name']) ?></td>
+                            <td><?= htmlspecialchars($row['email']) ?></td>
+                            <td><?= htmlspecialchars($row['contact_number'] ?? 'N/A') ?></td>
+                            <td><?= htmlspecialchars($row['year_graduated'] ?? 'N/A') ?></td>
+                            <td><?= htmlspecialchars($row['current_job'] ?? 'N/A') ?></td>
                             <td data-label="Actions" class="action-btns">
-                                <a href="admin-view-alumni.php?id=<?= urlencode($row['student_no']) ?>" class="view-btn-table" title="View Alumni Profile" aria-label="View alumni profile">
+                                <a href="admin-view-alumni.php?id=<?= urlencode($row['alumni_no']) ?>" class="view-btn-table" title="View Alumni" aria-label="View alumni <?= htmlspecialchars($row['first_name'] . " " . $row['last_name']) ?>">
                                     <i class="fa-solid fa-eye"></i>
                                 </a>
-                                <a href="admin-edit-alumni.php?id=<?= urlencode($row['student_no']) ?>" class="edit-btn-table" title="Edit Alumni Profile" aria-label="Edit alumni profile">
+                                <a href="admin-edit-alumni.php?id=<?= urlencode($row['alumni_no']) ?>" class="edit-btn-table" title="Edit Alumni" aria-label="Edit alumni <?= htmlspecialchars($row['first_name'] . " " . $row['last_name']) ?>">
                                     <i class="fa-solid fa-edit"></i>
                                 </a>
-                                <a href="manage-alumni.php?delete=<?= urlencode($row['student_no']) ?>" class="delete-btn" onclick="return confirm('Are you sure you want to completely remove this alumni record?')" title="Delete Alumni Record" aria-label="Delete alumni record">
+                                <a href="manage-alumni.php?delete=<?= urlencode($row['alumni_no']) ?>" class="delete-btn" onclick="return confirm('Are you sure you want to delete this alumni member record permanently?')" title="Delete Alumni" aria-label="Delete alumni <?= htmlspecialchars($row['first_name'] . " " . $row['last_name']) ?>">
                                     <i class="fa-solid fa-trash"></i>
                                 </a>
                             </td>
@@ -183,14 +189,14 @@ $total_results = $result->num_rows;
                 <?php else: ?>
                 <div class="no-results">
                     <div class="no-results-icon"><i class="fa-solid fa-search"></i></div>
-                    <p>No alumni profiles found matching those conditions.</p>
+                    <p>No alumni records found. Try adjusting your search filters.</p>
                 </div>
                 <?php endif; ?>
             </div>
         </section>
 
         <div class="button-container">
-            <button class="view-btn" onclick="window.location.href='admin-alumni.php'">
+            <button class="view-btn" onclick="window.location.href='admin-dashboard.php'">
                 <i class="fa-solid fa-arrow-left"></i> Back 
             </button>
         </div>
@@ -200,6 +206,7 @@ $total_results = $result->num_rows;
 </div>
 
 <script>
+    // Automatically fade alert blocks smoothly after 4 seconds
     setTimeout(function() {
         const alertBox = document.getElementById('alertBox');
         if (alertBox) {

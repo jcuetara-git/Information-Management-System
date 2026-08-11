@@ -1,35 +1,32 @@
 <?php
-include("../config/auth.php");
-include("../config/db.php"); 
+session_start();
+include("../config/db.php");
 
-// Ensure logged in as student
-if(!isset($_SESSION['role']) || $_SESSION['role'] != "student"){
+// Ensure the student is logged in
+if (!isset($_SESSION['role']) || $_SESSION['role'] != "student") {
     header("Location: ../auth/login.php");
     exit();
 }
 
 $student_no = $_SESSION['student_no'] ?? '';
-$first_name = $_SESSION['first_name'] ?? '';
-$last_name  = $_SESSION['last_name'] ?? '';
+$first_name = $_SESSION['firstname'] ?? $_SESSION['first_name'] ?? 'John';
+$last_name = $_SESSION['lastname'] ?? $_SESSION['last_name'] ?? 'Doe';
 
-// Check if student has already filled up personal information
-$info_filled = false;
-if (!empty($student_no)) {
-    $query = "SELECT id FROM student_profile WHERE student_no = ?";
-    $stmt = $conn->prepare($query);
-    
-    if ($stmt) {
-        $stmt->bind_param("s", $student_no); 
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result->num_rows > 0) {
-            $info_filled = true;
-        }
-        $stmt->close();
+// 1. Check if the student has filled out their personal information
+$is_profile_complete = false;
+$check_query = "SELECT 1 FROM student_profile WHERE student_no = ? LIMIT 1"; // Replace 'student_personal_info' with your actual table name
+$check_stmt = $conn->prepare($check_query);
+if ($check_stmt) {
+    $check_stmt->bind_param("s", $student_no);
+    $check_stmt->execute();
+    $check_result = $check_stmt->get_result();
+    if ($check_result && $check_result->num_rows > 0) {
+        $is_profile_complete = true;
     }
+    $check_stmt->close();
 }
 
-// Fetch announcements for dropdown
+// Fetch announcements for header dropdown
 $announcements = [];
 $conn->query("SET time_zone = '+08:00'");
 $query = "SELECT title, message, created_at, 
@@ -40,7 +37,7 @@ $query = "SELECT title, message, created_at,
           ORDER BY created_at DESC LIMIT 10";
 
 $stmt = $conn->prepare($query);
-$stmt->bind_param("s", $_SESSION['student_no']);
+$stmt->bind_param("s", $student_no);
 $stmt->execute();
 $result = $stmt->get_result();
 
@@ -51,249 +48,80 @@ if ($result && $result->num_rows > 0) {
 }
 $stmt->close();
 ?>
-
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>student-dashboard</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    <!-- Include global stylesheets -->
     <link rel="stylesheet" href="../assets/css/student-dashboard.css">
-    <link rel="stylesheet" href="../assets/css/student-view-record.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
 
-<!-- Success Alert -->
-    <?php if (isset($_GET['success'])): ?>
-        <div class="alert alert-success" id="alertBox">
-            <i class="fa-solid fa-circle-check"></i> 
-            <span>Student information saved successfully!</span>
-            <button class="close-btn" onclick="document.getElementById('alertBox').style.display='none'">&times;</button>
-        </div>
-    <?php endif; ?>
-
-    <?php if (isset($_GET['error'])): ?>
-        <div class="alert alert-danger" id="alertBox">
-            <i class="fa-solid fa-circle-exclamation"></i> 
-            <?= htmlspecialchars($_GET['error']) ?>
-            <button class="close-btn" onclick="document.getElementById('alertBox').style.display='none'">&times;</button>
-        </div>
-    <?php endif; ?>
-
 <div class="dashboard-container">
-    <!-- HEADER -->
-    <div class="logo-section">
-        <div class="logo-left">
-            <div class="logo-circle">
-                <img src="../assets/logo.png" alt="Logo">
-            </div>
+    
+    <!-- SEPARATED HEADER INCLUDE -->
+    <?php include("../includes/header.php"); ?>
 
-            <div class="logo-text">
-                <h2>College of Criminal Justice</h2>
-                <p>Center of Development in Criminology</p>
-            </div>
-        </div>
-
-        <div class="header-right">
-            <!-- NOTIFICATION DROPDOWN -->
-            <div class="notification-container">
-                <button class="notification-btn" id="notifBtn">
-                    <i class="fa-solid fa-bell"></i><span class="notif-badge" id="notifBadge" <?= count($announcements) == 0 ? 'style="display:none;"' : '' ?>><?= count($announcements); ?></span>
-                </button>
-                <div class="notification-dropdown" id="notifDropdown">
-                    <div class="notification-header">Recent Notifications</div>
-                    <?php if (count($announcements) > 0): ?>
-                        <?php foreach ($announcements as $announce): ?>
-                            <div class="notification-item">
-                                <div class="notif-title">
-                                    <?= htmlspecialchars($announce['title']) ?>
-                                    <?php if ($announce['is_new'] == 1): ?>
-                                        <span class="notif-new-badge">NEW</span>
-                                    <?php endif; ?>
-                                </div>
-                                <div class="notif-time"><?= date('M d, Y h:i A', strtotime($announce['created_at'])) ?></div>
-                                <div class="notif-msg"><?= htmlspecialchars($announce['message']) ?></div>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <div style="padding: 20px; text-align: center; color: #94a3b8; font-size: 13px;">
-                            No announcements
-                        </div>
-                    <?php endif; ?>
-                </div>
-            </div>
-
-            <!-- PROFILE DROPDOWN -->
-            <div class="profile-container">
-                <div class="profile-menu" id="profileBtn">
-                    <div class="profile-icon">
-                        <i class="fa-solid fa-user"></i>
-                    </div>
-                    <span class="profile-name"><?= htmlspecialchars($first_name); ?></span>
-                </div>
-                <div class="profile-dropdown" id="profileDropdown">
-                    <div class="profile-dropdown-header">
-                        <div class="profile-avatar"><?= strtoupper(substr($first_name, 0, 1)); ?></div>
-                        <div class="profile-info">
-                            <h4><?= htmlspecialchars($first_name . ' ' . $last_name); ?></h4>
-                            <p><?= htmlspecialchars($student_no); ?></p>
-                        </div>
-                    </div>
-                    <a href="../auth/logout.php" class="profile-logout" id="logoutBtn">
-                        <i class="fa-solid fa-sign-out-alt"></i> Logout
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- LAYOUT: Sidebar + Main -->
+    <!-- LAYOUT: Sidebar + Main Content -->
     <div class="dashboard-layout">
-
-        <?php include("../includes/student-sidebar.php"); ?>
         
-        <!-- MAIN -->
-        <main class="main-content">
-            <!-- WELCOME BANNER -->
-            <div class="card welcome-card">
-                <h1>Welcome back, <?= htmlspecialchars($first_name); ?>! 👋</h1>
-                <p>Use the sidebar navigation menu on the left to manage your student profile, view your records, and check academic guidelines.</p>
-            </div>
+        <!-- Include sidebar -->
+        <?php include("../includes/student-sidebar.php"); ?>
 
-            <!-- Quick Status Summary Widget -->
-            <div class="dashboard-status-banner">
-                <div class="status-item">
-                    <i class="fa-solid fa-id-card"></i>
-                    <div>
-                        <span>Student Number</span>
-                        <strong><?= htmlspecialchars($student_no); ?></strong>
+        <!-- MAIN PAGE CONTENT -->
+        <main class="main-content">
+            <div class="content-wrapper">
+                
+                <!-- Welcome Banner -->
+                <div style="background: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 24px;">
+                    <h2 style="font-size: 24px; color: #1e293b; margin-bottom: 8px;">Welcome back, <?= htmlspecialchars($first_name); ?>! 👋</h2>
+                    <p style="color: #64748b; font-size: 14px;">Use the sidebar navigation menu on the left to manage your student profile, view your records, and check academic guidelines.</p>
+                </div>
+
+                <!-- Quick Stats / Status Grid -->
+                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
+                    <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 16px;">
+                        <div style="background: #eff6ff; color: #2563eb; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                            <i class="fa-solid fa-id-card"></i>
+                        </div>
+                        <div>
+                            <p style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">Student Number</p>
+                            <h4 style="font-size: 18px; color: #1e293b;"><?= htmlspecialchars($student_no); ?></h4>
+                        </div>
+                    </div>
+
+                    <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 16px;">
+                        <?php if ($is_profile_complete): ?>
+                            <!-- Completed State -->
+                            <div style="background: #f0fdf4; color: #16a34a; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                                <i class="fa-solid fa-circle-check"></i>
+                            </div>
+                            <div>
+                                <p style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">Profile Status</p>
+                                <h4 style="font-size: 18px; color: #1e293b;">Completed & Saved</h4>
+                            </div>
+                        <?php else: ?>
+                            <!-- Pending State -->
+                            <div style="background: #fefce8; color: #ca8a04; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">
+                                <i class="fa-solid fa-triangle-exclamation"></i>
+                            </div>
+                            <div>
+                                <p style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">Profile Status</p>
+                                <h4 style="font-size: 18px; color: #1e293b;">Pending Information</h4>
+                            </div>
+                        <?php endif; ?>
                     </div>
                 </div>
-                <div class="status-item">
-                    <i class="fa-solid fa-circle-check" style="color: <?= $info_filled ? '#10b981' : '#f59e0b' ?>;"></i>
-                    <div>
-                        <span>Profile Status</span>
-                        <strong><?= $info_filled ? 'Completed & Saved' : 'Pending Information' ?></strong>
-                    </div>
-                </div>
+
             </div>
         </main>
-    </div>
+        <!-- END MAIN CONTENT -->
+
+    </div> 
 </div>
 
-<!-- ================= ADD INFO MODAL ================= -->
-<?php include("student-personal-info-modal.php"); ?>
-
-<script src="../assets/js/script.js"></script>
-<script>
-// === SIDEBAR TOGGLE SCRIPT ===
-    document.addEventListener('DOMContentLoaded', function() {
-        const sidebarToggle = document.getElementById('sidebarToggle');
-        const appSidebar = document.getElementById('appSidebar');
-
-        if (sidebarToggle && appSidebar) {
-            sidebarToggle.addEventListener('click', function(e) {
-                e.stopPropagation();
-                appSidebar.classList.toggle('collapsed');
-            });
-        }
-        
-        // Handle Sidebar item active click states
-        const navItems = document.querySelectorAll('.sidebar-nav .nav-item');
-        navItems.forEach(item => {
-            item.addEventListener('click', function() {
-                if(this.hasAttribute('disabled')) return;
-                navItems.forEach(nav => nav.classList.remove('nav-active'));
-                this.classList.add('nav-active');
-            });
-        });
-    });
-
-    // Add Info Modal Functions
-    function openInfoModal() {
-        document.getElementById('infoModal').style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeModal() {
-        document.getElementById('infoModal').style.display = 'none';
-        document.body.style.overflow = 'auto';
-    }
-
-    function confirmSave() {
-        return confirm("Are you sure you want to save this information?");
-    }
-
-    setTimeout(function() {
-        const alertBox = document.getElementById('alertBox');
-        if (alertBox) {
-            alertBox.style.transition = "opacity 0.5s ease";
-            alertBox.style.opacity = "0";
-            setTimeout(() => alertBox.style.display = "none", 500);
-        }
-    }, 4000);
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const notifBtn = document.getElementById('notifBtn');
-        const notifDropdown = document.getElementById('notifDropdown');
-        const profileBtn = document.getElementById('profileBtn');
-        const profileDropdown = document.getElementById('profileDropdown');
-        const infoModal = document.getElementById('infoModal');
-        const notifBadge = document.getElementById('notifBadge');
-        const logoutBtn = document.getElementById('logoutBtn');
-
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', function(e) {
-                if (profileDropdown) profileDropdown.classList.remove('active');
-            });
-        }
-
-        if (notifBtn) {
-            notifBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                notifDropdown.classList.toggle('active');
-                if (profileDropdown) profileDropdown.classList.remove('active');
-
-                if (notifBadge && notifDropdown.classList.contains('active')) {
-                    notifBadge.style.display = 'none';
-                }
-            });
-        }
-
-        if (profileBtn) {
-            profileBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                profileDropdown.classList.toggle('active');
-                if (notifDropdown) notifDropdown.classList.remove('active');
-            });
-        }
-
-        document.addEventListener('click', function(event) {
-            if (notifDropdown && !notifBtn.contains(event.target) && !notifDropdown.contains(event.target)) {
-                notifDropdown.classList.remove('active');
-            }
-            if (profileDropdown && !profileBtn.contains(event.target) && !profileDropdown.contains(event.target)) {
-                profileDropdown.classList.remove('active');
-            }
-            if (event.target === infoModal) {
-                closeModal();
-            }
-        });
-
-        const dobInput = document.getElementById('dob');
-        const ageInput = document.getElementById('age');
-        if (dobInput && ageInput) {
-            dobInput.addEventListener('change', function() {
-                const dob = new Date(this.value);
-                const today = new Date();
-                let age = today.getFullYear() - dob.getFullYear();
-                const m = today.getMonth() - dob.getMonth();
-                if (m < 0 || (m === 0 && today.getDate() < dob.getDate())) { age--; }
-                ageInput.value = age;
-            });
-        }
-    });
-</script>
 </body>
 </html>

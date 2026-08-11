@@ -1,0 +1,58 @@
+/* ================= ROLE TABS & BADGES ================= */
+.concerns-tabs-container {
+    display: flex;
+    gap: 10px;
+    margin-top: 25px;
+    margin-bottom: -10px;
+    background: #ffffff;
+    padding: 10px 15px;
+    border-radius: 12px;
+    box-shadow: var(--shadow-sm);
+    width: fit-content;
+}
+
+.concern-tab {
+    padding: 8px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    color: var(--text-color);
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.2s ease;
+    background: transparent;
+}
+
+.concern-tab:hover {
+    background: rgba(244, 180, 44, 0.15);
+    color: var(--primary-hover);
+}
+
+.concern-tab.active {
+    background: var(--primary-color);
+    color: #000000;
+    box-shadow: 0 2px 6px rgba(244, 180, 44, 0.3);
+}
+
+.role-badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.role-badge.student { 
+    background: #e0f2fe; 
+    color: #0369a1; 
+}
+
+.role-badge.faculty { 
+    background: #fef3c7; 
+    color: #b45309; 
+}
+
+.role-badge.alumni { 
+    background: #f1f5f9; 
+    color: #475569; 
+}

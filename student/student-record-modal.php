@@ -1,4 +1,4 @@
-    <link rel="stylesheet" href="../assets/css/student-view-record.css">
+<link rel="stylesheet" href="../assets/css/student-view-record.css">
 
 <?php
 // Fetch student profile row for viewing in the modal
@@ -37,14 +37,17 @@ if (isset($conn) && !empty($student_no)) {
             <!-- PROFILE CARD -->
             <div class="profile-card">
                 <div class="profile-left">
-                    <form action="student-upload-photo.php" method="POST" enctype="multipart/form-data">
-                        <input type="file" name="photo" id="photoInput" hidden onchange="this.form.submit()">
+                    <!-- FIX: Removed action, method, and this.form.submit() -->
+                    <form id="photoUploadForm" enctype="multipart/form-data">
+                        <input type="file" name="photo" id="photoInput" hidden onchange="uploadProfilePhoto()">
                     </form>
                     <div class="student-pic-container" onclick="document.getElementById('photoInput').click();" title="Click to change photo">
                         <img 
+                        id="studentProfileImg"
                         src="<?= !empty($student_profile_row['profile_pic']) ? '../uploads/'.$student_profile_row['profile_pic'] : '../assets/student.jpg'; ?>" 
                         class="student-pic"
                         alt="Student Photo"
+                        style="transition: opacity 0.3s;"
                         >
                     </div>
                     <div>
@@ -160,7 +163,9 @@ if (isset($conn) && !empty($student_no)) {
             <?php else: ?>
                 <div class="card" style="text-align: center; padding: 40px 20px;">
                     <p style="color: #64748b; margin-bottom: 15px;">No record found. <br> Please add your personal information first.</p>
-                    <a href="student-personal-info.php" style="display: inline-block; background: #f4b42c; color: black; padding: 10px 20px; border-radius: 6px; text-decoration: none; font-size: 14px;">Add Personal Information</a>
+                    <button type="button" onclick="openAddInfoModal()" style="display: inline-block; background: #f4b42c; color: black; padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; text-decoration: none; font-size: 14px; font-weight: 600;">
+                        Add Personal Information
+                    </button>
                 </div>
             <?php endif; ?>
         </div>
@@ -168,6 +173,7 @@ if (isset($conn) && !empty($student_no)) {
 </div>
 
 <script>
+    // Accordion Logic
     document.addEventListener("DOMContentLoaded", function () {
         const accButtons = document.querySelectorAll(".accordion-btn");
         accButtons.forEach(button => {
@@ -182,4 +188,69 @@ if (isset($conn) && !empty($student_no)) {
             });
         });
     });
+
+    // FIX: AJAX function to upload photo without reloading the page
+    function uploadProfilePhoto() {
+        const fileInput = document.getElementById('photoInput');
+        const file = fileInput.files[0];
+        
+        if (!file) return;
+
+        const formData = new FormData();
+        formData.append('photo', file);
+
+        const imgElement = document.getElementById('studentProfileImg');
+        const originalSrc = imgElement.src;
+        
+        // Dim the image slightly while uploading
+        imgElement.style.opacity = '0.5';
+
+        fetch('student-upload-photo.php', {
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.status === 'success') {
+                // Update image instantly in the modal, adding timestamp to bypass cache
+                imgElement.src = data.new_image + '?t=' + new Date().getTime();
+                imgElement.style.opacity = '1';
+            } else {
+                alert("Upload failed: " + data.message);
+                imgElement.src = originalSrc;
+                imgElement.style.opacity = '1';
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('An error occurred. Check the console.');
+            imgElement.src = originalSrc;
+            imgElement.style.opacity = '1';
+        });
+        
+        // Reset input
+        fileInput.value = '';
+    }
+
+    function openAddInfoModal() {
+        // Optional: Close the current record modal if needed, or keep it open
+        // closeRecordModal(); 
+        
+        const addModal = document.getElementById('addInfoModal'); // Change ID to match your add info modal's ID
+        if (addModal) {
+            addModal.style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        } else {
+            // Fallback if the modal ID is different or located on another file
+            window.location.href = 'student-personal-info.php';
+        }
+    }
+
+    function closeAddInfoModal() {
+        const addModal = document.getElementById('addInfoModal');
+        if (addModal) {
+            addModal.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    }
 </script>

@@ -13,7 +13,7 @@ $last_name  = $_SESSION['last_name'] ?? '';
 
 // Check if student has already added records
 $record_filled = false;
-$stmt = $conn->prepare("SELECT id FROM student_records WHERE student_no = ?");
+$stmt = $conn->prepare("SELECT id FROM student_profile WHERE student_no = ?");
 if ($stmt) {
     $stmt->bind_param("s", $student_no);
     $stmt->execute();
@@ -59,69 +59,7 @@ $stmt->close();
 
 <div class="dashboard-container">
     <!-- HEADER -->
-    <div class="logo-section">
-        <div class="logo-left">
-            <div class="logo-circle">
-                <img src="../assets/logo.png" alt="Logo">
-            </div>
-            <div class="logo-text">
-                <h2>College of Criminal Justice</h2>
-                <p>Center of Development in Criminology</p>
-            </div>
-        </div>
-
-        <div class="header-right">
-            <!-- NOTIFICATION DROPDOWN -->
-            <div class="notification-container">
-                <button class="notification-btn" id="notifBtn">
-                    <i class="fa-solid fa-bell"></i><span class="notif-badge" id="notifBadge" <?= count($announcements) == 0 ? 'style="display:none;"' : '' ?>><?= count($announcements); ?></span>
-                </button>
-                <div class="notification-dropdown" id="notifDropdown">
-                    <div class="notification-header">Recent Notifications</div>
-                    <?php if (count($announcements) > 0): ?>
-                        <?php foreach ($announcements as $announce): ?>
-                            <div class="notification-item">
-                                <div class="notif-title">
-                                    <?= htmlspecialchars($announce['title']) ?>
-                                    <?php if ($announce['is_new'] == 1): ?>
-                                        <span class="notif-new-badge">NEW</span>
-                                    <?php endif; ?>
-                                </div>
-                                <div class="notif-time"><?= date('M d, Y h:i A', strtotime($announce['created_at'])) ?></div>
-                                <div class="notif-msg"><?= htmlspecialchars($announce['message']) ?></div>
-                            </div>
-                        <?php endforeach; ?>
-                    <?php else: ?>
-                        <div style="padding: 20px; text-align: center; color: #94a3b8; font-size: 13px;">
-                            No announcements
-                        </div>
-                    <?php endif; ?>
-                </div>
-            </div>
-
-            <!-- PROFILE DROPDOWN -->
-            <div class="profile-container">
-                <div class="profile-menu" id="profileBtn">
-                    <div class="profile-icon">
-                        <i class="fa-solid fa-user"></i>
-                    </div>
-                    <span class="profile-name"><?= htmlspecialchars($first_name); ?></span>
-                </div>
-                <div class="profile-dropdown" id="profileDropdown">
-                    <div class="profile-dropdown-header">
-                        <div class="profile-avatar"><?= strtoupper(substr($first_name, 0, 1)); ?></div>
-                        <div class="profile-info">
-                            <h4><?= htmlspecialchars($first_name . ' ' . $last_name); ?></h4>
-                            <p><?= htmlspecialchars($student_no); ?></p>
-                        </div>
-                    </div>
-                    <a href="../auth/logout.php" class="profile-logout" id="logoutBtn">
-                        <i class="fa-solid fa-sign-out-alt"></i> Logout
-                    </a>
-                </div>
-            </div>
-        </div>
-    </div>
+    <?php include("../includes/header.php"); ?>
 
     <!-- LAYOUT -->
     <div class="dashboard-layout">
@@ -142,11 +80,11 @@ $stmt->close();
                 
                 <?php if (!$record_filled): ?>
                     <button type="button" class="save-btn" onclick="openRecordModal()" style="display: inline-block; padding: 12px 30px; font-size: 15px;">
-                     View My Student Information
+                        <i class="fa-solid fa-eye"></i> View My Student Information
                     </button>
                 <?php else: ?>
-                    <button type="button" class="save-btn" onclick="openRecordModal()" style="display: inline-block; padding: 10px 24px; font-size: 14px; background: #3b82f6;">
-                        <i class="fa-solid fa-eye"></i> View/Update Record
+                    <button type="button" class="save-btn" onclick="openRecordModal()" style="display: inline-block; padding: 10px 24px; font-size: 14px; background: #f4b42a; color: #000;">
+                        <i class="fa-solid fa-folder-open"></i> View My Student Information
                     </button>
                 <?php endif; ?>
             </div>
@@ -172,54 +110,6 @@ $stmt->close();
     function confirmSaveRecord() {
         return confirm("Are you sure you want to save this student record?");
     }
-
-    document.addEventListener('DOMContentLoaded', function() {
-        const notifBtn = document.getElementById('notifBtn');
-        const notifDropdown = document.getElementById('notifDropdown');
-        const profileBtn = document.getElementById('profileBtn');
-        const profileDropdown = document.getElementById('profileDropdown');
-        const recordModal = document.getElementById('recordModal');
-        const notifBadge = document.getElementById('notifBadge');
-        const logoutBtn = document.getElementById('logoutBtn');
-
-        if (logoutBtn) {
-            logoutBtn.addEventListener('click', function(e) {
-                if (profileDropdown) profileDropdown.classList.remove('active');
-            });
-        }
-
-        if (notifBtn) {
-            notifBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                notifDropdown.classList.toggle('active');
-                if (profileDropdown) profileDropdown.classList.remove('active');
-
-                if (notifBadge && notifDropdown.classList.contains('active')) {
-                    notifBadge.style.display = 'none';
-                }
-            });
-        }
-
-        if (profileBtn) {
-            profileBtn.addEventListener('click', function(e) {
-                e.stopPropagation();
-                profileDropdown.classList.toggle('active');
-                if (notifDropdown) notifDropdown.classList.remove('active');
-            });
-        }
-
-        document.addEventListener('click', function(event) {
-            if (notifDropdown && !notifBtn.contains(event.target) && !notifDropdown.contains(event.target)) {
-                notifDropdown.classList.remove('active');
-            }
-            if (profileDropdown && !profileBtn.contains(event.target) && !profileDropdown.contains(event.target)) {
-                profileDropdown.classList.remove('active');
-            }
-            if (event.target === recordModal) {
-                closeRecordModal();
-            }
-        });
-    });
 </script>
 </body>
 </html>

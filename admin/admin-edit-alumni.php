@@ -17,7 +17,7 @@ if(!$student_no){
 
 // Fetch alumni data mapping to your exact database schema fields
 $query = "SELECT u.*, p.* FROM users u 
-          LEFT JOIN alumni_profile p ON u.student_no = p.student_no 
+          LEFT JOIN alumni_profile p ON u.student_no = p.alumni_no 
           WHERE u.student_no = ? AND u.role = 'alumni'";
 $stmt = $conn->prepare($query);
 $stmt->bind_param("s", $student_no);

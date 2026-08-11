@@ -6,6 +6,14 @@ $current_page = basename($_SERVER['PHP_SELF']);
 ?>
 
 <aside class="sidebar" id="appSidebar">
+    
+    <!-- Hamburger Toggle Header inside Sidebar -->
+    <div class="sidebar-header">
+        <button class="sidebar-toggle-btn" id="sidebarToggleBtn" type="button" aria-label="Toggle Sidebar">
+            <i class="fa-solid fa-bars"></i>
+        </button>
+        <span class="sidebar-brand-text">Information Management System</span>
+    </div>
 
     <div class="sidebar-nav">
         <div class="nav-section">Student</div>
@@ -37,10 +45,22 @@ $current_page = basename($_SERVER['PHP_SELF']);
             <span class="nav-text">Indiana Jones Program</span>
         </a>
 
-        <!-- UPDATED: Now links to submit-concern.php with active state matching Retention Policy -->
         <a href="submit-concern.php" class="nav-item <?= ($current_page == 'submit-concern.php') ? 'nav-active' : '' ?>">
             <i class="fa-solid fa-envelope nav-icon"></i>
             <span class="nav-text">Submit Concern</span>
         </a>
     </div>
 </aside>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const toggleBtn = document.getElementById('sidebarToggleBtn');
+        const sidebar = document.getElementById('appSidebar');
+
+        if (toggleBtn && sidebar) {
+            toggleBtn.addEventListener('click', function() {
+                sidebar.classList.toggle('collapsed');
+            });
+        }
+    });
+</script>

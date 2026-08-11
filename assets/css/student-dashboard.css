@@ -11,8 +11,14 @@
 body {
     background: #e0e4e9;
     overflow-x: hidden;
+    overflow-y: auto;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
 }
 
+body::-webkit-scrollbar {
+    display: none; /* Chrome, Safari, and Opera */
+}
 /* ========================================================== */
 /* ALERT BOX                                                  */
 /* ========================================================== */
@@ -88,11 +94,12 @@ body {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 20px 30px;
+    padding: 20px 20px;
     background: #f4b42a;
     box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    animation: slideDown 0.5s ease;
+    animation: fadeIn 0.5s ease; 
     width: 100%;
+    flex-shrink: 0; /* FIX: Prevents the header from collapsing or hiding on refresh */
 }
 
 .logo-left {
@@ -132,7 +139,7 @@ body {
 .logo-text p {
     font-size: 13.5px;
     color: #222;
-    margin-top: -5px;
+    margin-top: -4px;
 }
 
 .header-right {
@@ -275,16 +282,15 @@ body {
 .profile-info h4 { font-size: 13px; font-weight: 700; color: #1e293b; margin-bottom:2px; }
 .profile-info p { font-size: 11px; color: #94a3b8; }
 
-/* Proper Styling for Logout Link */
 .profile-logout {
     display: block;
     padding: 12px 20px;
     text-decoration: none;
-    color: #ef4444; /* Clean red for logout */
-    font-size: 13px; /* Matched the name font size */
+    color: #ef4444; 
+    font-size: 13px; 
     font-weight: 600;
     transition: background 0.2s ease;
-    border-radius: 0 0 12px 12px; /* Smooth corners for bottom dropdown */
+    border-radius: 0 0 12px 12px; 
 }
 
 .profile-logout:hover {
@@ -312,10 +318,9 @@ body {
     flex-direction: column; 
     align-items: flex-start;
 }
-.welcome-card h1 { font-size: 26px; font-weight: 800; color: #1e293b; margin-bottom: 6px; }
+.welcome-card h1 { font-size: 24px; color: #1e293b; margin-bottom: 6px; }
 .welcome-card p { color: #64748b; font-size: 14.5px; line-height: 1.5; }
 
-/* Professional Dashboard Status Widget */
 .dashboard-status-banner {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -377,16 +382,16 @@ body {
     gap: 0;
 }
 
-/* Sidebar with Collapse Functionality */
+/* Sidebar Styles with Collapse Transition */
 .sidebar {
     position: sticky;
     top: 0;
     left: 0;
-    height: calc(100vh - 70px);
+    height: 100vh;
     min-width: 280px;
     width: 280px;
     background: #ffffff;
-    border-right: 1px solid #e2e8f0;
+    border-right: 2px solid #e2e8f0;
     padding: 16px;
     display: flex;
     flex-direction: column;
@@ -395,60 +400,81 @@ body {
     z-index: 50;
     box-shadow: 2px 0 10px rgba(0,0,0,0.02);
     align-self: flex-start;
-    transition: transform 0.3s ease, margin-left 0.3s ease, width 0.3s ease, opacity 0.3s ease;
+    transition: width 0.3s ease, min-width 0.3s ease, padding 0.3s ease;
 }
 
-/* Collapsed State: Hidden off-screen smoothly */
-.sidebar.collapsed {
-    margin-left: -280px;
-    opacity: 0;
-    pointer-events: none;
-    visibility: visible;
-}
-
-/* Sidebar Header Top containing System Title and Hamburger Toggle */
-.sidebar-header-top {
+.sidebar-header {
     display: flex;
     align-items: center;
-    gap: 10px;
-    padding-bottom: 15px;
-    margin-bottom: 25px;
-    border-bottom: 1px solid #f1f5f9;
+    gap: 6px;
+    padding-bottom: 4px;
 }
 
-/* Hamburger Menu Button Positioned to the left of Information Management System */
 .sidebar-toggle-btn {
-    background: #ffffff;
-    border: 1px solid #cbd5e1;
-    width: 34px;
-    height: 34px;
-    border-radius: 6px;
+    background: #f1f5f9;
+    border: none;
+    color: #334155;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 14px;
-    color: #1e293b;
+    font-size: 16px;
     flex-shrink: 0;
-    transition: background 0.2s ease, border-color 0.2s ease, transform 0.2s ease;
+    transition: background 0.2s;
 }
 
-.sidebar-nav { display:flex; flex-direction:column; gap:6px; padding-top:4px; }
+.sidebar-toggle-btn:hover {
+    background: #f4b42a;
+}
 
-.sidebar-nav .nav-item {
-        text-decoration: none !important;
-    }
+.sidebar-brand-text {
+    font-weight: 600;
+    font-size: 14px;
+    color: #000;
+    white-space: nowrap;
+    transition: opacity 0.2s ease;
+}
 
-/* Transparent Sidebar Buttons & Header-Yellow Hover/Active Styles */
+.sidebar.collapsed {
+    min-width: 80px;
+    width: 80px;
+    padding: 16px 10px;
+}
+
+.sidebar.collapsed .sidebar-brand-text,
+.sidebar.collapsed .nav-text,
+.sidebar.collapsed .nav-section {
+    display: none;
+}
+
+.sidebar.collapsed .nav-item {
+    justify-content: center;
+    padding: 12px;
+    gap: 0;
+}
+
+.sidebar.collapsed .nav-icon {
+    font-size: 18px;
+}
+
+.sidebar.collapsed .sidebar-header {
+    justify-content: center;
+    padding-bottom: 15px;
+}
+
 .nav-item {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 10px;
     padding: 12px 14px;
     background: transparent; 
     border: none;
     width: 100%;
     text-align: left;
+    text-decoration: none; 
     border-radius: 8px;
     cursor: pointer;
     transition: background 0.2s ease, color 0.2s ease;
@@ -460,7 +486,6 @@ body {
 .nav-item .nav-text { flex: 1; font-size: 14px;  color: #000;}
 .nav-item .nav-status { font-size: 11.5px; color: #94a3b8; font-weight: 500; }
 
-/* Header Yellow Hover Color Effect */
 .nav-item:hover { 
     background: #f4b42a !important; 
     color: #000000 !important;
@@ -469,7 +494,6 @@ body {
     color: #000000 !important; 
 }
 
-/* Active Dashboard Button Styling (Header Yellow Accent) */
 .nav-active, .nav-item.nav-active {
     background: #f4b42a !important; 
     color: #000000 !important;
@@ -498,6 +522,9 @@ body {
     margin: 18px 8px 8px 8px;
     padding-top: 5px;
     border-top: 1px solid #f1f5f9;
+    padding-top: 20px;
+    padding-bottom: 4px;
+    gap: 8px;
     font-weight: 700;
 }
 
@@ -510,6 +537,7 @@ body {
     box-sizing: border-box;
     width: 100%;
     min-height: calc(100vh - 70px);
+    min-width: 0; /* FIX: Prevents flex sizing calculation bugs on simultaneous refresh */
 }
 
 /* ========================================================== */
@@ -601,7 +629,313 @@ body {
     border-top: 1px solid #e2e8f0;
 }
 
-.save-btn, .cancel-btn {
+.save-btn, .cancel-btn {/* ========================================================== */
+/* GLOBAL & BASE LAYOUT                                       */
+/* ========================================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: Arial, sans-serif;
+}
+
+body {
+    background-color: #f8fafc;
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+/* This wrapper forces the sidebar and the right column to sit side-by-side */
+.app-layout {
+    display: flex;
+    min-height: 100vh;
+    width: 100%;
+}
+
+/* ================= SIDEBAR STYLES (WITH COLLAPSE SUPPORT) ================= */
+.sidebar {
+    position: sticky;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    min-width: 280px;
+    width: 280px;
+    background: #ffffff;
+    border-right: 1px solid #e2e8f0;
+    padding: 16px;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    flex-shrink: 0;
+    z-index: 50;
+    box-shadow: 2px 0 10px rgba(0,0,0,0.02);
+    align-self: flex-start;
+    transition: width 0.3s ease, min-width 0.3s ease, padding 0.3s ease;
+}
+
+/* Sidebar Header & Toggle Button */
+.sidebar-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding-bottom: 15px;
+    margin-bottom: 15px;
+    border-bottom: 1px solid #e2e8f0;
+}
+
+.sidebar-toggle-btn {
+    background: #f1f5f9;
+    border: none;
+    color: #334155;
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+    transition: background 0.2s;
+}
+
+.sidebar-toggle-btn:hover {
+    background: #e2e8f0;
+}
+
+.sidebar-brand-text {
+    font-weight: 600;
+    font-size: 14px;
+    color: #64748b;
+    white-space: nowrap;
+    transition: opacity 0.2s ease;
+}
+
+/* COLLAPSED STATE STYLING */
+.sidebar.collapsed {
+    min-width: 80px;
+    width: 80px;
+    padding: 16px 10px;
+}
+
+.sidebar.collapsed .sidebar-brand-text,
+.sidebar.collapsed .nav-text,
+.sidebar.collapsed .nav-section {
+    display: none;
+}
+
+.sidebar.collapsed .nav-item {
+    justify-content: center;
+    padding: 12px;
+    gap: 0;
+}
+
+.sidebar.collapsed .nav-icon {
+    font-size: 18px;
+}
+
+.sidebar.collapsed .sidebar-header {
+    justify-content: center;
+    padding-bottom: 15px;
+}
+
+/* Sidebar Navigation Items */
+.nav-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    background: transparent; 
+    border: none;
+    width: 100%;
+    text-align: left;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+    font-weight: 600;
+    color: #475569;
+    position: relative;
+    text-decoration: none; /* Removes any text underlines */
+}
+
+/* ================= MAIN CONTENT & LAYOUT FIX ================= */
+.main-content-column {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    min-width: 0; /* Prevents flex items from overflowing or breaking layout on refresh */
+}
+
+/* Header / Logo Section (Sits inside column next to sidebar) */
+.logo-section {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    background: #f4b42a;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    width: 100%;
+    flex-shrink: 0; /* Prevents header collapse during simultaneous refresh */
+}
+
+.main-content {
+    flex: 1; 
+    padding: 30px;
+    box-sizing: border-box;
+    margin-top: 0 !important; 
+    width: 100%;
+}
+
+/* ================= CONTENT STYLES ================= */
+.content-wrapper {
+    padding: 25px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+
+.header-title { margin: 0; color: #1e293b; font-size: 22px; }
+.header-desc { margin: 5px 0 0 0; font-size: 14px; color: #64748b; }
+
+.btn-add {
+    background-color: #f4b42a;
+    color: #000;
+    border: none;
+    padding: 10px 15px;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    box-shadow: 0 2px 4px rgba(234,179,8,0.3);
+    white-space: nowrap;
+    text-decoration: none;
+}
+.btn-add:hover {
+    background: #fdd76f;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(244, 180, 42, 0.3);
+}
+
+/* ================= ALERT STYLES ================= */
+.alert {
+    padding: 12px 20px;
+    margin-bottom: 20px;
+    border-radius: 6px;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+.alert-success { background-color: #dcfce7; color: #166534; border: 1px solid #bbf7d0; }
+.alert-danger { background-color: #fee2e2; color: #991b1b; border: 1px solid #fecaca; }
+.alert .close-btn { background: none; border: none; font-size: 18px; cursor: pointer; color: inherit; }
+
+/* ================= TABLE STYLES ================= */
+.table-responsive { overflow-x: auto; }
+.status-table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; border-radius: 15px; overflow: hidden; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+.status-table th { 
+    padding: 12px 15px; 
+    color: #000; 
+    font-weight: 600; 
+    background-color: #f4b42a; 
+    border-bottom: none; 
+}
+.status-table td { padding: 12px 15px; border-bottom: 1px solid #f1f5f9; color: #334155; }
+
+.status-table th, 
+.status-table td {
+    border: 1px solid #e2e8f0;
+}
+
+.badge { padding: 5px 10px; border-radius: 4px; font-size: 12px; font-weight: 600; display: inline-block; }
+.badge-approved { background-color: #dcfce7; color: #166534; }
+.badge-pending { background-color: #fef08a; color: #854d0e; }
+.badge-rejected { background-color: #fee2e2; color: #991b1b; }
+
+/* ================= MODAL STYLES ================= */
+.modal-overlay {
+    display: none;
+    position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); z-index: 1050;
+    justify-content: center; align-items: center;
+}
+
+.personal-modal {
+    max-width: 500px; width: 90%;
+    background: #ffffff; padding: 25px; border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1); position: relative;
+}
+
+.close-btn { position: absolute; top: 15px; right: 20px; font-size: 24px; cursor: pointer; color: #64748b; }
+.close-btn:hover { color: #1e293b; }
+
+/* ================= FORM STYLES ================= */
+.form-title { margin-top: 0; color: #1e293b; }
+.form-desc { font-size: 13px; color: #64748b; margin-bottom: 20px; }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 15px; }
+.form-group { margin-bottom: 15px; }
+.form-group.no-margin { margin-bottom: 0; }
+.form-label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 5px; color: #475569; }
+
+.form-input {
+    width: 100%; padding: 10px; border: 1px solid #cbd5e1;
+    border-radius: 6px; box-sizing: border-box; font-family: inherit;
+}
+.form-input:focus { outline: none; border-color: #eab308; }
+.form-input-readonly { background: #f1f5f9; cursor: not-allowed; }
+.form-file { border: 1px dashed #94a3b8; background-color: #f8fafc; cursor: pointer; }
+
+.modal-buttons { display: flex; gap: 10px; justify-content: flex-end; margin-top: 25px; }
+
+.btn-cancel {
+    background: #b10202; 
+    color: #fff;
+    padding: 12px 35px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s;
+    text-decoration: none;
+}
+
+.btn-cancel:hover {
+    background: #ffffff;
+    color: #b10202;
+    box-shadow: inset 0 0 0 2px #b10202;
+    transform: translateY(-2px);
+}
+
+.btn-submit {
+    background: #f4b42a;
+    padding: 12px 35px;
+    border-radius: 10px;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s;
+    text-decoration: none;
+}
+
+.btn-submit:hover {
+    background: #fdd76f;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(244, 180, 42, 0.3);
+}
     padding: 12px 35px;
     border-radius: 10px;
     font-weight: 700;

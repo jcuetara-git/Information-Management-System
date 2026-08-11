@@ -12,28 +12,96 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] !== 'admin') {
 if (isset($_POST['update_status'])) {
     $concern_id = $_POST['concern_id'];
     $new_status = $_POST['status'];
+    $source_table = $_POST['source_table'] ?? 'student_concerns';
+    $role_tab = $_POST['active_tab'] ?? 'All';
+    $current_page = $_POST['current_page'] ?? 1;
+    $current_limit = $_POST['current_limit'] ?? 5;
     
-    $update_stmt = $conn->prepare("UPDATE student_concerns SET status = ? WHERE id = ?");
-    $update_stmt->bind_param("si", $new_status, $concern_id);
-    $update_stmt->execute();
-    $update_stmt->close();
+    // Ensure we update the correct source table
+    $allowed_tables = ['student_concerns', 'faculty_concerns', 'alumni_concerns'];
+    if (in_array($source_table, $allowed_tables)) {
+        $update_stmt = $conn->prepare("UPDATE {$source_table} SET status = ? WHERE id = ?");
+        $update_stmt->bind_param("si", $new_status, $concern_id);
+        $update_stmt->execute();
+        $update_stmt->close();
+    }
     
-    header("Location: admin-feedback.php?success=Concern status updated successfully!");
+    header("Location: admin-feedback.php?tab=" . urlencode($role_tab) . "&page=" . $current_page . "&limit=" . $current_limit . "&success=Concern status updated successfully!");
     exit();
 }
 
-// Fetch all submitted student concerns
-$query = "SELECT * FROM student_concerns ORDER BY created_at DESC";
-$result = $conn->query($query);
-$submissions = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
+// Determine active role tab from GET parameter
+$active_tab = isset($_GET['tab']) ? $_GET['tab'] : 'All';
 
-// Fetch Stats directly from student_concerns table
+// Pagination variables
+$limit = isset($_GET['limit']) ? intval($_GET['limit']) : 5;
+if (!in_array($limit, [5, 20, 50])) {
+    $limit = 5; // Fallback default if tampered
+}
+$page = isset($_GET['page']) ? intval($_GET['page']) : 1;
+if ($page < 1) { $page = 1; }
+$offset = ($page - 1) * $limit;
+
+// 1. Get total records count for pagination based on the active tab
+if ($active_tab === 'Students') {
+    $countQuery = "SELECT COUNT(*) as total FROM student_concerns WHERE role LIKE 'Student%'";
+} elseif ($active_tab === 'Faculty') {
+    $countQuery = "SELECT COUNT(*) as total FROM faculty_concerns";
+} elseif ($active_tab === 'Alumni') {
+    $countQuery = "SELECT COUNT(*) as total FROM alumni_concerns";
+} else {
+    $countQuery = "SELECT (SELECT COUNT(*) FROM student_concerns) + (SELECT COUNT(*) FROM faculty_concerns) + (SELECT COUNT(*) FROM alumni_concerns) as total";
+}
+
+$countResult = $conn->query($countQuery);
+$totalRows = $countResult ? $countResult->fetch_assoc()['total'] : 0;
+$totalPages = ceil($totalRows / $limit);
+
+// 2. Build paginated queries combining student_concerns, faculty_concerns, and alumni_concerns tables
+if ($active_tab === 'Students') {
+    $query = "SELECT id, created_at, student_no AS id_number, first_name, last_name, 'Student' AS role, year_level, file_path, status, 'student_concerns' AS source_table FROM student_concerns WHERE role LIKE 'Student%' ORDER BY created_at DESC LIMIT ? OFFSET ?";
+} elseif ($active_tab === 'Faculty') {
+    $query = "SELECT id, created_at, faculty_no AS id_number, first_name, last_name, 'Faculty' AS role, NULL AS year_level, file_path, status, 'faculty_concerns' AS source_table FROM faculty_concerns ORDER BY created_at DESC LIMIT ? OFFSET ?";
+} elseif ($active_tab === 'Alumni') {
+    $query = "SELECT id, created_at, alumni_no AS id_number, first_name, last_name, 'Alumni' AS role, NULL AS year_level, file_path, status, 'alumni_concerns' AS source_table FROM alumni_concerns ORDER BY created_at DESC LIMIT ? OFFSET ?";
+} else {
+    // 'All' tab pulls from all three tables using UNION ALL wrapped in a wrapper for global sorting & pagination
+    $query = "SELECT * FROM (
+                (SELECT id, created_at, student_no AS id_number, first_name, last_name, role, year_level, file_path, status, 'student_concerns' AS source_table FROM student_concerns)
+                UNION ALL
+                (SELECT id, created_at, faculty_no AS id_number, first_name, last_name, 'Faculty' AS role, NULL AS year_level, file_path, status, 'faculty_concerns' AS source_table FROM faculty_concerns)
+                UNION ALL
+                (SELECT id, created_at, alumni_no AS id_number, first_name, last_name, 'Alumni' AS role, NULL AS year_level, file_path, status, 'alumni_concerns' AS source_table FROM alumni_concerns)
+              ) AS combined_concerns 
+              ORDER BY created_at DESC LIMIT ? OFFSET ?";
+}
+
+$stmt = $conn->prepare($query);
+$stmt->bind_param("ii", $limit, $offset);
+$stmt->execute();
+$result = $stmt->get_result();
+if (!$result) {
+    die("Database Query Error: " . $conn->error);
+}
+$submissions = $result->fetch_all(MYSQLI_ASSOC);
+$stmt->close();
+
+// Fetch overall stats counting across student, faculty, and alumni tables
 $stat_query = "SELECT 
-    COUNT(*) as total,
-    SUM(CASE WHEN status = 'Pending' OR status IS NULL OR status = '' THEN 1 ELSE 0 END) as pending,
-    SUM(CASE WHEN status = 'In Progress' THEN 1 ELSE 0 END) as in_progress,
-    SUM(CASE WHEN status = 'Resolved' THEN 1 ELSE 0 END) as resolved
-    FROM student_concerns";
+    (SELECT COUNT(*) FROM student_concerns) + (SELECT COUNT(*) FROM faculty_concerns) + (SELECT COUNT(*) FROM alumni_concerns) as total,
+    
+    (SELECT SUM(CASE WHEN status = 'Pending' OR status IS NULL OR status = '' THEN 1 ELSE 0 END) FROM student_concerns) + 
+    (SELECT SUM(CASE WHEN status = 'Pending' OR status IS NULL OR status = '' THEN 1 ELSE 0 END) FROM faculty_concerns) +
+    (SELECT SUM(CASE WHEN status = 'Pending' OR status IS NULL OR status = '' THEN 1 ELSE 0 END) FROM alumni_concerns) as pending,
+    
+    (SELECT SUM(CASE WHEN status = 'In Progress' THEN 1 ELSE 0 END) FROM student_concerns) + 
+    (SELECT SUM(CASE WHEN status = 'In Progress' THEN 1 ELSE 0 END) FROM faculty_concerns) +
+    (SELECT SUM(CASE WHEN status = 'In Progress' THEN 1 ELSE 0 END) FROM alumni_concerns) as in_progress,
+    
+    (SELECT SUM(CASE WHEN status = 'Resolved' THEN 1 ELSE 0 END) FROM student_concerns) + 
+    (SELECT SUM(CASE WHEN status = 'Resolved' THEN 1 ELSE 0 END) FROM faculty_concerns) +
+    (SELECT SUM(CASE WHEN status = 'Resolved' THEN 1 ELSE 0 END) FROM alumni_concerns) as resolved";
+
 $stat_result = $conn->query($stat_query);
 $stats = $stat_result ? $stat_result->fetch_assoc() : ['total' => 0, 'pending' => 0, 'in_progress' => 0, 'resolved' => 0];
 ?>
@@ -51,10 +119,11 @@ $stats = $stat_result ? $stat_result->fetch_assoc() : ['total' => 0, 'pending' =
     <link rel="stylesheet" href="../assets/css/admin-dashboard.css">
     <link rel="stylesheet" href="../assets/css/manage-students.css">
     <link rel="stylesheet" href="../assets/css/admin-retention.css">
+    <link rel="stylesheet" href="../assets/css/admin-feedback.css">
+    <link rel="stylesheet" href="../assets/css/admin-announcement.css">
 </head>
 <body>
 
-    <!-- Alerts integration for success/error messages -->
     <?php if (isset($_GET['success'])): ?>
         <div class="alert alert-success" id="alertBox">
             <i class="fa-solid fa-circle-check"></i>
@@ -72,52 +141,53 @@ $stats = $stat_result ? $stat_result->fetch_assoc() : ['total' => 0, 'pending' =
     <?php endif; ?>
 
     <div class="main-container">
-
-        <!-- Include the sidebar -->
         <?php include("../includes/sidebar.php"); ?>
 
-        <!-- Main Content Wrapped exactly like manage-students.php and admin-retention.php -->
         <main class="dashboard-container" id="mainContent" role="main">
             
-            <!-- Welcome / Header Card -->
             <section class="card welcome-card" aria-label="Welcome Section">
                 <div class="welcome-content">
                     <h2>Feedback & Concerns Management</h2>
-                    <p>Review and manage academic or personal concerns submitted by students.</p>
+                    <p>Review and manage academic or personal concerns submitted by students, faculty, and alumni.</p>
                 </div>
             </section>
 
-            <!-- Stats Grid -->
             <div class="stats-grid">
                 <div class="stat-card">
-                    <p>Total</p>
+                    <p>TOTAL</p>
                     <h3><?= $stats['total'] ?? 0; ?></h3>
                 </div>
                 <div class="stat-card">
-                    <p>Pending</p>
+                    <p>PENDING</p>
                     <h3><?= $stats['pending'] ?? 0; ?></h3>
                 </div>
                 <div class="stat-card">
-                    <p>In Progress</p>
+                    <p>IN PROGRESS</p>
                     <h3><?= $stats['in_progress'] ?? 0; ?></h3>
                 </div>
                 <div class="stat-card">
-                    <p>Resolved</p>
+                    <p>RESOLVED</p>
                     <h3><?= $stats['resolved'] ?? 0; ?></h3>
                 </div>
             </div>
 
-            <!-- Table Container -->
-            <section class="card table-container" aria-label="Submissions List">
+            <div class="concerns-tabs-container">
+                <a href="admin-feedback.php?tab=All&limit=<?= $limit ?>" class="concern-tab <?= $active_tab === 'All' ? 'active' : ''; ?>">All</a>
+                <a href="admin-feedback.php?tab=Students&limit=<?= $limit ?>" class="concern-tab <?= $active_tab === 'Students' ? 'active' : ''; ?>">Students</a>
+                <a href="admin-feedback.php?tab=Faculty&limit=<?= $limit ?>" class="concern-tab <?= $active_tab === 'Faculty' ? 'active' : ''; ?>">Faculty</a>
+                <a href="admin-feedback.php?tab=Alumni&limit=<?= $limit ?>" class="concern-tab <?= $active_tab === 'Alumni' ? 'active' : ''; ?>">Alumni</a>
+            </div>
+
+            <section class="card table-container" aria-label="Submissions List" style="padding: 0; overflow: hidden;">
                 <div class="table-wrapper">
                     <?php if (count($submissions) > 0): ?>
                         <table>
                             <thead>
                                 <tr>
                                     <th>Date Submitted</th>
-                                    <th>Student ID</th>
-                                    <th>Student Name</th>
-                                    <th>Year Level</th>
+                                    <th>ID Number</th>
+                                    <th>Full Name</th>
+                                    <th>Role / Details</th>
                                     <th>Attachment</th>
                                     <th>Status</th>
                                     <th>Action</th>
@@ -125,14 +195,28 @@ $stats = $stat_result ? $stat_result->fetch_assoc() : ['total' => 0, 'pending' =
                             </thead>
                             <tbody>
                                 <?php foreach ($submissions as $row): ?>
+                                    <?php 
+                                        // Dynamically route file paths based on source table folder structure
+                                        $file_folder = 'concerns';
+                                        if (($row['source_table'] ?? '') === 'faculty_concerns') {
+                                            $file_folder = 'faculty_concerns';
+                                        } elseif (($row['source_table'] ?? '') === 'alumni_concerns') {
+                                            $file_folder = 'alumni_concerns';
+                                        }
+                                    ?>
                                     <tr>
-                                        <td data-label="Date Submitted"><?= date("M d, Y h:i A", strtotime($row['created_at'])); ?></td>
-                                        <td data-label="Student ID"><?= htmlspecialchars($row['student_no']); ?></td>
-                                        <td data-label="Student Name"><?= htmlspecialchars($row['first_name'] . ' ' . $row['last_name']); ?></td>
-                                        <td data-label="Year Level"><?= htmlspecialchars($row['year_level']); ?></td>
+                                        <td data-label="Date Submitted"><?= !empty($row['created_at']) ? date("M d, Y h:i A", strtotime($row['created_at'])) : 'N/A'; ?></td>
+                                        <td data-label="ID Number"><?= htmlspecialchars($row['id_number'] ?? 'N/A'); ?></td>
+                                        <td data-label="Full Name"><?= htmlspecialchars(trim(($row['first_name'] ?? '') . ' ' . ($row['last_name'] ?? '')) ?: 'N/A'); ?></td>
+                                        <td data-label="Role / Details">
+                                            <span class="role-badge <?= strtolower($row['role'] ?? 'student'); ?>"><?= htmlspecialchars($row['role'] ?? 'Student'); ?></span>
+                                            <?php if (!empty($row['year_level'])): ?>
+                                                <br><small><?= htmlspecialchars($row['year_level']); ?></small>
+                                            <?php endif; ?>
+                                        </td>
                                         <td data-label="Attachment">
                                             <?php if (!empty($row['file_path'])): ?>
-                                                <a href="../uploads/concerns/<?= htmlspecialchars($row['file_path']); ?>" target="_blank" class="document-link" title="View Uploaded Document">
+                                                <a href="../uploads/<?= $file_folder; ?>/<?= htmlspecialchars($row['file_path']); ?>" target="_blank" class="document-link" title="View Uploaded Document">
                                                     <i class="fa-solid fa-file-arrow-down"></i> View File
                                                 </a>
                                             <?php else: ?>
@@ -151,10 +235,38 @@ $stats = $stat_result ? $stat_result->fetch_assoc() : ['total' => 0, 'pending' =
                                 <?php endforeach; ?>
                             </tbody>
                         </table>
+
+                        <!-- Pagination Control Bar -->
+                        <div class="pagination-container">
+                            <div class="rows-per-page">
+                                <label for="limitSelect">Show:</label>
+                                <select id="limitSelect" onchange="changeRowsPerPage(this.value)">
+                                    <option value="5" <?= $limit == 5 ? 'selected' : '' ?>>5</option>
+                                    <option value="20" <?= $limit == 20 ? 'selected' : '' ?>>20</option>
+                                    <option value="50" <?= $limit == 50 ? 'selected' : '' ?>>50</option>
+                                </select>
+                                <span>entries (Total: <?= $totalRows ?>)</span>
+                            </div>
+
+                            <div class="pagination-links">
+                                <?php if ($page > 1): ?>
+                                    <a href="?tab=<?= urlencode($active_tab) ?>&page=1&limit=<?= $limit ?>"><i class="fa-solid fa-angle-double-left"></i></a>
+                                    <a href="?tab=<?= urlencode($active_tab) ?>&page=<?= $page - 1 ?>&limit=<?= $limit ?>"><i class="fa-solid fa-angle-left"></i></a>
+                                <?php endif; ?>
+
+                                <span class="current">Page <?= $page ?> of <?= max(1, $totalPages) ?></span>
+
+                                <?php if ($page < $totalPages): ?>
+                                    <a href="?tab=<?= urlencode($active_tab) ?>&page=<?= $page + 1 ?>&limit=<?= $limit ?>"><i class="fa-solid fa-angle-right"></i></a>
+                                    <a href="?tab=<?= urlencode($active_tab) ?>&page=<?= $totalPages ?>&limit=<?= $limit ?>"><i class="fa-solid fa-angle-double-right"></i></a>
+                                <?php endif; ?>
+                            </div>
+                        </div>
+
                     <?php else: ?>
-                        <div class="no-results">
+                        <div class="no-results" style="padding: 40px; text-align: center;">
                             <div class="no-results-icon"><i class="fa-solid fa-folder-open"></i></div>
-                            <p>No student concerns submitted yet.</p>
+                            <p>No concerns found under <?= htmlspecialchars($active_tab); ?>.</p>
                         </div>
                     <?php endif; ?>
                 </div>
@@ -163,12 +275,15 @@ $stats = $stat_result ? $stat_result->fetch_assoc() : ['total' => 0, 'pending' =
         </main>
     </div>
 
-    <!-- Modal Code (Review Modal) -->
     <div id="reviewModal" class="modal-overlay">
         <div class="modal-content-box">
             <h3 class="modal-title"><i class="fa-solid fa-edit"></i> Review Concern Status</h3>
             <form action="admin-feedback.php" method="POST">
                 <input type="hidden" name="concern_id" id="modalConcernId">
+                <input type="hidden" name="source_table" id="modalSourceTable">
+                <input type="hidden" name="active_tab" value="<?= htmlspecialchars($active_tab); ?>">
+                <input type="hidden" name="current_page" value="<?= $page; ?>">
+                <input type="hidden" name="current_limit" value="<?= $limit; ?>">
 
                 <div class="modal-form-group">
                     <label class="modal-label">Update Status</label>
@@ -188,8 +303,16 @@ $stats = $stat_result ? $stat_result->fetch_assoc() : ['total' => 0, 'pending' =
     </div>
 
     <script>
+        function changeRowsPerPage(val) {
+            const urlParams = new URLSearchParams(window.location.search);
+            urlParams.set('limit', val);
+            urlParams.set('page', 1); // Reset to page 1 on limit change
+            window.location.search = urlParams.toString();
+        }
+
         function openReviewModal(data) {
             document.getElementById('modalConcernId').value = data.id;
+            document.getElementById('modalSourceTable').value = data.source_table || 'student_concerns';
             const statusSelect = document.getElementById('modalStatusSelect');
             if (data.status) {
                 statusSelect.value = data.status;
@@ -199,7 +322,6 @@ $stats = $stat_result ? $stat_result->fetch_assoc() : ['total' => 0, 'pending' =
             document.getElementById('reviewModal').style.display = 'flex';
         }
 
-        // Automatically hide the alert box after 4 seconds
         setTimeout(function () {
             const alertBox = document.getElementById('alertBox');
             if (alertBox) {

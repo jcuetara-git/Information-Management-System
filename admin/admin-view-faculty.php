@@ -15,9 +15,12 @@ if(!$faculty_no){
     exit();
 }
 
-// Fixed query: Removed u.middle_name since it doesn't exist in the users table
+// Fetch all profile details including portfolio uploaded fields from faculty_profile
 $query = "SELECT u.student_no AS faculty_no, u.first_name, u.last_name, u.email, 
-                 p.contact_no, p.status
+                 p.contact_no, p.status, p.cv, p.tor, p.diploma, p.prc_license, 
+                 p.certificates_membership, p.seminars_regional, p.seminars_national, 
+                 p.seminars_international, p.research_cert, p.research_presenter, 
+                 p.community_extension, p.test_questionnaires, p.syllabi, p.tos
           FROM users u 
           LEFT JOIN faculty_profile p ON u.student_no = p.faculty_no 
           WHERE u.student_no = ? AND u.role = 'faculty'";
@@ -37,7 +40,27 @@ if(!$faculty){
     header("Location: manage-faculty.php?error=Faculty record not found");
     exit();
 }
-?>
+
+// Helper function to render file links nicely if paths are stored (supports JSON arrays or string paths)
+function renderFileLink($filePath) {
+    if (empty($filePath)) {
+        return '<span class="text-muted">Not Uploaded</span>';
+    }
+    
+    // Check if it's a JSON array (multiple files)
+    $decoded = json_decode($filePath, true);
+    if (is_array($decoded)) {
+        $links = [];
+        foreach ($decoded as $path) {
+            $filename = basename($path);
+            $links[] = '<a href="' . htmlspecialchars($path) . '" target="_blank" class="file-link"><i class="fa-solid fa-file-arrow-down"></i> ' . htmlspecialchars($filename) . '</a>';
+        }
+        return implode('<br>', $links);
+    } else {
+        $filename = basename($filePath);
+        return '<a href="' . htmlspecialchars($filePath) . '" target="_blank" class="file-link"><i class="fa-solid fa-file-arrow-down"></i> ' . htmlspecialchars($filename) . '</a>';
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -53,6 +76,22 @@ if(!$faculty){
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/admin-dashboard.css">
     <link rel="stylesheet" href="../assets/css/admin-view-student.css">
+    <style>
+        .file-link {
+            color: #0066cc;
+            text-decoration: none;
+            font-weight: 500;
+            display: inline-block;
+            margin-top: 4px;
+        }
+        .file-link:hover {
+            text-decoration: underline;
+        }
+        .text-muted {
+            color: #94a3b8;
+            font-style: italic;
+        }
+    </style>
 </head>
 <body>
 
@@ -63,6 +102,7 @@ if(!$faculty){
         </div>
         
         <div class="view-body">
+            <!-- Faculty Information -->
             <div class="view-section">
                 <h3><i class="fa-solid fa-user"></i> Faculty Information</h3>
                 <div class="view-grid">
@@ -81,6 +121,7 @@ if(!$faculty){
                 </div>
             </div>
 
+            <!-- Employment & Contact -->
             <div class="view-section">
                 <h3><i class="fa-solid fa-briefcase"></i> Employment & Contact</h3>
                 <div class="view-grid">
@@ -95,6 +136,69 @@ if(!$faculty){
                     <div class="view-item">
                         <label>Contact Number:</label>
                         <p><?= htmlspecialchars($faculty['contact_no'] ?? 'N/A') ?></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Professional Credentials & Uploaded Documents -->
+            <div class="view-section">
+                <h3><i class="fa-solid fa-folder-open"></i> Uploaded Portfolio Credentials</h3>
+                <div class="view-grid">
+                    <div class="view-item">
+                        <label>Curriculum Vitae (CV):</label>
+                        <p><?= renderFileLink($faculty['cv'] ?? '') ?></p>
+                    </div>
+                    <div class="view-item">
+                        <label>Transcript of Records (TOR):</label>
+                        <p><?= renderFileLink($faculty['tor'] ?? '') ?></p>
+                    </div>
+                    <div class="view-item">
+                        <label>Diploma:</label>
+                        <p><?= renderFileLink($faculty['diploma'] ?? '') ?></p>
+                    </div>
+                    <div class="view-item">
+                        <label>PRC License:</label>
+                        <p><?= renderFileLink($faculty['prc_license'] ?? '') ?></p>
+                    </div>
+                    <div class="view-item">
+                        <label>Certificates of Membership:</label>
+                        <p><?= renderFileLink($faculty['certificates_membership'] ?? '') ?></p>
+                    </div>
+                    <div class="view-item">
+                        <label>Regional Seminars:</label>
+                        <p><?= renderFileLink($faculty['seminars_regional'] ?? '') ?></p>
+                    </div>
+                    <div class="view-item">
+                        <label>National Seminars:</label>
+                        <p><?= renderFileLink($faculty['seminars_national'] ?? '') ?></p>
+                    </div>
+                    <div class="view-item">
+                        <label>International Seminars:</label>
+                        <p><?= renderFileLink($faculty['seminars_international'] ?? '') ?></p>
+                    </div>
+                    <div class="view-item">
+                        <label>Research Certification:</label>
+                        <p><?= renderFileLink($faculty['research_cert'] ?? '') ?></p>
+                    </div>
+                    <div class="view-item">
+                        <label>Research Presenter Credentials:</label>
+                        <p><?= renderFileLink($faculty['research_presenter'] ?? '') ?></p>
+                    </div>
+                    <div class="view-item">
+                        <label>Community Extension Records:</label>
+                        <p><?= renderFileLink($faculty['community_extension'] ?? '') ?></p>
+                    </div>
+                    <div class="view-item">
+                        <label>Test Questionnaires:</label>
+                        <p><?= renderFileLink($faculty['test_questionnaires'] ?? '') ?></p>
+                    </div>
+                    <div class="view-item">
+                        <label>Syllabi:</label>
+                        <p><?= renderFileLink($faculty['syllabi'] ?? '') ?></p>
+                    </div>
+                    <div class="view-item">
+                        <label>Table of Specifications (TOS):</label>
+                        <p><?= renderFileLink($faculty['tos'] ?? '') ?></p>
                     </div>
                 </div>
             </div>

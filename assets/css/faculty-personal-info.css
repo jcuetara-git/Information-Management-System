@@ -1,0 +1,192 @@
+/* =========================================
+   Sidebar Navigation Styling
+========================================= */
+.sidebar-nav .nav-item {
+    text-decoration: none !important;
+}
+.sidebar-nav .nav-item.nav-active,
+.sidebar-nav a[href="faculty-personal-info.php"] {
+    background: #f4b42a !important;
+    color: #000000 !important;
+    font-weight: 700 !important;
+}
+.sidebar-nav a[href="faculty-personal-info.php"] .nav-icon {
+    color: #000000 !important;
+}
+
+/* =========================================
+   Modal Overlay & Box Styling
+========================================= */
+.modal-overlay {
+    display: none;
+    position: fixed;
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100%;
+    background: rgba(0, 0, 0, 0.6);
+    z-index: 9999;
+    justify-content: center;
+    align-items: center;
+    backdrop-filter: blur(4px);
+}
+
+.modal-content-box {
+    background: #fff;
+    width: 90%;
+    max-width: 900px;
+    max-height: 90vh;
+    overflow-y: auto;
+    border-radius: 12px;
+    padding: 30px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+    position: relative;
+}
+
+/* Modal Inner Elements */
+.modal-header-container {
+    display: flex; 
+    justify-content: space-between; 
+    align-items: center; 
+    border-bottom: 2px solid #f1f5f9; 
+    padding-bottom: 15px; 
+    margin-bottom: 20px;
+}
+
+.modal-header-title h2 {
+    margin: 0; 
+    color: #1e293b; 
+    font-size: 24px;
+}
+
+.modal-close-btn {
+    background: none; 
+    border: none; 
+    font-size: 22px; 
+    color: #64748b; 
+    cursor: pointer;
+    transition: color 0.2s;
+}
+
+.modal-close-btn:hover {
+    color: #ef4444;
+}
+
+.form-subtitle {
+    color: #475569;
+    font-size: 14px;
+    margin-bottom: 25px;
+    line-height: 1.5;
+}
+
+.highlight-subtitle {
+    color: #ea580c; 
+    font-weight: 600;
+}
+
+/* Form Grid & Inputs */
+.form-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.section-title {
+    grid-column: 1 / -1;
+    font-size: 16px;
+    font-weight: 700;
+    color: #0f172a;
+    border-bottom: 1px solid #e2e8f0;
+    padding-bottom: 5px;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    font-size: 13px;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 6px;
+}
+
+.required-asterisk {
+    color: #ef4444;
+}
+
+.optional-hint {
+    font-size: 11px;
+    color: #64748b;
+    font-weight: normal;
+    margin-left: 5px;
+}
+
+.form-group input, 
+.form-group select, 
+.form-group textarea {
+    padding: 10px 12px;
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    font-size: 14px;
+    outline: none;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus, 
+.form-group select:focus {
+    border-color: #2563eb;
+    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+}
+
+.form-group input[readonly] {
+    background: #f8fafc;
+    color: #64748b;
+    cursor: not-allowed;
+}
+
+.hidden-spacer {
+    display: none;
+}
+
+/* Modal Footer / Buttons */
+.modal-footer {
+    display: flex; 
+    justify-content: flex-end; 
+    gap: 15px; 
+    margin-top: 30px;
+    grid-column: 1 / -1;
+}
+
+.modal-cancel-btn {
+    padding: 12px 24px; 
+    border-radius: 8px; 
+    border: 1px solid #cbd5e1; 
+    background: #fff; 
+    color: #475569; 
+    font-weight: 600; 
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.modal-cancel-btn:hover {
+    background: #f8fafc;
+}
+
+.modal-submit-btn {
+    padding: 12px 24px; 
+    border-radius: 8px; 
+    border: none; 
+    background: #2563eb; 
+    color: #fff; 
+    font-weight: 600; 
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.modal-submit-btn:hover {
+    background: #1d4ed8;
+}

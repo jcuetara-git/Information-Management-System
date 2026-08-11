@@ -17,9 +17,14 @@ if(!$student_no){
 
 // Fetch alumni data mapping to your exact database schema fields
 $query = "SELECT u.*, p.* FROM users u 
-          LEFT JOIN alumni_profile p ON u.student_no = p.student_no 
+          LEFT JOIN alumni_profile p ON u.student_no = p.alumni_no 
           WHERE u.student_no = ? AND u.role = 'alumni'";
 $stmt = $conn->prepare($query);
+
+if (!$stmt) {
+    die("SQL Error: " . $conn->error);
+}
+
 $stmt->bind_param("s", $student_no);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -38,7 +43,7 @@ if(!$alumni){
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <meta name="description" content="View Alumni Details - College of Criminal Justice">
     <meta name="theme-color" content="#f4b42c">
-    <title>View Alumni</title>
+    <title>admin-view-alumni</title>
     
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
@@ -112,7 +117,7 @@ if(!$alumni){
                 <div class="view-grid">
                     <div class="view-item">
                         <label>Email Address:</label>
-                        <p><?= htmlspecialchars($alumni['email_address'] ?? 'N/A') ?></p>
+                        <p><?= htmlspecialchars($alumni['email_address'] ?? $alumni['email'] ?? 'N/A') ?></p>
                     </div>
                     <div class="view-item">
                         <label>Contact Number:</label>
