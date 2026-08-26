@@ -31,7 +31,7 @@
         <button id="toggleSidebar" class="hamburger-btn" aria-label="Toggle Sidebar">
             <i class="fa-solid fa-bars"></i>
         </button>
-        <span class="sidebar-title">UC-MAIN CCJ</span>
+        <span class="sidebar-title">UC-MAIN CCJ IMS</span>
     </div>
 
     <ul>
@@ -84,8 +84,8 @@
             ['file' => 'admin-faculty.php', 'icon' => 'fa-user-tie', 'label' => 'Faculty'],
             ['file' => 'admin-alumni.php', 'icon' => 'fa-user-graduate', 'label' => 'Alumni'],
             ['file' => 'admin-internship.php', 'icon' => 'fa-briefcase', 'label' => 'Internship'],
-            ['file' => 'admin-orgs.php', 'icon' => 'fa-folder', 'label' => 'Organizations'],
-            ['file' => 'admin-comex.php', 'icon' => 'fa-hands-holding-circle', 'label' => 'Community Extension'],
+            ['file' => 'admin-organizations.php', 'icon' => 'fa-folder', 'label' => 'Organizations'],
+            ['file' => 'admin-community-extension.php', 'icon' => 'fa-hands-holding-circle', 'label' => 'Community Extension'],
             ['file' => 'admin-jones.php', 'icon' => 'fa-file', 'label' => 'Indiana Jones'],
             ['file' => 'admin-retention.php', 'icon' => 'fa-user-check', 'label' => 'Retention Policy'],
             ['file' => 'admin-announcement.php', 'icon' => 'fa-bullhorn', 'label' => 'Updates and Notices'],

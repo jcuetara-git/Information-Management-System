@@ -2,7 +2,7 @@
 :root {
     --primary-color: #f3b12b; /* Sidebar Yellow */
     --primary-hover: #e0a822;
-    --text-dark: #333;
+    --text-dark: #1a1a1a;
     --text-muted: #64748b;
     --bg-light: #f0f2f5;
     --white: #ffffff;
@@ -15,7 +15,7 @@
     margin: 0;
     padding: 0;
     box-sizing: border-box;
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
 }
 
 body {

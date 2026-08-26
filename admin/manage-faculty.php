@@ -26,8 +26,54 @@ if(isset($_GET['delete'])){
 $search = isset($_GET['search']) ? trim($_GET['search']) : '';
 $status_filter = isset($_GET['status']) ? trim($_GET['status']) : '';
 
+// Pagination variables
+$limit = isset($_GET['limit']) ? intval($_GET['limit']) : 5;
+if (!in_array($limit, [5, 20, 50])) {
+    $limit = 5; // Default fallback
+}
+$page = isset($_GET['page']) ? intval($_GET['page']) : 1;
+if ($page < 1) { 
+    $page = 1; 
+}
+$offset = ($page - 1) * $limit;
 
-// Make sure your manage-faculty.php query joins and selects these exact columns:
+// 1. Build Count Query for Pagination
+$countQuery = "SELECT COUNT(*) as total
+               FROM users u 
+               LEFT JOIN faculty_profile p ON u.student_no = p.faculty_no 
+               WHERE u.role = 'faculty'";
+
+$countParams = [];
+$countTypes = '';
+
+if(!empty($search)){
+    $countQuery .= " AND (u.student_no LIKE ? OR u.first_name LIKE ? OR u.last_name LIKE ? OR u.email LIKE ?)";
+    $search_param = '%' . $search . '%';
+    array_push($countParams, $search_param, $search_param, $search_param, $search_param);
+    $countTypes .= 'ssss';
+}
+
+if(!empty($status_filter)){
+    $countQuery .= " AND p.status = ?";
+    $countParams[] = $status_filter;
+    $countTypes .= 's';
+}
+
+$stmtCount = $conn->prepare($countQuery);
+if (!$stmtCount) {
+    die("SQL Error: " . $conn->error);
+}
+if(!empty($countParams)){
+    $stmtCount->bind_param($countTypes, ...$countParams);
+}
+$stmtCount->execute();
+$countResult = $stmtCount->get_result();
+$totalRows = $countResult ? $countResult->fetch_assoc()['total'] : 0;
+$stmtCount->close();
+
+$totalPages = ceil($totalRows / $limit);
+
+// 2. Build Main Data Query with LIMIT and OFFSET
 $query = "SELECT u.student_no AS faculty_no, u.first_name, u.last_name, u.email, 
                  p.contact_no, p.status
           FROM users u 
@@ -37,7 +83,6 @@ $query = "SELECT u.student_no AS faculty_no, u.first_name, u.last_name, u.email,
 $params = [];
 $types = '';
 
-// Add search filter parameters (Updated to look up u.student_no)
 if(!empty($search)){
     $query .= " AND (u.student_no LIKE ? OR u.first_name LIKE ? OR u.last_name LIKE ? OR u.email LIKE ?)";
     $search_param = '%' . $search . '%';
@@ -45,18 +90,19 @@ if(!empty($search)){
     $types .= 'ssss';
 }
 
-// Add employment status filter
 if(!empty($status_filter)){
     $query .= " AND p.status = ?";
     $params[] = $status_filter;
     $types .= 's';
 }
 
-$query .= " ORDER BY u.first_name ASC";
+$query .= " ORDER BY u.first_name ASC LIMIT ? OFFSET ?";
+$params[] = $limit;
+$params[] = $offset;
+$types .= 'ii';
 
 $stmt = $conn->prepare($query);
 
-// Safety checkpoint: catch any alternative syntax mismatches instantly
 if (!$stmt) {
     die("SQL Error: " . $conn->error);
 }
@@ -66,7 +112,6 @@ if(!empty($params)){
 }
 $stmt->execute();
 $result = $stmt->get_result();
-$total_results = $result->num_rows;
 ?>
 
 <!DOCTYPE html>
@@ -80,8 +125,8 @@ $total_results = $result->num_rows;
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     <link rel="stylesheet" href="../assets/css/admin-dashboard.css">
-    <!-- Reusing your manage students styling architecture to ensure exact design symmetry -->
     <link rel="stylesheet" href="../assets/css/manage-students.css"> 
+    <link rel="stylesheet" href="../assets/css/admin-announcement.css">
 </head>
 
 <body>
@@ -104,9 +149,7 @@ $total_results = $result->num_rows;
 
 <div class="main-container">
 
-    <?php 
-    include("../includes/sidebar.php");
-    ?>
+    <?php include("../includes/sidebar.php"); ?>
 
     <main class="dashboard-container" id="mainContent" role="main">
 
@@ -153,12 +196,12 @@ $total_results = $result->num_rows;
         </section>
 
         <div class="result-count">
-            Showing <strong><?= $total_results ?></strong> faculty member<?= $total_results !== 1 ? 's' : '' ?>
+            Showing <strong><?= $totalRows ?></strong> faculty member<?= $totalRows !== 1 ? 's' : '' ?>
         </div>
 
         <section class="card table-container" aria-label="Faculty Records List">
             <div class="table-wrapper">
-                <?php if($total_results > 0): ?>
+                <?php if($totalRows > 0): ?>
                 <table>
                     <thead>
                         <tr>
@@ -193,6 +236,34 @@ $total_results = $result->num_rows;
                         <?php endwhile; ?>
                     </tbody>
                 </table>
+
+                <!-- Pagination Control Bar -->
+                <div class="pagination-container">
+                    <div class="rows-per-page">
+                        <label for="limitSelect">Show:</label>
+                        <select id="limitSelect" onchange="changeRowsPerPage(this.value)">
+                            <option value="5" <?= $limit == 5 ? 'selected' : '' ?>>5</option>
+                            <option value="20" <?= $limit == 20 ? 'selected' : '' ?>>20</option>
+                            <option value="50" <?= $limit == 50 ? 'selected' : '' ?>>50</option>
+                        </select>
+                        <span>entries (Total: <?= $totalRows ?>)</span>
+                    </div>
+
+                    <div class="pagination-links">
+                        <?php if ($page > 1): ?>
+                            <a href="?<?= http_build_query(array_merge($_GET, ['page' => 1, 'limit' => $limit])) ?>"><i class="fa-solid fa-angle-double-left"></i></a>
+                            <a href="?<?= http_build_query(array_merge($_GET, ['page' => $page - 1, 'limit' => $limit])) ?>"><i class="fa-solid fa-angle-left"></i></a>
+                        <?php endif; ?>
+
+                        <span class="current">Page <?= $page ?> of <?= max(1, $totalPages) ?></span>
+
+                        <?php if ($page < $totalPages): ?>
+                            <a href="?<?= http_build_query(array_merge($_GET, ['page' => $page + 1, 'limit' => $limit])) ?>"><i class="fa-solid fa-angle-right"></i></a>
+                            <a href="?<?= http_build_query(array_merge($_GET, ['page' => $totalPages, 'limit' => $limit])) ?>"><i class="fa-solid fa-angle-double-right"></i></a>
+                        <?php endif; ?>
+                    </div>
+                </div>
+
                 <?php else: ?>
                 <div class="no-results">
                     <div class="no-results-icon"><i class="fa-solid fa-search"></i></div>
@@ -213,6 +284,13 @@ $total_results = $result->num_rows;
 </div>
 
 <script>
+    function changeRowsPerPage(val) {
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('limit', val);
+        urlParams.set('page', 1); // Reset to page 1 on limit change
+        window.location.search = urlParams.toString();
+    }
+
     // Automatically fade alert blocks smoothly after 4 seconds
     setTimeout(function() {
         const alertBox = document.getElementById('alertBox');
