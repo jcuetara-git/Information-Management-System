@@ -260,7 +260,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
         <h2>Create Updates and/or Notice</h2>
         <form action="save-announcement.php" method="POST">
             <label>Title</label>
-            <input type="text" name="title" placeholder="Enter announcement title" required>
+            <input type="text" name="title" placeholder="Enter Updates or Notice title" required>
             
             <label>Target Audience</label>
             <select name="audience" id="audienceSelect" onchange="toggleSpecificField()" required>
@@ -283,9 +283,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['action'])) {
             </select>
 
             <label>Message</label>
-            <textarea name="message" rows="5" placeholder="Write your announcement here..." required></textarea>
+            <textarea name="message" rows="5" placeholder="Write your updates or notice here..." required></textarea>
             
-            <button type="submit" class="filter-btn" style="width:100%; margin-top: 20px; height: 45px;">Post Announcement</button>
+            <button type="submit" class="filter-btn" style="width:100%; margin-top: 20px; height: 45px;">Post Updates or Notice</button>
         </form>
     </div>
 </div>

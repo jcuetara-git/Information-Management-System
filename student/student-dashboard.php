@@ -14,7 +14,7 @@ $last_name = $_SESSION['lastname'] ?? $_SESSION['last_name'] ?? 'Doe';
 
 // 1. Check if the student has filled out their personal information
 $is_profile_complete = false;
-$check_query = "SELECT 1 FROM student_profile WHERE student_no = ? LIMIT 1"; // Replace 'student_personal_info' with your actual table name
+$check_query = "SELECT 1 FROM student_profile WHERE student_no = ? LIMIT 1"; 
 $check_stmt = $conn->prepare($check_query);
 if ($check_stmt) {
     $check_stmt->bind_param("s", $student_no);
@@ -53,7 +53,7 @@ $stmt->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>student-dashboard</title>
+    <title>Student Dashboard</title>
     <!-- Include global stylesheets -->
     <link rel="stylesheet" href="../assets/css/student-dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -73,50 +73,51 @@ $stmt->close();
 
         <!-- MAIN PAGE CONTENT -->
         <main class="main-content">
-            <div class="content-wrapper">
+            
+            <!-- Welcome Card -->
+            <div class="card welcome-card">
+                <h2>Welcome back, <?= htmlspecialchars($first_name); ?>! 👋</h2>
+                <p>Use the sidebar navigation menu on the left to manage your student profile, view your records, and check academic guidelines.</p>
+            </div>
+
+            <!-- Quick Stats / Status Grid -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
                 
-                <!-- Welcome Banner -->
-                <div style="background: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 24px;">
-                    <h2 style="font-size: 24px; color: #1e293b; margin-bottom: 8px;">Welcome back, <?= htmlspecialchars($first_name); ?>! 👋</h2>
-                    <p style="color: #64748b; font-size: 14px;">Use the sidebar navigation menu on the left to manage your student profile, view your records, and check academic guidelines.</p>
+                <!-- Card 1: Student Number -->
+                <div class="card" style="display: flex; align-items: center; gap: 16px; margin-bottom: 0;">
+                    <div style="background: #eff6ff; color: #2563eb; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
+                        <i class="fa-solid fa-id-card"></i>
+                    </div>
+                    <div>
+                        <p style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">Student Number</p>
+                        <h4 style="font-size: 18px; color: #1e293b; margin: 0;"><?= htmlspecialchars($student_no); ?></h4>
+                    </div>
                 </div>
 
-                <!-- Quick Stats / Status Grid -->
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
-                    <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 16px;">
-                        <div style="background: #eff6ff; color: #2563eb; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">
-                            <i class="fa-solid fa-id-card"></i>
+                <!-- Card 2: Profile Status -->
+                <div class="card" style="display: flex; align-items: center; gap: 16px; margin-bottom: 0;">
+                    <?php if ($is_profile_complete): ?>
+                        <!-- Completed State -->
+                        <div style="background: #f0fdf4; color: #16a34a; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
+                            <i class="fa-solid fa-circle-check"></i>
                         </div>
                         <div>
-                            <p style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">Student Number</p>
-                            <h4 style="font-size: 18px; color: #1e293b;"><?= htmlspecialchars($student_no); ?></h4>
+                            <p style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">Profile Status</p>
+                            <h4 style="font-size: 18px; color: #1e293b; margin: 0;">Completed & Saved</h4>
                         </div>
-                    </div>
-
-                    <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 16px;">
-                        <?php if ($is_profile_complete): ?>
-                            <!-- Completed State -->
-                            <div style="background: #f0fdf4; color: #16a34a; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">
-                                <i class="fa-solid fa-circle-check"></i>
-                            </div>
-                            <div>
-                                <p style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">Profile Status</p>
-                                <h4 style="font-size: 18px; color: #1e293b;">Completed & Saved</h4>
-                            </div>
-                        <?php else: ?>
-                            <!-- Pending State -->
-                            <div style="background: #fefce8; color: #ca8a04; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">
-                                <i class="fa-solid fa-triangle-exclamation"></i>
-                            </div>
-                            <div>
-                                <p style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">Profile Status</p>
-                                <h4 style="font-size: 18px; color: #1e293b;">Pending Information</h4>
-                            </div>
-                        <?php endif; ?>
-                    </div>
+                    <?php else: ?>
+                        <!-- Pending State -->
+                        <div style="background: #fefce8; color: #ca8a04; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                        <div>
+                            <p style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">Profile Status</p>
+                            <h4 style="font-size: 18px; color: #1e293b; margin: 0;">Pending Information</h4>
+                        </div>
+                    <?php endif; ?>
                 </div>
-
             </div>
+
         </main>
         <!-- END MAIN CONTENT -->
 

@@ -49,7 +49,7 @@ $stmt->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>student-information</title>
+    <title>Student Information</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
     
     <!-- Shared Dashboard Layout CSS -->
@@ -94,24 +94,26 @@ $stmt->close();
         <?php include("../includes/student-sidebar.php"); ?>
         
         <main class="main-content">
+            <!-- Welcome Card -->
             <div class="card welcome-card">
-                <h1>Personal Information Management</h1>
-                <p>Manage and complete your student profile details required by the institution.</p>
+                <h2>Personal Information Management</h2>
+                <p>Manage and complete your student profile details required by the college.</p>
             </div>
 
-            <div class="card" style="text-align: center; padding: 40px;">
-                <i class="fa-solid fa-id-card-clip" style="font-size: 48px; color: #f4b42a; margin-bottom: 15px;"></i>
+            <!-- Status Card -->
+            <div class="card status-card">
+                <i class="fa-solid fa-id-card-clip status-icon"></i>
                 <h3>Student Profile Status: <strong><?= $info_filled ? 'Completed' : 'Pending Information' ?></strong></h3>
-                <p style="color: #64748b; margin: 10px 0 20px 0;">
+                <p class="status-desc">
                     <?= $info_filled ? 'Your information has been saved successfully.' : 'Please provide your personal, residential, and family background data.' ?>
                 </p>
                 
                 <?php if (!$info_filled): ?>
-                    <button type="button" class="save-btn" onclick="openInfoModal()" style="display: inline-block; padding: 12px 30px; font-size: 15px;">
+                    <button type="button" class="save-btn status-btn" onclick="openInfoModal()">
                         <i class="fa-solid fa-plus"></i> Add Information
                     </button>
                 <?php else: ?>
-                    <p style="color: #10b981; font-weight: 600;"><i class="fa-solid fa-circle-check"></i> Information already submitted.</p>
+                    <p class="success-text"><i class="fa-solid fa-circle-check"></i> Personal Information already submitted.</p>
                 <?php endif; ?>
             </div>
         </main>
@@ -136,7 +138,6 @@ $stmt->close();
     function confirmSave() {
         return confirm("Are you sure you want to save this information?");
     }
-
 </script>
 </body>
 </html>

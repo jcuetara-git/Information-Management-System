@@ -11,7 +11,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <button class="sidebar-toggle-btn" id="sidebarToggleBtn" type="button" aria-label="Toggle Sidebar">
             <i class="fa-solid fa-bars"></i>
         </button>
-        <span class="sidebar-brand-text">Information Management System</span>
+        <span class="sidebar-brand-text" style="font-weight:800; font-size: 18px;">UCMAIN CCJ IMS</span>
     </div>
 
     <div class="sidebar-nav">

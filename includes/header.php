@@ -7,7 +7,7 @@
             </div>
             <div class="logo-text">
                 <h2>College of Criminal Justice</h2>
-                <p>Center of Development in Criminology</p>
+                <p>Center of Excellence in Criminology</p>
             </div>
         </div>
 

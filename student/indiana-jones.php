@@ -11,6 +11,10 @@ $student_no = $_SESSION['student_no'] ?? '';
 $first_name = $_SESSION['firstname'] ?? $_SESSION['first_name'] ?? 'John';
 $last_name = $_SESSION['lastname'] ?? $_SESSION['last_name'] ?? 'Doe';
 
+// Handle pagination/limit configuration
+$allowed_limits = [5, 20, 50];
+$limit = isset($_GET['limit']) && in_array((int)$_GET['limit'], $allowed_limits) ? (int)$_GET['limit'] : 5;
+
 // Fetch announcements for header dropdown
 $announcements = [];
 $conn->query("SET time_zone = '+08:00'");
@@ -35,9 +39,9 @@ $stmt->close();
 
 $submissions = [];
 if (!empty($student_no)) {
-    $stmt = $conn->prepare("SELECT * FROM indiana_jones_records WHERE student_no = ? ORDER BY date_recorded DESC, id DESC");
+    $stmt = $conn->prepare("SELECT * FROM indiana_jones_records WHERE student_no = ? ORDER BY date_recorded DESC, id DESC LIMIT ?");
     if ($stmt) {
-        $stmt->bind_param("s", $student_no);
+        $stmt->bind_param("si", $student_no, $limit);
         $stmt->execute();
         $result = $stmt->get_result();
         $submissions = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
@@ -52,7 +56,6 @@ if (!empty($student_no)) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Indiana Jones Program</title>
     <link rel="stylesheet" href="../assets/css/student-dashboard.css">
-    <link rel="stylesheet" href="../assets/css/retention-policy.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
 <body>
@@ -64,38 +67,54 @@ if (!empty($student_no)) {
         <?php include("../includes/student-sidebar.php"); ?>
 
         <main class="main-content">
-            <div class="content-wrapper">
-                <?php if (isset($_GET['success'])): ?>
-                    <div class="alert alert-success" id="alertBox">
-                        <span><i class="fa-solid fa-circle-check"></i> <?= htmlspecialchars($_GET['success']); ?></span>
-                        <button class="close-btn" onclick="document.getElementById('alertBox').style.display='none'">&times;</button>
-                    </div>
-                <?php endif; ?>
+            <?php if (isset($_GET['success'])): ?>
+                <div class="alert alert-success" id="alertBox">
+                    <span><i class="fa-solid fa-circle-check"></i> <?= htmlspecialchars($_GET['success']); ?></span>
+                    <button class="close-btn" onclick="document.getElementById('alertBox').style.display='none'">&times;</button>
+                </div>
+            <?php endif; ?>
 
-                <?php if (isset($_GET['error'])): ?>
-                    <div class="alert alert-danger" id="alertBox">
-                        <span><i class="fa-solid fa-circle-exclamation"></i> <?= htmlspecialchars($_GET['error']); ?></span>
-                        <button class="close-btn" onclick="document.getElementById('alertBox').style.display='none'">&times;</button>
-                    </div>
-                <?php endif; ?>
+            <?php if (isset($_GET['error'])): ?>
+                <div class="alert alert-danger" id="alertBox">
+                    <span><i class="fa-solid fa-circle-exclamation"></i> <?= htmlspecialchars($_GET['error']); ?></span>
+                    <button class="close-btn" onclick="document.getElementById('alertBox').style.display='none'">&times;</button>
+                </div>
+            <?php endif; ?>
 
-                <div class="page-header">
+            <div class="card welcome-card">
+                <div class="page-header" style="margin-bottom: 0; width: 100%;">
                     <div>
-                        <h2 class="header-title"><i class="fa-solid fa-hat-cowboy"></i> Indiana Jones Program Submissions</h2>
+                        <h2 class="header-title"><i class="fa-solid fa-calendar nav-icon"></i> Indiana Jones Program Submissions</h2>
                         <p class="header-desc">View the approval status of your submitted Letters of Undertaking for absences.</p>
                     </div>
                     <button type="button" class="btn-add" onclick="openIndianaJonesModal()">
                         <i class="fa-solid fa-plus"></i> Add New LOU
                     </button>
                 </div>
+            </div>
+
+            <div class="card">
+                <div class="table-controls">
+                    <div>
+                        Show 
+                        <select id="entriesLimit" onchange="changeLimit(this.value)">
+                            <option value="5" <?= $limit == 5 ? 'selected' : ''; ?>>5</option>
+                            <option value="20" <?= $limit == 20 ? 'selected' : ''; ?>>20</option>
+                            <option value="50" <?= $limit == 50 ? 'selected' : ''; ?>>50</option>
+                        </select> 
+                        entries
+                    </div>
+                </div>
 
                 <div class="table-responsive">
                     <table class="status-table">
                         <thead>
                             <tr>
+                                <th>Student Number</th>
+                                <th>Year Level</th>
                                 <th>Date Recorded</th>
                                 <th>Number of Absences</th>
-                                <th>Year Level</th>
+                                <th>Attachment File</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -110,17 +129,38 @@ if (!empty($student_no)) {
                                         } elseif (strtolower($status) === 'rejected') {
                                             $badge_class = 'badge-rejected';
                                         }
+
+                                        // Support multiple potential column names used across different handlers
+                                        $filename = $row['undertaking_file'] ?? $row['undertaking_file_path'] ?? $row['file_path'] ?? '';
+
+                                        // Check which folder holds the file
+                                        $folder = 'indiana_jones';
+                                        if (!empty($filename)) {
+                                            if (file_exists(__DIR__ . "/../uploads/lou/" . $filename)) {
+                                                $folder = 'lou';
+                                            } elseif (file_exists(__DIR__ . "/../uploads/indiana_jones/" . $filename)) {
+                                                $folder = 'indiana_jones';
+                                            }
+                                        }
                                     ?>
                                     <tr>
-                                        <td><?= !empty($row['date_recorded']) ? date('M d, Y', strtotime($row['date_recorded'])) : 'N/A'; ?></td>
-                                        <td><?= htmlspecialchars($row['number_of_absences']); ?></td>
-                                        <td><?= htmlspecialchars($row['year_level']); ?></td>
-                                        <td><span class="badge <?= $badge_class; ?>"><?= htmlspecialchars($status); ?></span></td>
+                                        <td data-label="Student Number"><?= htmlspecialchars($row['student_no'] ?? $student_no); ?></td>
+                                        <td data-label="Year Level"><?= htmlspecialchars($row['year_level']); ?></td>
+                                        <td data-label="Date Recorded"><?= !empty($row['date_recorded']) ? date('M d, Y', strtotime($row['date_recorded'])) : 'N/A'; ?></td>
+                                        <td data-label="Number of Absences"><?= htmlspecialchars($row['number_of_absences']); ?></td>
+                                        <td data-label="Attachment File">
+                                            <?php if (!empty($filename)): ?>
+                                                <a href="../uploads/<?= $folder; ?>/<?= htmlspecialchars($filename); ?>" target="_blank" style="color: #2563eb; text-decoration: underline;">View File</a>
+                                            <?php else: ?>
+                                                N/A
+                                            <?php endif; ?>
+                                        </td>
+                                        <td data-label="Status"><span class="badge <?= $badge_class; ?>"><?= htmlspecialchars($status); ?></span></td>
                                     </tr>
                                 <?php endforeach; ?>
                             <?php else: ?>
                                 <tr>
-                                    <td colspan="4" style="text-align: center; color: #64748b; padding: 25px;">No Indiana Jones submissions found. Click "Add New LOU" to submit one.</td>
+                                    <td colspan="6" style="text-align: center; color: #64748b; padding: 25px;">No Indiana Jones submissions found. Click "Add New LOU" to submit one.</td>
                                 </tr>
                             <?php endif; ?>
                         </tbody>
@@ -185,12 +225,20 @@ if (!empty($student_no)) {
 </div>
 
 <script>
+    function changeLimit(value) {
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('limit', value);
+        window.location.search = urlParams.toString();
+    }
+
     function openIndianaJonesModal() {
         document.getElementById('indianaJonesModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
     }
 
     function closeIndianaJonesModal() {
         document.getElementById('indianaJonesModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
     }
 
     window.onclick = function(event) {

@@ -36,7 +36,7 @@ $current_page = basename($_SERVER['PHP_SELF']);
         <div class="nav-section">Academic Support</div>
 
         <a href="retention-policy.php" class="nav-item <?= ($current_page == 'retention-policy.php') ? 'nav-active' : '' ?>">
-            <i class="fa-solid fa-graduation-cap nav-icon"></i>
+            <i class="fa-solid fa-list-check"></i>
             <span class="nav-text">Retention Policy</span>
         </a>
 
