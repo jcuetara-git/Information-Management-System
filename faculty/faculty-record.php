@@ -51,8 +51,10 @@ $stmt->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>faculty-record</title>
+    <title>Faculty Record</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Shared Dashboard Layout CSS -->
     <link rel="stylesheet" href="../assets/css/student-dashboard.css">
 </head>
 <body>
@@ -66,25 +68,27 @@ $stmt->close();
         <?php include("../includes/faculty-sidebar.php"); ?>
         
         <main class="main-content">
+            <!-- Welcome Card -->
             <div class="card welcome-card">
-                <h1>Faculty Record Management</h1>
-                <p>Manage, review, and submit your official professional credentials and institutional document records.</p>
+                <h2>Faculty Record Management</h2>
+                <p>View your faculty records.</p>
             </div>
 
-            <div class="card" style="text-align: center; padding: 40px;">
-                <i class="fa-solid fa-folder-open" style="font-size: 48px; color: #f4b42a; margin-bottom: 15px;"></i>
+            <!-- Status Card -->
+            <div class="card status-card">
+                <i class="fa-solid fa-folder-open status-icon"></i>
                 <h3>Record Status: <strong><?= $record_filled ? 'Submitted' : 'No Records Added' ?></strong></h3>
-                <p style="color: #64748b; margin: 10px 0 20px 0;">
-                    <?= $record_filled ? 'Your faculty portfolio records are up to date.' : 'View your faculty record portfolio' ?>
+                <p class="status-desc">
+                    <?= $record_filled ? 'Your faculty records are up to date.' : 'View your faculty record' ?>
                 </p>
                 
                 <?php if (!$record_filled): ?>
-                    <button type="button" class="save-btn" onclick="openRecordModal()" style="display: inline-block; padding: 12px 30px; font-size: 15px;">
-                        <i class="fa-solid fa-eye"></i> View My Faculty Information
+                    <button type="button" class="save-btn status-btn" onclick="openRecordModal()">
+                        <i class="fa-solid fa-eye"></i> View My Faculty Personal Information
                     </button>
                 <?php else: ?>
-                    <button type="button" class="save-btn" onclick="openRecordModal()" style="display: inline-block; padding: 10px 24px; font-size: 14px; background: #f4b42a; color: #000;">
-                        <i class="fa-solid fa-eye"></i> View My Faculty Information
+                    <button type="button" class="save-btn status-btn" onclick="openRecordModal()">
+                        <i class="fa-solid fa-folder-open"></i> View My Faculty Information
                     </button>
                 <?php endif; ?>
             </div>

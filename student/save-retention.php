@@ -51,22 +51,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt->bind_param("sssssisss", $student_no, $firstname, $lastname, $middlename, $year_level, $failed_subjects_count, $memo_issued_date, $new_file_name, $status);
                 
                 if ($stmt->execute()) {
-                    header("Location: student-dashboard.php?success=Indiana Jones Submission uploaded successfully! Awaiting Admin review.");
+                    header("Location: retention-policy.php?success=Retention Policy Submission uploaded successfully!");
                 } else {
-                    header("Location: student-dashboard.php?error=Database error. Failed to save submission.");
+                    header("Location: retention-policy.php?error=Database error. Failed to save submission.");
                 }
                 $stmt->close();
             } else {
                 die("Database preparation failed: " . $conn->error); 
             }
         } else {
-            header("Location: student-dashboard.php?error=Failed to upload the file to the server.");
+            header("Location: retention-policy.php?error=Failed to upload the file to the server.");
         }
     } else {
-        header("Location: student-dashboard.php?error=Please select a valid PDF file to upload.");
+        header("Location: retention-policy.php?error=Please select a valid PDF file to upload.");
     }
 } else {
-    header("Location: student-dashboard.php");
+    header("Location: retention-policy.php");
     exit();
 }
 ?>

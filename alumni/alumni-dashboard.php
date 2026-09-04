@@ -39,7 +39,7 @@ $conn->query("SET time_zone = '+08:00'");
 
 // Change the session identifier depending on the user type (e.g., alumni_no, student_no, or faculty_no)
 $user_id = $_SESSION['alumni_no'] ?? $_SESSION['student_no'] ?? $_SESSION['faculty_no'] ?? '';
-$role = $_SESSION['role'] ?? 'student'; // 'student', 'faculty', 'alumni'
+$role = $_SESSION['role'] ?? 'alumni';
 
 $query = "SELECT title, message, created_at, 
           (created_at >= NOW() - INTERVAL 1 DAY) AS is_new 
@@ -69,7 +69,7 @@ $stmt->close();
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>alumni-dashboard</title>
+    <title>Alumni Dashboard</title>
     <!-- Include global stylesheets -->
     <link rel="stylesheet" href="../assets/css/student-dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -83,56 +83,57 @@ $stmt->close();
 
     <!-- LAYOUT: Sidebar + Main Content -->
     <div class="dashboard-layout">
-    
+        
         <!-- Include alumni sidebar -->
         <?php include("../includes/alumni-sidebar.php"); ?>
 
         <!-- MAIN PAGE CONTENT -->
         <main class="main-content">
-            <div class="content-wrapper">
+            
+            <!-- Welcome Card -->
+            <div class="card welcome-card">
+                <h2>Hi, <?= htmlspecialchars($first_name); ?>! 👋</h2>
+                <p>Keep your alumni records updated and stay connected with the college using the sidebar menu.</p>
+            </div>
+
+            <!-- Quick Stats / Status Grid -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
                 
-                <!-- Welcome Banner -->
-                <div style="background: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 24px;">
-                    <h2 style="font-size: 24px; color: #1e293b; margin-bottom: 8px;">Hi, <?= htmlspecialchars($first_name); ?>! 👋</h2>
-                    <p style="color: #64748b; font-size: 14px;">Keep your alumni records updated and stay connected with the college using the sidebar menu.</p>
+                <!-- Card 1: Alumni ID Number -->
+                <div class="card" style="display: flex; align-items: center; gap: 16px; margin-bottom: 0;">
+                    <div style="background: #eff6ff; color: #2563eb; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
+                        <i class="fa-solid fa-id-card"></i>
+                    </div>
+                    <div>
+                        <p style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">Alumni ID Number</p>
+                        <h4 style="font-size: 18px; color: #1e293b; margin: 0;"><?= htmlspecialchars($alumni_no); ?></h4>
+                    </div>
                 </div>
 
-                <!-- Quick Stats / Status Grid -->
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
-                    <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 16px;">
-                        <div style="background: #eff6ff; color: #2563eb; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">
-                            <i class="fa-solid fa-id-card"></i>
+                <!-- Card 2: Profile Status -->
+                <div class="card" style="display: flex; align-items: center; gap: 16px; margin-bottom: 0;">
+                    <?php if ($is_profile_complete): ?>
+                        <!-- Completed State -->
+                        <div style="background: #f0fdf4; color: #16a34a; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
+                            <i class="fa-solid fa-circle-check"></i>
                         </div>
                         <div>
-                            <p style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">Alumni ID Number</p>
-                            <h4 style="font-size: 18px; color: #1e293b;"><?= htmlspecialchars($alumni_no); ?></h4>
+                            <p style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">Profile Status</p>
+                            <h4 style="font-size: 18px; color: #1e293b; margin: 0;">Completed & Saved</h4>
                         </div>
-                    </div>
-
-                    <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 16px;">
-                        <?php if ($is_profile_complete): ?>
-                            <!-- Completed State -->
-                            <div style="background: #f0fdf4; color: #16a34a; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">
-                                <i class="fa-solid fa-circle-check"></i>
-                            </div>
-                            <div>
-                                <p style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">Profile Status</p>
-                                <h4 style="font-size: 18px; color: #1e293b;">Completed & Saved</h4>
-                            </div>
-                        <?php else: ?>
-                            <!-- Pending State -->
-                            <div style="background: #fefce8; color: #ca8a04; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">
-                                <i class="fa-solid fa-triangle-exclamation"></i>
-                            </div>
-                            <div>
-                                <p style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">Profile Status</p>
-                                <h4 style="font-size: 18px; color: #1e293b;">Pending Information</h4>
-                            </div>
-                        <?php endif; ?>
-                    </div>
+                    <?php else: ?>
+                        <!-- Pending State -->
+                        <div style="background: #fefce8; color: #ca8a04; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                        <div>
+                            <p style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">Profile Status</p>
+                            <h4 style="font-size: 18px; color: #1e293b; margin: 0;">Pending Information</h4>
+                        </div>
+                    <?php endif; ?>
                 </div>
-
             </div>
+
         </main>
         <!-- END MAIN CONTENT -->
 

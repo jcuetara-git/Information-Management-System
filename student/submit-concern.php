@@ -8,8 +8,8 @@ if (!isset($_SESSION['role']) || $_SESSION['role'] != "student") {
 }
 
 $student_no = $_SESSION['student_no'] ?? '';
-$first_name = $_SESSION['firstname'] ?? $_SESSION['first_name'] ?? 'John';
-$last_name = $_SESSION['lastname'] ?? $_SESSION['last_name'] ?? 'Doe';
+$first_name = $_SESSION['firstname'] ?? $_SESSION['first_name'] ?? '';
+$last_name = $_SESSION['lastname'] ?? $_SESSION['last_name'] ?? '';
 
 // Handle pagination/limit configuration
 $allowed_limits = [5, 20, 50];
@@ -128,13 +128,24 @@ if (!empty($student_no)) {
                                         } elseif (strtolower($status) === 'rejected') {
                                             $badge_class = 'badge-rejected';
                                         }
+
+                                        // Fallback checks for dynamic column names and folders
+                                        $filename = $row['file_path'] ?? $row['concern_file'] ?? '';
+                                        $folder = 'concerns';
+                                        if (!empty($filename)) {
+                                            if (file_exists(__DIR__ . "/../uploads/lou/" . $filename)) {
+                                                $folder = 'lou';
+                                            } elseif (file_exists(__DIR__ . "/../uploads/concerns/" . $filename)) {
+                                                $folder = 'concerns';
+                                            }
+                                        }
                                     ?>
                                     <tr>
                                         <td data-label="Student Number"><?= htmlspecialchars($row['student_no'] ?? $student_no); ?></td>
                                         <td data-label="Year Level"><?= htmlspecialchars($row['year_level'] ?? 'N/A'); ?></td>
                                         <td data-label="Attachment File">
-                                            <?php if (!empty($row['file_path'])): ?>
-                                                <a href="../uploads/concerns/<?= htmlspecialchars($row['file_path']); ?>" target="_blank" style="color: #2563eb; text-decoration: underline;">View File</a>
+                                            <?php if (!empty($filename)): ?>
+                                                <a href="../uploads/<?= $folder; ?>/<?= htmlspecialchars($filename); ?>" target="_blank" style="color: #2563eb; text-decoration: underline;">View File</a>
                                             <?php else: ?>
                                                 N/A
                                             <?php endif; ?>

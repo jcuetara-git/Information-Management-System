@@ -11,6 +11,10 @@ $faculty_id = $_SESSION['faculty_no'] ?? $_SESSION['faculty_id'] ?? '';
 $first_name = $_SESSION['firstname'] ?? $_SESSION['first_name'] ?? 'Faculty';
 $last_name = $_SESSION['lastname'] ?? $_SESSION['last_name'] ?? '';
 
+// Handle pagination/limit configuration
+$allowed_limits = [5, 20, 50];
+$limit = isset($_GET['limit']) && in_array((int)$_GET['limit'], $allowed_limits) ? (int)$_GET['limit'] : 5;
+
 // Fetch announcements for header dropdown
 $announcements = [];
 $conn->query("SET time_zone = '+08:00'");
@@ -35,9 +39,9 @@ $stmt->close();
 
 $concerns = [];
 if (!empty($faculty_id)) {
-    $stmt = $conn->prepare("SELECT * FROM faculty_concerns WHERE faculty_no = ? ORDER BY id DESC");
+    $stmt = $conn->prepare("SELECT * FROM faculty_concerns WHERE faculty_no = ? ORDER BY id DESC LIMIT ?");
     if ($stmt) {
-        $stmt->bind_param("s", $faculty_id);
+        $stmt->bind_param("si", $faculty_id, $limit);
         $stmt->execute();
         $result = $stmt->get_result();
         $concerns = $result ? $result->fetch_all(MYSQLI_ASSOC) : [];
@@ -80,56 +84,76 @@ if (!empty($faculty_id)) {
                     </div>
                 <?php endif; ?>
 
-                <div class="page-header">
-                    <div>
-                        <h2 class="header-title"><i class="fa-solid fa-envelope"></i> Faculty Concerns</h2>
-                        <p class="header-desc">Track status updates for concerns or inquiries submitted to the administration.</p>
+                <div class="card welcome-card">
+                    <div class="page-header" style="margin-bottom: 0; width: 100%;">
+                        <div>
+                            <h2 class="header-title"><i class="fa-solid fa-envelope"></i> Faculty Concerns</h2>
+                            <p class="header-desc">Track status updates for concerns or inquiries submitted to the administration.</p>
+                        </div>
+                        <button type="button" class="btn-add" onclick="openConcernForm()">
+                            <i class="fa-solid fa-plus"></i> Submit Concern
+                        </button>
                     </div>
-                    <button type="button" class="btn-add" onclick="openConcernForm()">
-                        <i class="fa-solid fa-plus"></i> Submit Concern
-                    </button>
                 </div>
 
-                <div class="table-responsive">
-                    <table class="status-table">
-                        <thead>
-                            <tr>
-                                <th>Attachment File</th>
-                                <th>Date Submitted</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <?php if (count($concerns) > 0): ?>
-                                <?php foreach ($concerns as $row): ?>
-                                    <?php 
-                                        $status = $row['status'] ?? 'Pending';
-                                        $badge_class = 'badge-pending';
-                                        if (strtolower($status) === 'resolved') {
-                                            $badge_class = 'badge-resolved';
-                                        } elseif (strtolower($status) === 'rejected') {
-                                            $badge_class = 'badge-rejected';
-                                        }
-                                    ?>
-                                    <tr>
-                                        <td>
-                                            <?php if (!empty($row['file_path'])): ?>
-                                                <a href="../uploads/concerns/<?= htmlspecialchars($row['file_path']); ?>" target="_blank" style="color: #2563eb; text-decoration: underline;">View File</a>
-                                            <?php else: ?>
-                                                N/A
-                                            <?php endif; ?>
-                                        </td>
-                                        <td><?= !empty($row['created_at']) ? date('M d, Y', strtotime($row['created_at'])) : 'N/A'; ?></td>
-                                        <td><span class="badge <?= $badge_class; ?>"><?= htmlspecialchars($status); ?></span></td>
-                                    </tr>
-                                <?php endforeach; ?>
-                            <?php else: ?>
+                <div class="card">
+                    <div class="table-controls">
+                        <div>
+                            Show 
+                            <select id="entriesLimit" onchange="changeLimit(this.value)">
+                                <option value="5" <?= $limit == 5 ? 'selected' : ''; ?>>5</option>
+                                <option value="20" <?= $limit == 20 ? 'selected' : ''; ?>>20</option>
+                                <option value="50" <?= $limit == 50 ? 'selected' : ''; ?>>50</option>
+                            </select> 
+                            entries
+                        </div>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="status-table">
+                            <thead>
                                 <tr>
-                                    <td colspan="3" style="text-align: center; color: #64748b; padding: 25px;">No concern records found. Click "Submit Concern" to raise one.</td>
+                                    <th>Faculty Number</th>
+                                    <th>Attachment File</th>
+                                    <th>Date Submitted</th>
+                                    <th>Status</th>
                                 </tr>
-                            <?php endif; ?>
-                        </tbody>
-                    </table>
+                            </thead>
+                            <tbody>
+                                <?php if (count($concerns) > 0): ?>
+                                    <?php foreach ($concerns as $row): ?>
+                                        <?php 
+                                            $status = $row['status'] ?? 'Pending';
+                                            $badge_class = 'badge-pending';
+                                            if (strtolower($status) === 'resolved') {
+                                                $badge_class = 'badge-resolved';
+                                            } elseif (strtolower($status) === 'rejected') {
+                                                $badge_class = 'badge-rejected';
+                                            }
+
+                                            $filename = $row['file_path'] ?? $row['concern_file'] ?? '';
+                                        ?>
+                                        <tr>
+                                            <td data-label="Faculty Number"><?= htmlspecialchars($row['faculty_no'] ?? $faculty_id); ?></td>
+                                            <td data-label="Attachment File">
+                                                <?php if (!empty($filename)): ?>
+                                                    <a href="../uploads/concerns/<?= htmlspecialchars($filename); ?>" target="_blank" style="color: #2563eb; text-decoration: underline;">View File</a>
+                                                <?php else: ?>
+                                                    N/A
+                                                <?php endif; ?>
+                                            </td>
+                                            <td data-label="Date Submitted"><?= !empty($row['created_at']) ? date('M d, Y', strtotime($row['created_at'])) : 'N/A'; ?></td>
+                                            <td data-label="Status"><span class="badge <?= $badge_class; ?>"><?= htmlspecialchars($status); ?></span></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                <?php else: ?>
+                                    <tr>
+                                        <td colspan="4" style="text-align: center; color: #64748b; padding: 25px;">No concern records found. Click "Submit Concern" to raise one.</td>
+                                    </tr>
+                                <?php endif; ?>
+                            </tbody>
+                        </table>
+                    </div>
                 </div>
             </div>
         </main>
@@ -141,6 +165,7 @@ if (!empty($faculty_id)) {
         <span class="close-btn" onclick="closeConcernForm()">&times;</span>
         <form class="personal-form" method="POST" action="save-faculty-concern.php" enctype="multipart/form-data">
             <h3 class="form-title">Submit a Concern</h3>
+            <p class="form-desc">Submit a Letter of Concern regarding academic or any other matters.</p>
             
             <div class="form-grid">
                 <div class="form-group no-margin">
@@ -167,12 +192,20 @@ if (!empty($faculty_id)) {
 </div>
 
 <script>
+    function changeLimit(value) {
+        const urlParams = new URLSearchParams(window.location.search);
+        urlParams.set('limit', value);
+        window.location.search = urlParams.toString();
+    }
+
     function openConcernForm() {
         document.getElementById('concernModal').style.display = 'flex';
+        document.body.style.overflow = 'hidden';
     }
 
     function closeConcernForm() {
         document.getElementById('concernModal').style.display = 'none';
+        document.body.style.overflow = 'auto';
     }
 
     window.onclick = function(event) {

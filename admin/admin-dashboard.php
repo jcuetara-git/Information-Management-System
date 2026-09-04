@@ -114,7 +114,7 @@ if ($alumni_result) {
 
                 <div class="logo-text">
                     <h1>College of Criminal Justice</h1>
-                    <p>Center of Development in Criminology</p>
+                    <p>Center of Excellence in Criminology</p>
                 </div>
             </div>
         </header>
@@ -122,7 +122,7 @@ if ($alumni_result) {
         <!-- Welcome Section -->
         <section class="card welcome-card" aria-label="Welcome Section">
             <div class="welcome-content">
-                <h2>Welcome, Admin! 👋</h2>
+                <h2>Hello, Admin! 👋</h2>
                 <p>View administrative overview data counters across accounts.</p>
             </div>
             <div class="welcome-date">

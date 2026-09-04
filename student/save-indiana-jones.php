@@ -50,22 +50,22 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
                 $stmt->bind_param("ssssssiss", $student_no, $firstname, $lastname, $middlename, $year_level, $date_recorded, $number_of_absences, $new_file_name, $status);
                 
                 if ($stmt->execute()) {
-                    header("Location: student-dashboard.php?success=Indiana Jones Submission uploaded successfully!");
+                    header("Location: indiana-jones.php?success=Indiana Jones Submission uploaded successfully!");
                 } else {
-                    header("Location: student-dashboard.php?error=Database error. Failed to save submission.");
+                    header("Location: indiana-jones.php?error=Database error. Failed to save submission.");
                 }
                 $stmt->close();
             } else {
                 die("Database preparation failed: " . $conn->error); 
             }
         } else {
-            header("Location: student-dashboard.php?error=Failed to upload the file to the server.");
+            header("Location: indiana-jones.php?error=Failed to upload the file to the server.");
         }
     } else {
-        header("Location: student-dashboard.php?error=Please select a valid PDF file to upload.");
+        header("Location: indiana-jones.php?error=Please select a valid PDF file to upload.");
     }
 } else {
-    header("Location: student-dashboard.php");
+    header("Location: indiana-jones.php");
     exit();
 }
 ?>

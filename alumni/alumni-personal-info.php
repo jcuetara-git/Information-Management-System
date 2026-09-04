@@ -57,69 +57,90 @@ if ($stmt) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alumni Information</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Shared Dashboard Layout CSS -->
     <link rel="stylesheet" href="../assets/css/student-dashboard.css">
+    
+    <!-- Externalized Stylesheet for Modal Layout -->
+    <link rel="stylesheet" href="../assets/css/faculty-personal-info.css">
+    
+    <script>
+        function confirmSubmission() {
+            return confirm("Are you sure all information is correct and you want to submit your alumni record?");
+        }
+
+        function confirmCancel(event) {
+            if (!confirm("Are you sure you want to cancel? Any unsaved changes will be lost.")) {
+                if(event) event.preventDefault(); 
+                return false;
+            }
+            closeModal();
+            return true;
+        }
+
+        function openModal() {
+            document.getElementById('infoModal').style.display = 'flex';
+            document.body.style.overflow = 'hidden';
+        }
+
+        function closeModal() {
+            document.getElementById('infoModal').style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+
+        function confirmSave() {
+            return confirm("Are you sure you want to save this information?");
+        }
+
+        window.onclick = function(event) {
+            const modal = document.getElementById('infoModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+    </script>
 </head>
 <body>
 
 <div class="dashboard-container">
-    
     <!-- HEADER INCLUDE -->
     <?php include("../includes/header.php"); ?>
-
+    
     <!-- LAYOUT -->
     <div class="dashboard-layout">
-        
         <!-- SIDEBAR INCLUDE -->
         <?php include("../includes/alumni-sidebar.php"); ?>
         
         <main class="main-content">
+            <!-- Welcome Card -->
             <div class="card welcome-card">
-                <h1>Alumni Information Management</h1>
+                <h2>Alumni Information Management</h2>
                 <p>Manage and complete your career and board exam details to update your official alumni record.</p>
             </div>
 
-            <!-- STATUS CARD -->
-            <div class="card" style="text-align: center; padding: 40px;">
-                <i class="fa-solid fa-user-graduate" style="font-size: 48px; color: #f4b42a; margin-bottom: 15px;"></i>
-                <h3>Alumni Profile Status: <strong><?= $info_filled ? 'Completed' : 'Pending Information' ?></strong></h3>
-                <p style="color: #64748b; margin: 10px 0 20px 0;">
+            <!-- Status Card -->
+            <div class="card status-card">
+                <i class="fa-solid fa-id-card-clip status-icon"></i>
+                <h3>Profile Status: <strong><?= $info_filled ? 'Completed' : 'Pending Information' ?></strong></h3>
+                <p class="status-desc">
                     <?= $info_filled ? 'Your career and board exam details have been saved successfully.' : 'Please provide your career, board exam, and current job data.' ?>
                 </p>
                 
                 <?php if (!$info_filled): ?>
-                    <button type="button" class="save-btn" onclick="openModal()" style="display: inline-block; padding: 12px 30px; font-size: 15px; border: none; border-radius: 6px; background-color: #f4b42a; color: #000; cursor: pointer; font-weight: 600; transition: 0.2s;">
-                        <i class="fa-solid fa-plus"></i> Add Information
+                    <button type="button" class="save-btn status-btn" onclick="openModal()">
+                        <i class="fa-solid fa-plus"></i> Add Alumni Information
                     </button>
                 <?php else: ?>
-                    <p style="color: #10b981; font-weight: 600;"><i class="fa-solid fa-circle-check"></i> Information already submitted.</p>
+                    <p class="success-text"><i class="fa-solid fa-circle-check"></i> Information already submitted.</p>
                 <?php endif; ?>
             </div>
         </main>
     </div>
 </div>
 
-<!-- ================= ADD INFO MODAL INCLUDE ================= -->
+<!-- ================= ADD INFO MODAL ================= -->
 <?php include("alumni-personal-info-modal.php"); ?>
 
-<script>
-    // Modal Functions Only (Header Dropdowns are managed globally by header.php)
-    function openModal() {
-        document.getElementById('infoModal').style.display = 'flex';
-        document.body.style.overflow = 'hidden';
-    }
-
-    function closeModal() {
-        document.getElementById('infoModal').style.display = 'none';
-        document.body.style.overflow = 'auto';
-    }
-
-    window.onclick = function(event) {
-        const modal = document.getElementById('infoModal');
-        if (event.target == modal) {
-            closeModal();
-        }
-    }
-</script>
-
+<script src="../assets/js/script.js"></script>
 </body>
 </html>

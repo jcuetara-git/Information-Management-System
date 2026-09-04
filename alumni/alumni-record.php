@@ -56,6 +56,8 @@ if ($stmt) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Alumni Record</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+    
+    <!-- Shared Dashboard Layout CSS -->
     <link rel="stylesheet" href="../assets/css/student-dashboard.css">
 </head>
 <body>
@@ -72,24 +74,26 @@ if ($stmt) {
         <?php include("../includes/alumni-sidebar.php"); ?>
         
         <main class="main-content">
+            <!-- Welcome Card -->
             <div class="card welcome-card">
-                <h1>Alumni Record Management</h1>
-                <p>Manage, review, and keep your official alumni, career, and board exam records up to date.</p>
+                <h2>Alumni Record Management</h2>
+                <p>View your alumni record.</p>
             </div>
 
-            <div class="card" style="text-align: center; padding: 40px;">
-                <i class="fa-solid fa-folder-open" style="font-size: 48px; color: #f4b42a; margin-bottom: 15px;"></i>
+            <!-- Status Card -->
+            <div class="card status-card">
+                <i class="fa-solid fa-folder-open status-icon"></i>
                 <h3>Record Status: <strong><?= $record_filled ? 'Submitted' : 'No Records Added' ?></strong></h3>
-                <p style="color: #64748b; margin: 10px 0 20px 0;">
+                <p class="status-desc">
                     <?= $record_filled ? 'Your alumni records are up to date.' : 'View your alumni record' ?>
                 </p>
                 
                 <?php if (!$record_filled): ?>
-                    <button type="button" class="save-btn" onclick="openRecordModal()" style="display: inline-block; padding: 12px 30px; font-size: 15px;">
+                    <button type="button" class="save-btn status-btn" onclick="openRecordModal()">
                         <i class="fa-solid fa-eye"></i> View My Alumni Information
                     </button>
                 <?php else: ?>
-                    <button type="button" class="save-btn" onclick="openRecordModal()" style="display: inline-block; padding: 10px 24px; font-size: 14px; background: #f4b42a; color: #000;">
+                    <button type="button" class="save-btn status-btn" onclick="openRecordModal()">
                         <i class="fa-solid fa-folder-open"></i> View My Alumni Information
                     </button>
                 <?php endif; ?>
@@ -101,8 +105,8 @@ if ($stmt) {
 <!-- ================= ALUMNI RECORD MODAL INCLUDE ================= -->
 <?php include("alumni-record-modal.php"); ?>
 
+<script src="../assets/js/script.js"></script>
 <script>
-    // Modal Functions Only (Header Dropdowns are managed globally by header.php)
     function openRecordModal() {
         document.getElementById('recordModal').style.display = 'flex';
         document.body.style.overflow = 'hidden';
@@ -111,6 +115,10 @@ if ($stmt) {
     function closeRecordModal() {
         document.getElementById('recordModal').style.display = 'none';
         document.body.style.overflow = 'auto';
+    }
+
+    function confirmSaveRecord() {
+        return confirm("Are you sure you want to save this alumni record?");
     }
 
     window.addEventListener('click', function(event) {

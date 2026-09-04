@@ -80,50 +80,51 @@ $stmt->close();
 
         <!-- MAIN PAGE CONTENT -->
         <main class="main-content">
-            <div class="content-wrapper">
+            
+            <!-- Welcome Card -->
+            <div class="card welcome-card">
+                <h2>Hi, <?= htmlspecialchars($first_name); ?>! 👋</h2>
+                <p>Manage your professional portfolio information and view your teaching record using the sidebar menu.</p>
+            </div>
+
+            <!-- Quick Stats / Status Grid -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 24px;">
                 
-                <!-- Welcome Banner -->
-                <div style="background: #ffffff; padding: 24px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 24px;">
-                    <h2 style="font-size: 24px; color: #1e293b; margin-bottom: 8px;">Hi, <?= htmlspecialchars($first_name); ?>! 👋</h2>
-                    <p style="color: #64748b; font-size: 14px;">Manage your professional portfolio information and view your teaching record using the sidebar menu.</p>
+                <!-- Card 1: Faculty ID -->
+                <div class="card" style="display: flex; align-items: center; gap: 16px; margin-bottom: 0;">
+                    <div style="background: #eff6ff; color: #2563eb; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
+                        <i class="fa-solid fa-id-badge"></i>
+                    </div>
+                    <div>
+                        <p style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">Faculty ID</p>
+                        <h4 style="font-size: 18px; color: #1e293b; margin: 0;"><?= htmlspecialchars($faculty_id ?: 'N/A'); ?></h4>
+                    </div>
                 </div>
 
-                <!-- Quick Stats / Status Grid -->
-                <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 20px;">
-                    <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 16px;">
-                        <div style="background: #eff6ff; color: #2563eb; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">
-                            <i class="fa-solid fa-id-badge"></i>
+                <!-- Card 2: Portfolio Status -->
+                <div class="card" style="display: flex; align-items: center; gap: 16px; margin-bottom: 0;">
+                    <?php if ($portfolio_exists): ?>
+                        <!-- Completed State -->
+                        <div style="background: #f0fdf4; color: #16a34a; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
+                            <i class="fa-solid fa-circle-check"></i>
                         </div>
                         <div>
-                            <p style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">Faculty ID</p>
-                            <h4 style="font-size: 18px; color: #1e293b;"><?= htmlspecialchars($faculty_id ?: 'N/A'); ?></h4>
+                            <p style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">Portfolio Status</p>
+                            <h4 style="font-size: 18px; color: #1e293b; margin: 0;">Portfolio Saved</h4>
                         </div>
-                    </div>
-
-                    <div style="background: #ffffff; padding: 20px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 16px;">
-                        <?php if ($portfolio_exists): ?>
-                            <!-- Completed State -->
-                            <div style="background: #f0fdf4; color: #16a34a; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">
-                                <i class="fa-solid fa-circle-check"></i>
-                            </div>
-                            <div>
-                                <p style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">Portfolio Status</p>
-                                <h4 style="font-size: 18px; color: #1e293b;">Portfolio Saved</h4>
-                            </div>
-                        <?php else: ?>
-                            <!-- Pending State -->
-                            <div style="background: #fefce8; color: #ca8a04; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px;">
-                                <i class="fa-solid fa-triangle-exclamation"></i>
-                            </div>
-                            <div>
-                                <p style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">Portfolio Status</p>
-                                <h4 style="font-size: 18px; color: #1e293b;">Pending Portfolio</h4>
-                            </div>
-                        <?php endif; ?>
-                    </div>
+                    <?php else: ?>
+                        <!-- Pending State -->
+                        <div style="background: #fefce8; color: #ca8a04; width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; flex-shrink: 0;">
+                            <i class="fa-solid fa-triangle-exclamation"></i>
+                        </div>
+                        <div>
+                            <p style="font-size: 12px; color: #64748b; text-transform: uppercase; font-weight: 600; margin-bottom: 4px;">Portfolio Status</p>
+                            <h4 style="font-size: 18px; color: #1e293b; margin: 0;">Pending Portfolio</h4>
+                        </div>
+                    <?php endif; ?>
                 </div>
-
             </div>
+
         </main>
         <!-- END MAIN CONTENT -->
 

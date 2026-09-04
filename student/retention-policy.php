@@ -55,29 +55,6 @@ if (!empty($student_no)) {
     <title>Retention Policy</title>
     <link rel="stylesheet" href="../assets/css/student-dashboard.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        .table-controls {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-            font-size: 14px;
-            color: #475569;
-        }
-        .table-controls select {
-            padding: 6px 12px;
-            border: 1px solid #cbd5e1;
-            border-radius: 6px;
-            background-color: #fff;
-            color: #1e293b;
-            font-size: 14px;
-            cursor: pointer;
-            outline: none;
-        }
-        .table-controls select:focus {
-            border-color: #2563eb;
-        }
-    </style>
 </head>
 <body>
 

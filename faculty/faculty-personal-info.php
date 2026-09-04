@@ -249,33 +249,35 @@ $stmt->close();
         
         <main class="main-content">
             <?php if(isset($_SESSION['portfolio_success_msg'])): ?>
-                <div style="background: #dcfce7; color: #166534; padding: 15px; border-radius: 8px; margin-bottom: 20px; border: 1px solid #bbf7d0;">
+                <div style="background: #dcfce7; color: #166534; padding: 15px; border-radius: 8px; margin-bottom: 24px; border: 1px solid #bbf7d0;">
                     <i class="fa-solid fa-circle-check"></i> <?= $_SESSION['portfolio_success_msg'] ?>
                 </div>
                 <?php unset($_SESSION['portfolio_success_msg']); ?>
             <?php endif; ?>
 
+            <!-- Welcome Card -->
             <div class="card welcome-card">
-                <h1>Faculty Portfolio Management</h1>
+                <h2>Faculty Portfolio Management</h2>
                 <p>Manage and complete your professional credentials and institutional document records.</p>
             </div>
 
-            <div class="card" style="text-align: center; padding: 40px;">
-                <i class="fa-solid fa-file-shield" style="font-size: 48px; color: #f4b42a; margin-bottom: 15px;"></i>
+            <!-- Status Card -->
+            <div class="card status-card">
+                <i class="fa-solid fa-file-shield status-icon"></i>
                 <h3>Portfolio Status: <strong><?= $info_filled ? 'Completed' : 'Pending Portfolio' ?></strong></h3>
-                <p style="color: #64748b; margin: 10px 0 20px 0;">
+                <p class="status-desc">
                     <?= $info_filled ? 'Your faculty portfolio documents have been saved successfully.' : 'Please provide your required professional records, licenses, and academic files.' ?>
                 </p>
                 
                 <?php if (!$info_filled): ?>
-                    <button type="button" class="save-btn" onclick="openModal()" style="display: inline-block; padding: 12px 30px; font-size: 15px; border: none; border-radius: 8px; cursor: pointer; font-weight: 700;">
+                    <button type="button" class="save-btn status-btn" onclick="openModal()">
                         <i class="fa-solid fa-plus"></i> Add Portfolio Information
                     </button>
                 <?php else: ?>
-                    <button type="button" class="save-btn" onclick="openModal()" style="display: inline-block; padding: 10px 24px; font-size: 14px; border: none; border-radius: 8px; cursor: pointer; font-weight: 600; background: #f4b42a; color: #000;">
+                    <button type="button" class="save-btn status-btn" onclick="openModal()">
                         <i class="fa-solid fa-pen-to-square"></i> Update Portfolio
                     </button>
-                    <p style="color: #10b981; font-weight: 600; margin-top: 15px;"><i class="fa-solid fa-circle-check"></i> Portfolio records submitted.</p>
+                    <p class="success-text"><i class="fa-solid fa-circle-check"></i> Portfolio records submitted.</p>
                 <?php endif; ?>
             </div>
         </main>
